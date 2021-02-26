@@ -1,3 +1,10 @@
+/**
+ * Les gares du jeu
+ *
+ * @author Edouard Michelin (314770)
+ * @author Julien Jordan (315429)
+ */
+
 package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.Preconditions;
@@ -21,9 +28,22 @@ public final class Station {
         this.name = name;
     }
 
+    /**
+     * Retourne l'id de cette gare
+     * @return l'id de cette gare
+     */
     public int id() { return this.id; }
+
+    /**
+     * Retourne le nom de cette gare
+     * @return le nom de cette gare
+     */
     public String name() { return this.name; }
 
+    /**
+     * Retourne le nom de cette gare
+     * @return le nom de cette gare
+     */
     @Override
     public String toString() { return this.name; }
 }

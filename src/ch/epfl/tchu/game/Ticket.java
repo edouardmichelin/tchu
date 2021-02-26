@@ -1,3 +1,9 @@
+/**
+ * Les tickets que les joueurs peuvent tirer au cours du jeu
+ *
+ * @author Edouard Michelin (314770)
+ * @author Julien Jordan (315429)
+ */
 package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.Preconditions;
@@ -20,14 +26,28 @@ public final class Ticket implements Comparable<Ticket> {
         this(List.of((new Trip(from, to, points))));
     }
 
+    /**
+     * Retourne le rendu textuel de ce ticket
+     * @return le texte de ce ticket
+     */
     public String text() {
         return this.text;
     }
 
+    /**
+     * Retourne les points que le ticket engendre selon la connexion
+     * @param connectivity
+     * @return les points engendrés par le ticket
+     */
     public int points(StationConnectivity connectivity) {
         return trips.stream().mapToInt(trip -> trip.points(connectivity)).max().getAsInt();
     }
 
+    /**
+     * Effectue et retourne le rendu du texte à afficher sur le ticket en jeu
+     * @param trips La liste des trajets devant figurer sur le ticket
+     * @return Le texte à rendre pour notre tickets
+     */
     private static String computeText(List<Trip> trips) {
         Trip firstTrip = trips.get(0);
 
@@ -62,11 +82,20 @@ public final class Ticket implements Comparable<Ticket> {
         throw new IllegalArgumentException();
     }
 
+    /**
+     * Fait une comparaison des textes des deux tickets par ordre alphabétique
+     * @param that
+     * @return -1 si this est avant that, 1 si that est avant this, 0 si ils sont égaux
+     */
     @Override
     public int compareTo(Ticket that) {
         return this.text.compareTo(that.text());
     }
 
+    /**
+     * Retourne le texte de ce ticket
+     * @return le texte de ce ticket
+     */
     @Override
     public String toString() {
         return this.text;
