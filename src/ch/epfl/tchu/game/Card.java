@@ -17,12 +17,13 @@ public enum Card {
 
     private Color c;
 
-    private Card(Color color) {
+    Card(Color color) {
         this.c = color;
     }
 
     public final static List<Card> ALL = List.of(Card.values());
-    public final static int COUNT = Card.values().length;
+    public final static int COUNT = ALL.size();
+
     public final static List<Card> CARS = Arrays
             .stream(Card.values())
             .filter(card -> card.c != null)
