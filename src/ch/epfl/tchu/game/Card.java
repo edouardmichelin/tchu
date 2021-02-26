@@ -47,7 +47,7 @@ public enum Card {
             .collect(Collectors.toUnmodifiableList());
 
     /**
-     * Retourne le type de carte correspondant à une couleure donnée
+     * Retourne le type de carte correspondant à une couleur donnée
      * @param color
      * @return le type de carte correspondant à la couleur ou null si
      *          aucune carte n'est trouvée pour la couleur donnée.

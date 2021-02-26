@@ -1,5 +1,5 @@
 /**
- * Les couleures utilisées dans le jeu
+ * Les couleurs utilisées dans le jeu
  *
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
@@ -20,12 +20,12 @@ public enum Color {
     WHITE;
 
     /**
-     * Liste de toutes les couleures
+     * Liste de toutes les couleurs
      */
     public final static List<Color> ALL = List.of(Color.values());
 
     /**
-     * Nombre total de couleures dans le jeu
+     * Nombre total de couleurs dans le jeu
      */
     public final static int COUNT = ALL.size();
 }
