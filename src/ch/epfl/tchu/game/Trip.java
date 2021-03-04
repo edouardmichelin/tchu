@@ -28,9 +28,9 @@ public final class Trip {
     /**
      * Composer et retourne une liste de toutes les possibilités de trajets entre deux
      * ensembles de gares avec le nombre de points correspondant attribué.
-     * @param from
-     * @param to
-     * @param points
+     * @param from station  de départ
+     * @param to station d'arrivée
+     * @param points nombre de points du voyage (trip)
      * @return Une liste de tous les trajets possibles entre deux ensembles de gares
      *              avec leurs points attribués.
      */
@@ -66,7 +66,7 @@ public final class Trip {
 
     /**
      * Retourne les points de ce trajet en fonction de sa connexion
-     * @param connectivity
+     * @param connectivity connectivity
      * @return les points de ce trajet en fonction de sa connexion
      */
     public int points(StationConnectivity connectivity) {

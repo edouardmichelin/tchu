@@ -10,9 +10,9 @@ public final class Preconditions {
     private Preconditions() {}
 
     /**
-     * Lève une exception si l'argument passé est faux
+     * Lève une exception de type IllegalArgumentException si l'argument passé est faux
      * @exception IllegalArgumentException
-     * @param shouldBeTrue
+     * @param shouldBeTrue condition à tester
      */
     public static void checkArgument(boolean shouldBeTrue) {
         if (!shouldBeTrue) throw new IllegalArgumentException();

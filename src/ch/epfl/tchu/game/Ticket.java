@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public final class Ticket implements Comparable<Ticket> {
-    private List<Trip> trips;
-    private String text;
+    private final List<Trip> trips;
+    private final String text;
 
     Ticket(List<Trip> trips) {
         Preconditions.checkArgument(!trips.isEmpty());
@@ -36,7 +36,7 @@ public final class Ticket implements Comparable<Ticket> {
 
     /**
      * Retourne les points que le ticket engendre selon la connexion
-     * @param connectivity
+     * @param connectivity connectivité
      * @return les points engendrés par le ticket
      */
     public int points(StationConnectivity connectivity) {
@@ -52,19 +52,16 @@ public final class Ticket implements Comparable<Ticket> {
         Trip firstTrip = trips.get(0);
 
         if (trips.size() > 1) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(String.format("%s - {", firstTrip.from().name()));
-
-            sb.append(trips
-                    .stream()
-                    .map(trip -> String.format("%s (%s)", trip.to().name(), trip.points()))
-                    .distinct()
-                    .sorted()
-                    .collect(Collectors.joining(", ")));
-
-            sb.append("}");
-
-            return sb.toString();
+            return new StringBuilder()
+                    .append(String.format("%s - {", firstTrip.from().name()))
+                    .append(trips
+                        .stream()
+                        .map(trip -> String.format("%s (%s)", trip.to().name(), trip.points()))
+                        .distinct()
+                        .sorted()
+                        .collect(Collectors.joining(", ")))
+                    .append("}")
+                    .toString();
         } else {
             return String
                     .format("%s - %s (%d)", firstTrip.from().name(), firstTrip.to().name(), firstTrip.points());
@@ -84,7 +81,7 @@ public final class Ticket implements Comparable<Ticket> {
 
     /**
      * Fait une comparaison des textes des deux tickets par ordre alphabétique
-     * @param that
+     * @param that objet Ticket avec lequel effectuer la comparaison
      * @return -1 si this est avant that, 1 si that est avant this, 0 si ils sont égaux
      */
     @Override

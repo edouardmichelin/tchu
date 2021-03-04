@@ -22,7 +22,7 @@ public enum Card {
     WHITE(Color.WHITE),
     LOCOMOTIVE(null);
 
-    private Color color;
+    private final Color color;
 
     Card(Color color) {
         this.color = color;
@@ -48,7 +48,7 @@ public enum Card {
 
     /**
      * Retourne le type de carte correspondant à une couleur donnée
-     * @param color
+     * @param color la couleur de la carte
      * @return le type de carte correspondant à la couleur ou null si
      *          aucune carte n'est trouvée pour la couleur donnée.
      */
