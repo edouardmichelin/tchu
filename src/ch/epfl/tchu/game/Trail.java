@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Trail
+ * Chemin
  *
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
@@ -25,10 +25,29 @@ public final class Trail {
         this(routes, routes == null ? 0 : routes.stream().mapToInt(Route::length).sum());
     }
 
+    /**
+     * Retourne la première station du chemin
+     * @return la première station du chemin si la longueur est plus grande que 0, null sinon
+     */
     public Station station1() { return this.length > 0 ? this.routes.get(0).station1() : null; }
+
+    /**
+     * Retourne la dernière station du chemin
+     * @return la dernière station du chemin si la longueur est plus grande que 0, null sinon
+     */
     public Station station2() { return this.length > 0 ? this.routes.get(this.routes.size() - 1).station2() : null; }
+
+    /**
+     * Retourne la longueur totale des routes du chemin
+     * @return la longueur totale des routes du chemin
+     */
     public int length() { return this.length; }
 
+    /**
+     * Retourne le chemin le plus long que le joueur possède
+     * @param routes la liste de routes du joueur
+     * @return le chemin le plus long que le joueur possède
+     */
     public static Trail longest(List<Route> routes) {
         Trail currentLongestTrail = new Trail(null);
         List<Trail> singleRouteTrails = routes
@@ -58,6 +77,10 @@ public final class Trail {
         return currentLongestTrail;
     }
 
+    /**
+     * Retourne le nom des stations se trouvant le long du chemin, ainsi que la longueur totale du chemin
+     * @return le nom des stations se trouvant le long du chemin, ainsi que la longueur totale du chemin
+     */
     @Override
     public String toString() {
         if (this.length <= 0) return "";
