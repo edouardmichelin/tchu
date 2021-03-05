@@ -15,14 +15,14 @@ public final class Ticket implements Comparable<Ticket> {
     private final List<Trip> trips;
     private final String text;
 
-    Ticket(List<Trip> trips) {
+    public Ticket(List<Trip> trips) {
         Preconditions.checkArgument(!trips.isEmpty());
 
         this.trips = tryStoreTrips(trips);
         this.text = computeText(trips);
     }
 
-    Ticket(Station from, Station to, int points) {
+    public Ticket(Station from, Station to, int points) {
         this(List.of((new Trip(from, to, points))));
     }
 
