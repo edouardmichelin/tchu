@@ -1,10 +1,3 @@
-/**
- * Classe de test pour Route
- *
- * @author Edouard Michelin (314770)
- * @author Julien Jordan (315429)
- */
-
 package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.SortedBag;
@@ -15,6 +8,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Classe de test pour Route
+ *
+ * @author Edouard Michelin (314770)
+ * @author Julien Jordan (315429)
+ */
 class RouteTest {
 
     @Test

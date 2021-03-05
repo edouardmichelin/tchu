@@ -2,26 +2,62 @@ package ch.epfl.tchu.game;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
- * Trail tests
+ * Title
  *
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
 public class TrailTest {
 
+    private final List<Route> NETWORK = List.of(
+            ChMap.routes().get(13),
+            ChMap.routes().get(16),
+            ChMap.routes().get(18),
+            ChMap.routes().get(19),
+            ChMap.routes().get(65),
+            ChMap.routes().get(66)
+    );
+
     @Test
-    void findAllRouteConnectionsReturnsExpectedRoutes() {
-        var allRoutes = ChMap.routes();
-        var expectedLongest = 13;
+    void longestWorksOnEmptyRouteList() {
+        Trail a = Trail.longest(new ArrayList<Route>());
+        assertEquals(0, a.length());
+        assertNull(a.station1());
+        assertNull(a.station2());
+    }
 
-        var result = Trail.longest(List.of(allRoutes.get(13), allRoutes.get(16), allRoutes.get(18), allRoutes.get(19), allRoutes.get(65), allRoutes.get(66)));
-        // var result = Trail.longest(allRoutes.subList(0, 40));
+    @Test
+    void lengthReturnsExpectedLength() {
+        Trail a = Trail.longest(new ArrayList<Route>());
+        assertEquals(0, a.length());
 
-        assertEquals(expectedLongest, result.length());
+        a = Trail.longest(NETWORK);
+        assertEquals(13, a.length());
+    }
+
+    @Test
+    void station2ReturnsExpectedStation() {
+        Trail a = Trail.longest(NETWORK);
+        assertEquals(ChMap.stations().get(16), a.station2());
+    }
+
+    @Test
+    void station1ReturnsExpectedStation() {
+        Trail a = Trail.longest(NETWORK);
+        assertEquals(ChMap.stations().get(9), a.station1());
+    }
+
+    @Test
+    void toStringReturnsExpectedString() {
+        String expectedString = "Fribourg - Berne - Neuchâtel - Soleure - Berne - Lucerne (13)";
+        Trail a = Trail.longest(NETWORK);
+        assertEquals(expectedString, a.toString());
     }
 }
