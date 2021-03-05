@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
- * Title
+ * Test du chemin
  *
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
