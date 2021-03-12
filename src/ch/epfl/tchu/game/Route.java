@@ -161,7 +161,7 @@ public final class Route {
                         .build());
         }
 
-        result.add(SortedBag.of(3, Card.LOCOMOTIVE));
+        result.add(SortedBag.of(length, Card.LOCOMOTIVE));
 
         return result;
     }
