@@ -23,7 +23,7 @@ public final class Deck<C extends Comparable<C>> {
         List<C> shuffledCards = cards.toList();
         Collections.shuffle(shuffledCards, rng);
 
-        return new Deck(shuffledCards);
+        return new Deck<C>(shuffledCards);
     }
 
     /**
