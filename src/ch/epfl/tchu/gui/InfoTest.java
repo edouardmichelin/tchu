@@ -1,6 +1,8 @@
 package ch.epfl.tchu.gui;
 
+import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
+import ch.epfl.tchu.game.ChMap;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -59,5 +61,29 @@ public class InfoTest {
         var expectedValue = "\nJulien et Edouard sont ex æqo avec 20 points !\n";
 
         assertEquals(expectedValue, Info.draw(playerNames, 20));
+    }
+
+    @Test
+    public void test() {
+        var info = new Info("Edouard");
+
+        System.out.println(info.willPlayFirst());
+        System.out.println(info.keptTickets(2));
+        System.out.println(info.keptTickets(1));
+        System.out.println(info.canPlay());
+        System.out.println(info.drewTickets(2));
+        System.out.println(info.drewTickets(1));
+        System.out.println(info.drewBlindCard());
+        System.out.println(info.drewVisibleCard(Card.GREEN));
+        System.out.println(info.claimedRoute(ChMap.routes().get(0), SortedBag.of(3, Card.BLUE)));
+        System.out.println(info.attemptsTunnelClaim(ChMap.routes().get(0), SortedBag.of(3, Card.BLUE)));
+        System.out.println(info.drewAdditionalCards(SortedBag.of(3, Card.BLUE), 2));
+        System.out.println(info.didNotClaimRoute(ChMap.routes().get(0)));
+        System.out.println(info.lastTurnBegins(2));
+        System.out.println(info.lastTurnBegins(1));
+        System.out.println(info.won(2, 2));
+        System.out.println(info.won(2, 1));
+        System.out.println(info.won(1, 2));
+        System.out.println(info.won(1, 1));
     }
 }
