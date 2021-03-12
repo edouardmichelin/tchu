@@ -65,6 +65,9 @@ public final class Trail {
 
             for (Trail trail : trails) {
                 List<Route> connections = Trail.findAllRouteConnections(singleRouteTrails, trail);
+                if (trail.length > currentLongestTrail.length)
+                    currentLongestTrail = trail;
+
                 for (Route connection : connections) {
                     Trail candidate = trail.copyAndExtend(connection);
                     nextTrails.add(candidate);
@@ -145,5 +148,5 @@ public final class Trail {
         return result;
     }
 
-    private static String getRouteKey(Route route) { return route.id().substring(0, 6); }
+    private static String getRouteKey(Route route) { return route.id(); }
 }
