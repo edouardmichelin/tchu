@@ -18,9 +18,9 @@ public class PublicCardState {
     private int discardsSize;
 
     public PublicCardState(List<Card> faceUpCards, int deckSize, int discardsSize) {
-        Preconditions.checkArgument(faceUpCards.size() < 5);
-        Preconditions.checkArgument(deckSize < 0);
-        Preconditions.checkArgument(discardsSize < 0);
+        Preconditions.checkArgument(faceUpCards.size() == Constants.FACE_UP_CARDS_COUNT);
+        Preconditions.checkArgument(!(deckSize < 0));
+        Preconditions.checkArgument(!(discardsSize < 0));
 
 
     }
