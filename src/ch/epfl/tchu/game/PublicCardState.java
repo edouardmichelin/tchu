@@ -13,10 +13,10 @@ import java.util.Objects;
  * @author Julien Jordan (315429)
  */
 public class PublicCardState {
-    // peut-être à rendre finale, je sais pas pour le moment
-    private List<Card> faceUpCards;
-    private int deckSize;
-    private int discardsSize;
+
+    private final List<Card> faceUpCards;
+    private final int deckSize;
+    private final int discardsSize;
 
     public PublicCardState(List<Card> faceUpCards, int deckSize, int discardsSize) {
         Preconditions.checkArgument(faceUpCards.size() == Constants.FACE_UP_CARDS_COUNT);

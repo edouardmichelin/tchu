@@ -17,8 +17,8 @@ import java.util.stream.Stream;
  */
 public final class CardState extends PublicCardState {
 
-    private Deck<Card> deck;
-    private SortedBag<Card> discards;
+    private final Deck<Card> deck;
+    private final SortedBag<Card> discards;
 
     private CardState(List<Card> faceUpCards, Deck<Card> deck, SortedBag<Card> discarded, int deckSize, int discardsSize) {
         super(faceUpCards, deckSize, discardsSize);
