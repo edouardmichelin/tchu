@@ -3,6 +3,7 @@ package ch.epfl.tchu.game;
 import ch.epfl.tchu.SortedBag;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 public class CardStateTest {
 
-    //Un multi-ensemble de cartes non-trivial
+    //Un multi-ensemble de cartes non-trivial 17 cartes + 5 locomotives
     SortedBag<Card> cardsA = new SortedBag.Builder<Card>()
             .add(5, Card.LOCOMOTIVE)
             .add(3, Card.BLACK)
@@ -43,9 +44,8 @@ public class CardStateTest {
     void ofWorksWithNonTrivialDeck() {
         Deck a = Deck.of(cardsA, new Random());
         CardState test = CardState.of(a);
-        SortedBag<Card> expectedCards = SortedBag.of(5, Card.LOCOMOTIVE);
 
-        assertEquals(expectedCards, test.faceUpCards());
+        assertEquals(5, test.faceUpCards().size());
     }
 
     @Test
@@ -56,11 +56,18 @@ public class CardStateTest {
     }
 
     @Test
-    void withDrawnFaceUpCardFailOnEmtpyDeck() {
+    void withDrawnFaceUpCardFailsOnEmtpyDeck() {
         Deck<Card> deck = Deck.of(SortedBag.of(5, Card.BLUE), new Random());
         CardState a = CardState.of(deck);
         assertThrows(IllegalArgumentException.class, () -> {
             a.withDrawnFaceUpCard(0);
         });
+    }
+
+    @Test
+    void withDrawnFaceUpCardWorksOnNonTrivialCardState() {
+        cardStateA.withDrawnFaceUpCard(0);
+        assertEquals(16, cardStateA.deckSize());
+        assertEquals(5, cardStateA.faceUpCards().size());
     }
 }
