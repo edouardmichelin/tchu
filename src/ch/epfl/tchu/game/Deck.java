@@ -23,7 +23,7 @@ public final class Deck<C extends Comparable<C>> {
         List<C> shuffledCards = cards.toList();
         Collections.shuffle(shuffledCards, rng);
 
-        return new Deck<C>(shuffledCards);
+        return new Deck<>(shuffledCards);
     }
 
     /**
@@ -57,7 +57,7 @@ public final class Deck<C extends Comparable<C>> {
      * @return un tas identique au récepteur (this) mais sans la carte au sommet, ou lève IllegalArgumentException si le tas est vide
      */
     public Deck<C> withoutTopCard() {
-        return new Deck(this.cards.subList(1, this.cards.size()));
+        return new Deck<>(this.cards.subList(1, this.cards.size()));
     }
 
     /**
@@ -79,6 +79,6 @@ public final class Deck<C extends Comparable<C>> {
     public Deck<C> withoutTopCards(int count) {
         Objects.checkIndex(0, this.cards.size() + 1);
 
-        return new Deck(this.cards.subList(this.cards.size() - count, this.cards.size()));
+        return new Deck<>(this.cards.subList(this.cards.size() - count, this.cards.size()));
     }
 }
