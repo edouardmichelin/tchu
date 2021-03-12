@@ -23,7 +23,7 @@ final class SignatureChecks_3 {
         v06 = v10.deckSize();
         v06 = v10.discardsSize();
         v12 = v10.faceUpCard(v06);
-        // v11 = v10.faceUpCards();
+        v11 = v10.faceUpCards();
         v05 = v10.isDeckEmpty();
         v06 = v10.totalSize();
     }
@@ -41,7 +41,6 @@ final class SignatureChecks_3 {
         v16 = new ch.epfl.tchu.gui.Info(v17);
         v17 = ch.epfl.tchu.gui.Info.cardName(v12, v06);
         v17 = ch.epfl.tchu.gui.Info.draw(v18, v06);
-        /*
         v17 = v16.attemptsTunnelClaim(v19, v15);
         v17 = v16.canPlay();
         v17 = v16.claimedRoute(v19, v15);
@@ -55,8 +54,6 @@ final class SignatureChecks_3 {
         v17 = v16.lastTurnBegins(v06);
         v17 = v16.willPlayFirst();
         v17 = v16.won(v06, v06);
-
-         */
     }
 
     interface C extends Comparable<C> {}
