@@ -2,6 +2,7 @@ package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.Preconditions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,7 +43,7 @@ public class PublicCardState {
      * @return les cartes face visibles
      */
     public List<Card> faceUpCards() {
-        return this.faceUpCards;
+        return new ArrayList<>(this.faceUpCards);
     }
 
     /**
