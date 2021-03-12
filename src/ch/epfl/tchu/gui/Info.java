@@ -30,7 +30,7 @@ public final class Info {
     public static String cardName(Card card, int count) {
         String cardName = String.format("%s_CARD", card.color().toString());
         try {
-            return String.format("%s%s", (String) StringsFr.class.getDeclaredField(cardName).get(StringsFr.class), StringsFr.plural(count));
+            return String.format("%s%s", StringsFr.class.getDeclaredField(cardName).get(StringsFr.class), StringsFr.plural(count));
         } catch (Exception ignored) { }
 
         return "";
@@ -74,7 +74,7 @@ public final class Info {
     }
 
     public String claimedRoute(Route route, SortedBag<Card> cards) {
-        return String.format(StringsFr.CLAIMED_ROUTE, this.playerName, route, cards);
+        return String.format(StringsFr.CLAIMED_ROUTE, this.playerName, Info.getRouteName(route), cards);
     }
 
     public String attemptsTunnelClaim(Route route, SortedBag<Card> initialCards) {
@@ -90,7 +90,7 @@ public final class Info {
     }
 
     public String didNotClaimRoute(Route route) {
-        return String.format(StringsFr.DID_NOT_CLAIM_ROUTE, this.playerName, route);
+        return String.format(StringsFr.DID_NOT_CLAIM_ROUTE, this.playerName, Info.getRouteName(route));
     }
 
     public String lastTurnBegins(int carCount) {
@@ -113,5 +113,9 @@ public final class Info {
                 StringsFr.plural(points),
                 loserPoints,
                 StringsFr.plural(loserPoints));
+    }
+
+    private static String getRouteName(Route route) {
+        return String.format("%s%s%s", route.station1(), StringsFr.EN_DASH_SEPARATOR, route.station2());
     }
 }
