@@ -66,7 +66,13 @@ public class CardStateTest {
 
     @Test
     void withDrawnFaceUpCardWorksOnNonTrivialCardState() {
-        assertEquals(16, cardStateA.withDrawnFaceUpCard(0).deckSize());
-        assertEquals(5, cardStateA.withDrawnFaceUpCard(0).faceUpCards().size());
+        assertEquals(16, cardStateA.withDrawnFaceUpCard(2).deckSize());
+        assertEquals(5, cardStateA.withDrawnFaceUpCard(2).faceUpCards().size());
+        Card cardToReplace = cardStateA.faceUpCard(2);
+        Card replacingCard = cardStateA.topDeckCard();
+        System.out.println(cardToReplace.toString());
+        System.out.println(replacingCard.toString());
+        assertEquals(replacingCard, cardStateA.withDrawnFaceUpCard(2).faceUpCards().get(2));
+
     }
 }
