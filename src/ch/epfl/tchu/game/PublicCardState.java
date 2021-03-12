@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Représente (une partie de) l'état des cartes wagon/locomotive qui ne sont pas en main des joueurs
+ * L'état visible aux joueurs des cartes de la partie qui ne sont pas en main des joueurs
  *
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
@@ -26,11 +26,11 @@ public class PublicCardState {
     }
 
     /**
-     * Retourne le nombre total de cartes qui ne sont pas en main des joueurs, à savoir les 5 dont la face est visible, celles de la pioche et celles de la défausse
-     * @return le nombre total de cartes qui ne sont pas en main des joueurs, à savoir les 5 dont la face est visible, celles de la pioche et celles de la défausse
+     * Retourne le nombre total de cartes qui ne sont pas en main des joueurs, à savoir le nombre qui sont visibles, celles de la pioche et celles de la défausse
+     * @return le nombre total de cartes qui ne sont pas en main des joueurs,  à savoir le nombre qui sont visibles, celles de la pioche et celles de la défausse
      */
     public int totalSize() {
-        return 0;
+        return Constants.FACE_UP_CARDS_COUNT + this.deckSize + this.discardsSize;
     }
 
     /**
