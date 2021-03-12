@@ -18,6 +18,15 @@ import java.util.Random;
 public class DeckTest {
     SortedBag<Card> cards = SortedBag.of(List.of(Card.BLUE, Card.WHITE, Card.RED, Card.BLACK));
     SortedBag<Card> blueCards = SortedBag.of(List.of(Card.BLUE, Card.BLUE, Card.BLUE, Card.BLUE));
+    SortedBag<Card> manyCards = new SortedBag.Builder<Card>()
+            .add(5, Card.LOCOMOTIVE)
+            .add(3, Card.BLACK)
+            .add(4, Card.BLUE)
+            .add(1, Card.WHITE)
+            .add(6, Card.RED)
+            .add(2, Card.GREEN)
+            .add(1, Card.ORANGE)
+            .build();
 
     @Test
     public void sizeReturnsExpectedSize() {
@@ -49,9 +58,9 @@ public class DeckTest {
     @Test
     public void withoutTopCardsReturnsExpectedResult() {
         var random = new Random();
-        var deck = Deck.of(blueCards, random);
+        var deck = Deck.of(manyCards, random);
 
-        var newDeck = deck.withoutTopCards(2);
+        var newDeck = deck.withoutTopCards(5);
 
         System.out.println(deck);
     }

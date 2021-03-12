@@ -79,6 +79,6 @@ public final class Deck<C extends Comparable<C>> {
     public Deck<C> withoutTopCards(int count) {
         Objects.checkIndex(0, this.cards.size() + 1);
 
-        return new Deck<>(this.cards.subList(this.cards.size() - count, this.cards.size()));
+        return new Deck<>(this.cards.subList(count, this.cards.size()));
     }
 }
