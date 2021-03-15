@@ -1,11 +1,10 @@
 package ch.epfl.tchu.game;
 
-import ch.epfl.tchu.SortedBag;
+import ch.epfl.tchu.gui.StringsFr;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,7 +15,7 @@ import java.util.stream.Stream;
  * @author Julien Jordan (315429)
  */
 public final class Trail {
-    private int length;
+    private final int length;
     private final List<Route> routes;
 
     private Trail(List<Route> routes, int length) {
@@ -52,11 +51,21 @@ public final class Trail {
      * @return le chemin le plus long que le joueur possède
      */
     public static Trail longest(List<Route> routes) {
-        Trail currentLongestTrail = new Trail(null);
+        Trail currentLongestTrail;
+        final Trail[] finalCurrentLongestTrail = {new Trail(null)};
+
         List<Trail> singleRouteTrails = routes
                 .stream()
-                .flatMap(route -> Stream.of(new Trail(List.of(route)), new Trail(List.of(Trail.reverseRoute(route)))))
+                .flatMap(route -> {
+                    Trail trail = new Trail(List.of(route));
+                    if (trail.length > finalCurrentLongestTrail[0].length)
+                        finalCurrentLongestTrail[0] = trail;
+
+                    return Stream.of(new Trail(List.of(route)), new Trail(List.of(Trail.reverseRoute(route))));
+                })
                 .collect(Collectors.toList());
+
+        currentLongestTrail = finalCurrentLongestTrail[0];
 
         List<Trail> trails = new ArrayList<>(singleRouteTrails);
 
@@ -65,8 +74,6 @@ public final class Trail {
 
             for (Trail trail : trails) {
                 List<Route> connections = Trail.findAllRouteConnections(singleRouteTrails, trail);
-                if (trail.length > currentLongestTrail.length)
-                    currentLongestTrail = trail;
 
                 for (Route connection : connections) {
                     Trail candidate = trail.copyAndExtend(connection);
@@ -91,7 +98,11 @@ public final class Trail {
     public String toString() {
         if (this.length <= 0) return "";
 
-        var sj = new StringJoiner(" - ", this.station1().name() + " - ", String.format(" (%d)", this.length));
+        var sj = new StringJoiner(
+                StringsFr.EN_DASH_SEPARATOR,
+                this.station1() + StringsFr.EN_DASH_SEPARATOR,
+                String.format(" (%d)", this.length)
+        );
 
         this.routes.forEach(route -> sj.add(route.station2().name()));
 
@@ -103,13 +114,6 @@ public final class Trail {
         newRoutes.add(route);
 
         return new Trail(newRoutes, this.length + route.length());
-    }
-
-    private Trail copyAndExtend(List<Route> routes) {
-        List<Route> newRoutes = new ArrayList<>(this.routes);
-        newRoutes.addAll(routes);
-
-        return new Trail(newRoutes);
     }
 
     private static Route reverseRoute(Route route) {

@@ -55,7 +55,7 @@ public class TrailTest {
 
     @Test
     void toStringReturnsExpectedString() {
-        String expectedString = "Fribourg - Berne - Neuchâtel - Soleure - Berne - Lucerne (13)";
+        String expectedString = "Fribourg – Berne – Neuchâtel – Soleure – Berne – Lucerne (13)";
         Trail a = Trail.longest(NETWORK);
         assertEquals(expectedString, a.toString());
     }

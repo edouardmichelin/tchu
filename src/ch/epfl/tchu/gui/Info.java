@@ -29,7 +29,11 @@ public final class Info {
     public static String cardName(Card card, int count) {
         String cardName = String.format("%s_CARD", card.color().toString());
         try {
-            return String.format("%s%s", StringsFr.class.getDeclaredField(cardName).get(StringsFr.class), StringsFr.plural(count));
+            return String.format(
+                    "%s%s",
+                    StringsFr.class.getDeclaredField(cardName).get(StringsFr.class),
+                    StringsFr.plural(count)
+            );
         } catch (Exception ignored) { }
 
         return "";
