@@ -11,6 +11,7 @@ import java.util.Random;
  * Représente un tas de cartes
  *
  * @author Edouard Michelin (314770)
+ * @author Julien Jordan (315429)
  */
 public final class Deck<C extends Comparable<C>> {
     private final List<C> cards;
