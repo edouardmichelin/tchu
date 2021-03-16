@@ -31,17 +31,29 @@ public final class Info {
      * @return le nom (français) de la carte donnée, au singulier ssi la valeur absolue du second argument vaut 1
      */
     public static String cardName(Card card, int count) {
-        String cardName = String.format("%s_CARD", card.color().toString());
-        try {
-            return String.format(
-                    "%s%s",
-                    StringsFr.class.getDeclaredField(cardName).get(StringsFr.class),
-                    StringsFr.plural(count)
-            );
-        } catch (Exception ignored) {
+        StringBuilder name = new StringBuilder();
+        switch (card) {
+            case BLACK:
+                return name.append(StringsFr.BLACK_CARD).append(StringsFr.plural(count)).toString();
+            case VIOLET:
+                return name.append(StringsFr.VIOLET_CARD).append(StringsFr.plural(count)).toString();
+            case BLUE:
+                return name.append(StringsFr.BLUE_CARD).append(StringsFr.plural(count)).toString();
+            case GREEN:
+                return name.append(StringsFr.GREEN_CARD).append(StringsFr.plural(count)).toString();
+            case YELLOW:
+                return name.append(StringsFr.YELLOW_CARD).append(StringsFr.plural(count)).toString();
+            case ORANGE:
+                return name.append(StringsFr.ORANGE_CARD).append(StringsFr.plural(count)).toString();
+            case RED:
+                return name.append(StringsFr.RED_CARD).append(StringsFr.plural(count)).toString();
+            case WHITE:
+                return name.append(StringsFr.WHITE_CARD).append(StringsFr.plural(count)).toString();
+            case LOCOMOTIVE:
+                return name.append(StringsFr.LOCOMOTIVE_CARD).append(StringsFr.plural(count)).toString();
+            default:
+                throw new Error();
         }
-
-        return "";
     }
 
     /**
@@ -136,7 +148,7 @@ public final class Info {
      * @return le message déclarant que le joueur désire s'emparer de la route en tunnel donnée en utilisant initialement les cartes données
      */
     public String attemptsTunnelClaim(Route route, SortedBag<Card> initialCards) {
-        return String.format(StringsFr.ATTEMPTS_TUNNEL_CLAIM, this.playerName, route, initialCards);
+        return String.format(StringsFr.ATTEMPTS_TUNNEL_CLAIM, this.playerName, getRouteName(route), getCardsInfo(initialCards));
     }
 
     /**
@@ -151,7 +163,7 @@ public final class Info {
                 StringsFr.NO_ADDITIONAL_COST :
                 String.format(StringsFr.SOME_ADDITIONAL_COST, additionalCost, StringsFr.plural(additionalCost));
 
-        return String.format(StringsFr.ADDITIONAL_CARDS_ARE + additionalCostString, drawnCards);
+        return String.format(StringsFr.ADDITIONAL_CARDS_ARE + additionalCostString, getCardsInfo(drawnCards));
     }
 
     /**
@@ -217,39 +229,7 @@ public final class Info {
 
                 int count = cards.countOf(card);
 
-                cardsInfo.append(count).append(" ");
-
-                switch (card) {
-                    case BLACK:
-                        cardsInfo.append(StringsFr.BLACK_CARD).append(StringsFr.plural(count));
-                        break;
-                    case VIOLET:
-                        cardsInfo.append(StringsFr.VIOLET_CARD).append(StringsFr.plural(count));
-                        break;
-                    case BLUE:
-                        cardsInfo.append(StringsFr.BLUE_CARD).append(StringsFr.plural(count));
-                        break;
-                    case GREEN:
-                        cardsInfo.append(StringsFr.GREEN_CARD).append(StringsFr.plural(count));
-                        break;
-                    case YELLOW:
-                        cardsInfo.append(StringsFr.YELLOW_CARD).append(StringsFr.plural(count));
-                        break;
-                    case ORANGE:
-                        cardsInfo.append(StringsFr.ORANGE_CARD).append(StringsFr.plural(count));
-                        break;
-                    case RED:
-                        cardsInfo.append(StringsFr.RED_CARD).append(StringsFr.plural(count));
-                        break;
-                    case WHITE:
-                        cardsInfo.append(StringsFr.WHITE_CARD).append(StringsFr.plural(count));
-                        break;
-                    case LOCOMOTIVE:
-                        cardsInfo.append(StringsFr.LOCOMOTIVE_CARD).append(StringsFr.plural(count));
-                        break;
-                    default:
-                        throw new Error();
-                }
+                cardsInfo.append(count).append(" ").append(cardName(card, count));
             }
         }
         return cardsInfo.toString();
