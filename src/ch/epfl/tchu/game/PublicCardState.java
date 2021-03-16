@@ -23,7 +23,7 @@ public class PublicCardState {
         Preconditions.checkArgument(!(deckSize < 0));
         Preconditions.checkArgument(!(discardsSize < 0));
 
-        this.faceUpCards = faceUpCards;
+        this.faceUpCards = new ArrayList<>(faceUpCards);
         this.deckSize = deckSize;
         this.discardsSize = discardsSize;
     }
