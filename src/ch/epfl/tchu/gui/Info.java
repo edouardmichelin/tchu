@@ -2,10 +2,13 @@ package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
+import ch.epfl.tchu.game.Color;
 import ch.epfl.tchu.game.Route;
 import ch.epfl.tchu.game.Trail;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Permet de générer les textes décrivant le déroulement de la partie
@@ -22,7 +25,8 @@ public final class Info {
 
     /**
      * Retourne le nom (français) de la carte donnée, au singulier ssi la valeur absolue du second argument vaut 1
-     * @param card la carte
+     *
+     * @param card  la carte
      * @param count le nombre d'occurence de la carte
      * @return le nom (français) de la carte donnée, au singulier ssi la valeur absolue du second argument vaut 1
      */
@@ -34,15 +38,17 @@ public final class Info {
                     StringsFr.class.getDeclaredField(cardName).get(StringsFr.class),
                     StringsFr.plural(count)
             );
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
 
         return "";
     }
 
     /**
      * Retourne le message déclarant que les joueurs, dont les noms sont ceux donnés, ont terminé la partie ex æqo en ayant chacun remporté les points donnés
+     *
      * @param playerNames names of the player
-     * @param points amount of points
+     * @param points      amount of points
      * @return le message déclarant que les joueurs, dont les noms sont ceux donnés, ont terminé la partie ex æqo en ayant chacun remporté les points donnés
      */
     public static String draw(List<String> playerNames, int points) {
@@ -54,6 +60,7 @@ public final class Info {
 
     /**
      * Retourne le message déclarant que le joueur jouera en premier
+     *
      * @return le message déclarant que le joueur jouera en premier
      */
     public String willPlayFirst() {
@@ -62,6 +69,7 @@ public final class Info {
 
     /**
      * Retourne le message déclarant que le joueur a gardé le nombre de billets donné
+     *
      * @param count le nombre de ticket
      * @return le message déclarant que le joueur a gardé le nombre de billets donné
      */
@@ -71,6 +79,7 @@ public final class Info {
 
     /**
      * Retourne le message déclarant que le joueur peut jouer
+     *
      * @return le message déclarant que le joueur peut jouer
      */
     public String canPlay() {
@@ -79,6 +88,7 @@ public final class Info {
 
     /**
      * Retourne le message déclarant que le joueur a tiré le nombre donné de billets
+     *
      * @return le message déclarant que le joueur a tiré le nombre donné de billets
      */
     public String drewTickets(int count) {
@@ -87,6 +97,7 @@ public final class Info {
 
     /**
      * Retourne le message déclarant que le joueur a tiré une carte «à l'aveugle», c-à-d du sommet de la pioche
+     *
      * @return le message déclarant que le joueur a tiré une carte «à l'aveugle», c-à-d du sommet de la pioche
      */
     public String drewBlindCard() {
@@ -95,6 +106,7 @@ public final class Info {
 
     /**
      * Retourne le message déclarant que le joueur a tiré la carte disposée face visible donnée
+     *
      * @param card la carte concernée
      * @return le message déclarant que le joueur a tiré la carte disposée face visible donnée
      */
@@ -104,17 +116,22 @@ public final class Info {
 
     /**
      * Retourne le message déclarant que le joueur s'est emparé de la route donnée au moyen des cartes données
+     *
      * @param route la route prise
      * @param cards les cartes données
      * @return le message déclarant que le joueur s'est emparé de la route donnée au moyen des cartes données
      */
     public String claimedRoute(Route route, SortedBag<Card> cards) {
-        return String.format(StringsFr.CLAIMED_ROUTE, this.playerName, Info.getRouteName(route), cards);
+
+        String info = String.format(StringsFr.CLAIMED_ROUTE, this.playerName, Info.getRouteName(route), getCardsInfo(cards));
+
+        return info;
     }
 
     /**
      * Retourne le message déclarant que le joueur désire s'emparer de la route en tunnel donnée en utilisant initialement les cartes données
-     * @param route le tunnel en question
+     *
+     * @param route        le tunnel en question
      * @param initialCards les cartes servant à prendre possession du tunnel
      * @return le message déclarant que le joueur désire s'emparer de la route en tunnel donnée en utilisant initialement les cartes données
      */
@@ -124,7 +141,8 @@ public final class Info {
 
     /**
      * Retourne le message déclarant que le joueur a tiré les trois cartes additionnelles données, et qu'elles impliquent un coût additionel du nombre de cartes donné
-     * @param drawnCards les cartes tirées
+     *
+     * @param drawnCards     les cartes tirées
      * @param additionalCost le coût additionnel
      * @return le message déclarant que le joueur a tiré les trois cartes additionnelles données, et qu'elles impliquent un coût additionel du nombre de cartes donné
      */
@@ -138,6 +156,7 @@ public final class Info {
 
     /**
      * Retourne le message déclarant que le joueur n'a pas pu (ou voulu) s'emparer du tunnel donné
+     *
      * @param route la route en question
      * @return le message déclarant que le joueur n'a pas pu (ou voulu) s'emparer du tunnel donné
      */
@@ -147,6 +166,7 @@ public final class Info {
 
     /**
      * Retourne le message déclarant que le joueur n'a plus que le nombre donné (et inférieur ou égale à 2) de wagons, et que le dernier tour commence donc
+     *
      * @param carCount le nombre de wagon
      * @return le message déclarant que le joueur n'a plus que le nombre donné (et inférieur ou égale à 2) de wagons, et que le dernier tour commence donc
      */
@@ -156,6 +176,7 @@ public final class Info {
 
     /**
      * Retourne le message déclarant que le joueur obtient le bonus de fin de partie grâce au chemin donné, qui est le plus long, ou l'un des plus longs
+     *
      * @param longestTrail le chemin en question
      * @return le message déclarant que le joueur obtient le bonus de fin de partie grâce au chemin donné, qui est le plus long, ou l'un des plus longs
      */
@@ -169,7 +190,8 @@ public final class Info {
 
     /**
      * Retourne le message déclarant que le joueur remporte la partie avec le nombre de points donnés, son adversaire n'en ayant obtenu que loserPoints.
-     * @param points le nombre de points du vainqueur
+     *
+     * @param points      le nombre de points du vainqueur
      * @param loserPoints le nombre de points du perdant
      * @return le message déclarant que le joueur remporte la partie avec le nombre de points donnés, son adversaire n'en ayant obtenu que loserPoints.
      */
@@ -185,5 +207,51 @@ public final class Info {
 
     private static String getRouteName(Route route) {
         return String.format("%s%s%s", route.station1(), StringsFr.EN_DASH_SEPARATOR, route.station2());
+    }
+
+    private String getCardsInfo(SortedBag<Card> cards) {
+        StringBuilder cardsInfo = new StringBuilder();
+        for (Card card : Card.ALL) {
+            if (cards.contains(card)) {
+                if (cardsInfo.length() > 0) cardsInfo.append(StringsFr.AND_SEPARATOR);
+
+                int count = cards.countOf(card);
+
+                cardsInfo.append(count).append(" ");
+
+                switch (card) {
+                    case BLACK:
+                        cardsInfo.append(StringsFr.BLACK_CARD).append(StringsFr.plural(count));
+                        break;
+                    case VIOLET:
+                        cardsInfo.append(StringsFr.VIOLET_CARD).append(StringsFr.plural(count));
+                        break;
+                    case BLUE:
+                        cardsInfo.append(StringsFr.BLUE_CARD).append(StringsFr.plural(count));
+                        break;
+                    case GREEN:
+                        cardsInfo.append(StringsFr.GREEN_CARD).append(StringsFr.plural(count));
+                        break;
+                    case YELLOW:
+                        cardsInfo.append(StringsFr.YELLOW_CARD).append(StringsFr.plural(count));
+                        break;
+                    case ORANGE:
+                        cardsInfo.append(StringsFr.ORANGE_CARD).append(StringsFr.plural(count));
+                        break;
+                    case RED:
+                        cardsInfo.append(StringsFr.RED_CARD).append(StringsFr.plural(count));
+                        break;
+                    case WHITE:
+                        cardsInfo.append(StringsFr.WHITE_CARD).append(StringsFr.plural(count));
+                        break;
+                    case LOCOMOTIVE:
+                        cardsInfo.append(StringsFr.LOCOMOTIVE_CARD).append(StringsFr.plural(count));
+                        break;
+                    default:
+                        throw new Error();
+                }
+            }
+        }
+        return cardsInfo.toString();
     }
 }
