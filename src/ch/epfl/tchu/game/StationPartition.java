@@ -52,6 +52,8 @@ public final class StationPartition implements StationConnectivity {
          * Retourne la partition aplatie des gares correspondant à la partition profonde en cours de construction par ce bâtisseur
          * @return la partition aplatie des gares correspondant à la partition profonde en cours de construction par ce bâtisseur
          */
-        public StationPartition build() {}
+        public StationPartition build() {
+            return null;
+        }
     }
 }
