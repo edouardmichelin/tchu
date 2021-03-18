@@ -4,7 +4,10 @@ import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * L'état complet d'un joueur
@@ -32,7 +35,7 @@ public final class PlayerState extends PublicPlayerState {
      * @return l'état initial du joueur
      */
     static PlayerState initial(SortedBag<Card> initialCards) {
-        Preconditions.checkArgument(initialCards.size() == 4);
+        Preconditions.checkArgument(initialCards.size() == Constants.INITIAL_CARDS_COUNT);
         return new PlayerState(SortedBag.of(), initialCards, List.of());
     }
 
@@ -108,21 +111,46 @@ public final class PlayerState extends PublicPlayerState {
     public List<SortedBag<Card>> possibleClaimCards(Route route) {
         Preconditions.checkArgument(this.carCount() >= route.length());
         List<SortedBag<Card>> playerPossibilities = new ArrayList<>();
+
         for (SortedBag<Card> possibility : route.possibleClaimCards()) {
             if (this.cards().contains(possibility)) playerPossibilities.add(possibility);
         }
         return playerPossibilities;
     }
 
-    //WIP
+    /**
+     * Retourne la liste de tous les ensembles de cartes que le joueur pourrait utiliser pour s'emparer d'un tunnel,
+     * trié par ordre croissant du nombre de cartes locomotives,
+     *
+     * @param additionalCardsCount le nombre de cartes additionnel à défausser pour s'emparer du tunnel
+     * @param initialCards         les cartes initialement posées pour s'eparer du tunnel
+     * @param drawnCards           la pioche de 3 cartes qui définissent le nombre de cartes additionnelles à défausser
+     * @return la liste de tous les ensembles de cartes que le joueur pourrait utiliser pour s'emparer d'un
+     * tunnel, trié par ordre croissant du nombre de cartes locomotives,
+     */
     public List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards,
                                                          SortedBag<Card> drawnCards) {
-        Preconditions.checkArgument(additionalCardsCount >= 1 && additionalCardsCount <= 3);
+        Preconditions.checkArgument(additionalCardsCount >= 1 && additionalCardsCount <= Constants.ADDITIONAL_TUNNEL_CARDS);
         Preconditions.checkArgument(!initialCards.isEmpty());
         Preconditions.checkArgument(initialCards.toSet().size() <= 2);
         Preconditions.checkArgument(drawnCards.size() == 3);
 
+        final Card[] initialType = {Card.LOCOMOTIVE};
+        for (Card card : initialCards) {
+            if (!card.equals(Card.LOCOMOTIVE)) {
+                initialType[0] = card;
+                break;
+            }
+        }
 
+        SortedBag<Card> usableCards = SortedBag.of(this.cards().difference(initialCards).stream().filter(
+                card -> card == initialType[0] || card == Card.LOCOMOTIVE).collect(Collectors.toList()
+        ));
+
+        List<SortedBag<Card>> usableCardsSet = new ArrayList<>(usableCards.subsetsOfSize(additionalCardsCount));
+        usableCardsSet.sort(Comparator.comparingInt(hand -> hand.countOf(Card.LOCOMOTIVE)));
+
+        return usableCardsSet;
     }
 
     /**
