@@ -3,6 +3,7 @@ package ch.epfl.tchu.game;
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -86,18 +87,31 @@ public final class PlayerState extends PublicPlayerState {
         return new PlayerState(this.tickets, union, this.routes);
     }
 
-    //WIP
+    /**
+     * Retourne vrai ssi le joueur peut s'emparer de la route donnée
+     *
+     * @param route la route dont on veut savoir si le joueur peut s'en emparer
+     * @return retourne vrai ssi le joueur peut s'emparer de la route donnée
+     */
     public boolean canClaimRoute(Route route) {
-        if (this.carCount() >= route.length()) {
-
-        }
-        return false;
+        return this.carCount() >= route.length() && !this.possibleClaimCards(route).isEmpty();
     }
 
-    //WIP
+    /**
+     * Retourne la liste de tous les ensembles de cartes que le joueur pourrait utiliser pour prendre possession de la
+     * route donnée, ou lève IllegalArgumentException si le joueur n'a pas assez de wagons pour s'emparer de la route
+     *
+     * @param route Route concernée du contexte
+     * @return retourne la liste de tous les ensembles de cartes que le joueur pourrait utiliser pour prendre
+     * possession de la route donnée
+     */
     public List<SortedBag<Card>> possibleClaimCards(Route route) {
         Preconditions.checkArgument(this.carCount() >= route.length());
-        return route.possibleClaimCards();
+        List<SortedBag<Card>> playerPossibilities = new ArrayList<>();
+        for (SortedBag<Card> possibility : route.possibleClaimCards()) {
+            if (this.cards().contains(possibility)) playerPossibilities.add(possibility);
+        }
+        return playerPossibilities;
     }
 
     //WIP
@@ -107,6 +121,8 @@ public final class PlayerState extends PublicPlayerState {
         Preconditions.checkArgument(!initialCards.isEmpty());
         Preconditions.checkArgument(initialCards.toSet().size() <= 2);
         Preconditions.checkArgument(drawnCards.size() == 3);
+
+
     }
 
     /**
