@@ -1,9 +1,12 @@
 package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.Preconditions;
+import ch.epfl.tchu.gui.Info;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Partission de stations
@@ -22,11 +25,11 @@ public final class StationPartition implements StationConnectivity {
 
     @Override
     public boolean connected(Station s1, Station s2) {
-        return false;
+        return this.links[s1.id()] == this.links[s2.id()];
     }
 
     public static final class Builder {
-        private final List<Station> stations;
+        private final int[] stations;
 
         private Builder() {
             this.stations = null;
@@ -35,7 +38,7 @@ public final class StationPartition implements StationConnectivity {
         public Builder(int stationCount) {
             Preconditions.checkArgument(stationCount >= 0);
 
-            this.stations = new ArrayList<>(stationCount);
+            this.stations = new int[stationCount];
         }
 
         /**
@@ -45,7 +48,9 @@ public final class StationPartition implements StationConnectivity {
          * @return le bâtisseur
          */
         public Builder connect(Station s1, Station s2) {
-            return null;
+            this.stations[this.representative(s1)] = s2.id();
+
+            return this;
         }
 
         /**
@@ -54,6 +59,15 @@ public final class StationPartition implements StationConnectivity {
          */
         public StationPartition build() {
             return null;
+        }
+
+        private int representative(Station station) {
+            int representative = -1;
+            while (representative != station.id()) {
+                representative = this.stations[representative > -1 ? representative : station.id()];
+            }
+
+            return representative;
         }
     }
 }
