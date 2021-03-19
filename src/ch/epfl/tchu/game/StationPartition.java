@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * Partission de stations
+ * Partition de stations
  *
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)

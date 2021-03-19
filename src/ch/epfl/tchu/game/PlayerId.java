@@ -3,7 +3,7 @@ package ch.epfl.tchu.game;
 import java.util.List;
 
 /**
- * Title
+ * Identité du joueur
  *
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)

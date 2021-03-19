@@ -11,7 +11,7 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Title
+ * Classe de test PublicCardState
  *
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)

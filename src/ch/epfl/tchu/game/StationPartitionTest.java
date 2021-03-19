@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
- * Title
+ * Partition applatie des gares
  *
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
