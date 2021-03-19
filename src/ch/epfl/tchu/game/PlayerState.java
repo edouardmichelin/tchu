@@ -56,7 +56,7 @@ public final class PlayerState extends PublicPlayerState {
      */
     public PlayerState withAddedTickets(SortedBag<Ticket> newTickets) {
         SortedBag<Ticket> union = this.tickets.union(newTickets);
-        return new PlayerState(union, this.cards, this.routes);
+        return new PlayerState(union, this.cards, this.routes());
     }
 
     /**
@@ -76,7 +76,7 @@ public final class PlayerState extends PublicPlayerState {
      */
     public PlayerState withAddedCard(Card card) {
         SortedBag<Card> union = this.cards.union(SortedBag.of(card));
-        return new PlayerState(this.tickets, union, this.routes);
+        return new PlayerState(this.tickets, union, this.routes());
     }
 
     /**
@@ -87,7 +87,7 @@ public final class PlayerState extends PublicPlayerState {
      */
     public PlayerState withAddedCards(SortedBag<Card> additionalCards) {
         SortedBag<Card> union = this.cards.union(additionalCards);
-        return new PlayerState(this.tickets, union, this.routes);
+        return new PlayerState(this.tickets, union, this.routes());
     }
 
     /**
