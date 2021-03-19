@@ -12,10 +12,10 @@ import java.util.List;
  * @author Julien Jordan (315429)
  */
 public class PublicPlayerState {
-
-    final int ticketCount;
-    final int cardCount;
-    final List<Route> routes;
+  
+    private final int ticketCount;
+    private final int cardCount;
+    private final List<Route> routes;
 
     private final int carCount;
     private final int claimPoints;
@@ -74,7 +74,7 @@ public class PublicPlayerState {
         return this.claimPoints;
     }
 
-    private int getUsedCars(List<Route> routes) {
+    private static int getUsedCars(List<Route> routes) {
         int usedCars = 0;
         for (Route route : routes) {
             usedCars += route.length();
@@ -82,7 +82,7 @@ public class PublicPlayerState {
         return usedCars;
     }
 
-    private int getClaimPoints(List<Route> routes) {
+    private static int getClaimPoints(List<Route> routes) {
         int claimPoints = 0;
         for (Route route : routes) {
             claimPoints += Constants.ROUTE_CLAIM_POINTS.get(route.length());

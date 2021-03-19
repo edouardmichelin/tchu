@@ -57,20 +57,20 @@ public class PublicPlayerStateTest {
     void ticketCountReturnsExpectedValue() {
         int expectedValue = 7;
         PublicPlayerState a = new PublicPlayerState(expectedValue, 0, givenCase);
-        assertEquals(expectedValue, a.ticketCount);
+        assertEquals(expectedValue, a.ticketCount());
     }
 
     @Test
     void cardCountReturnsExpectedValue() {
         int expectedValue = 5;
         PublicPlayerState a = new PublicPlayerState(0, expectedValue, givenCase);
-        assertEquals(expectedValue, a.cardCount);
+        assertEquals(expectedValue, a.cardCount());
     }
 
     @Test
     void routesReturnExpectedRoutes() {
         PublicPlayerState a = new PublicPlayerState(0, 0, givenCase);
-        assertEquals(givenCase, a.routes);
+        assertEquals(givenCase, a.routes());
     }
 
     @Test
