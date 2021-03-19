@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * L'état complet d'un joueur
@@ -168,9 +169,34 @@ public final class PlayerState extends PublicPlayerState {
         return new PlayerState(this.tickets, this.cards.difference(claimCards), routes);
     }
 
-    //WIP
+    /**
+     * Retourne le nombre de points — éventuellement négatif — obtenus par le joueur grâce à ses billets
+     *
+     * @return le nombre de points — éventuellement négatif — obtenus par le joueur grâce à ses billets
+     */
     public int ticketPoints() {
-        return 0;
+        int maxId = 0;
+        for (Route route : this.routes()) {
+            if (route.station1().id() > maxId) {
+                if (route.station2().id() > route.station1().id()) {
+                    maxId = route.station2().id();
+                }
+                maxId = route.station1().id();
+            }
+        }
+
+        StationPartition.Builder spb = new StationPartition.Builder(maxId);
+        for (Route route : this.routes()) {
+            spb.connect(route.station1(), route.station2());
+        }
+        StationPartition stationPartition = spb.build();
+
+        int netPoints = 0;
+        for (Ticket ticket : this.tickets) {
+            netPoints += ticket.points(stationPartition);
+        }
+
+        return netPoints;
     }
 
     /**
