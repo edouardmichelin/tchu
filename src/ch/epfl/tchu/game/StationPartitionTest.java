@@ -31,15 +31,13 @@ public class StationPartitionTest {
 
         var connectivity = new StationPartition.Builder(size)
                 .connect(GEN, LAU)
-                .connect(LAU, YVE)
+                .connect(YVE, LAU)
                 .connect(MAR, GEN)
                 .connect(LAU, NEU)
                 .connect(LAU, LCF)
                 .connect(ZUR, ZOU)
                 .connect(ZUR, LUG)
                 .build();
-
-        System.out.println(connectivity);
 
         var t1 = connectivity.connected(GEN, LAU);
         var t2 = connectivity.connected(LAU, YVE);

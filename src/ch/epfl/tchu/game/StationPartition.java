@@ -3,6 +3,7 @@ package ch.epfl.tchu.game;
 import ch.epfl.tchu.Preconditions;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Partission de stations
@@ -21,7 +22,11 @@ public final class StationPartition implements StationConnectivity {
 
     @Override
     public boolean connected(Station s1, Station s2) {
-        return this.links[s1.id()] == this.links[s2.id()];
+        try {
+            return this.links[s1.id()] == this.links[s2.id()];
+        } catch (Exception ignored) {
+            return s1.id() == s2.id();
+        }
     }
 
     public static final class Builder {
@@ -42,10 +47,10 @@ public final class StationPartition implements StationConnectivity {
         }
 
         /**
-         * Joint les sous-ensembles contenant les deux gares passées en argument, en «élisant» l'un des deux représentants comme représentant du sous-ensemble joint ; retourne le bâtisseur (this)
+         * Connecte deux gares entre elles en élisant au besoin l'une des deux comme représentante ; retourne le bâtisseur (this)
          * @param s1 station 1
          * @param s2 station 2
-         * @return le bâtisseur
+         * @return le bâtisseur (this)
          */
         public Builder connect(Station s1, Station s2) {
             if (this.representatives[s2.id()])
@@ -53,9 +58,12 @@ public final class StationPartition implements StationConnectivity {
             else if (this.representatives[s1.id()])
                 this.stations[s2.id()] = s1.id();
             else {
-                if (this.representative(s1.id()) == s1.id())
+                if (this.representative(s1.id()) == s1.id() && this.representative(s2.id()) == s2.id())
                     this.representatives[s1.id()] = true;
-                else {
+                else if (this.representative(s1.id()) == s1.id() && !(this.representative(s2.id()) == s2.id())) {
+                    this.stations[s1.id()] = this.representative(s2.id());
+                    return this;
+                } else {
                     this.stations[s2.id()] = this.representative(s1.id());
                     return this;
                 }
