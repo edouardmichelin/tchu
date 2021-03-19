@@ -29,12 +29,13 @@ public final class Route {
 
     /**
      * Construit une route
-     * @param id identifiant unique de la route
+     *
+     * @param id       identifiant unique de la route
      * @param station1 station de départ de la route
      * @param station2 station d'arrivée de la route
-     * @param length taille de la route
-     * @param level niveau sur lequel se situe la route (route ou tunnel)
-     * @param color couleur de la route
+     * @param length   taille de la route
+     * @param level    niveau sur lequel se situe la route (route ou tunnel)
+     * @param color    couleur de la route
      */
     public Route(String id, Station station1, Station station2, int length, Level level, Color color) {
         Preconditions.checkArgument(station1.id() != station2.id());
@@ -51,48 +52,70 @@ public final class Route {
 
     /**
      * Retourne l'identifiant de la route
+     *
      * @return l'identifiant de la route
      */
-    public String id() { return this.id; }
+    public String id() {
+        return this.id;
+    }
 
     /**
      * Retourne la station de départ du chemin
+     *
      * @return la station de départ du chemin
      */
-    public Station station1() { return this.station1; }
+    public Station station1() {
+        return this.station1;
+    }
 
     /**
      * Retourne la station d'arrivée du chemin
+     *
      * @return la station d'arrivée du chemin
      */
-    public Station station2() { return this.station2; }
+    public Station station2() {
+        return this.station2;
+    }
 
     /**
      * Retourne la taille de la route
+     *
      * @return
      */
-    public int length() { return this.length; }
+    public int length() {
+        return this.length;
+    }
 
     /**
      * Retourne le niveau de la route
+     *
      * @return le niveau de la route
      */
-    public Level level() { return this.level; }
+    public Level level() {
+        return this.level;
+    }
 
     /**
      * Retourne la couleur de la route
+     *
      * @return la couleur de la route
      */
-    public Color color() { return this.color; }
+    public Color color() {
+        return this.color;
+    }
 
     /**
      * Retourne une liste contenant la station de départ et la station d'arrivée
+     *
      * @return une liste contenant la station de départ et la station d'arrivée
      */
-    public List<Station> stations() { return List.of(this.station1, this.station2); }
+    public List<Station> stations() {
+        return List.of(this.station1, this.station2);
+    }
 
     /**
      * Retourne la station opposée à la station de référence passée en paramètre
+     *
      * @param station station de référence
      * @return la station opposée à la station de référence passée en paramètre
      */
@@ -103,6 +126,7 @@ public final class Route {
 
     /**
      * Retourne les possibilités de mains de carte pour réclamer la route
+     *
      * @return les possibilités de mains de carte pour réclamer la route
      */
     public List<SortedBag<Card>> possibleClaimCards() {
@@ -117,11 +141,12 @@ public final class Route {
 
     /**
      * Retourne le nombre de carte supplémentaire à payer pour construire le tunnel
+     *
      * @param claimCards main du joueur pour construire le tunnel
      * @param drawnCards pioche de la pile
      * @return le nombre de carte supplémentaire à payer pour construire le tunnel
      */
-    public int additionalClaimCardsCount(SortedBag<Card> claimCards,SortedBag<Card> drawnCards) {
+    public int additionalClaimCardsCount(SortedBag<Card> claimCards, SortedBag<Card> drawnCards) {
         Preconditions.checkArgument(this.level.equals(Level.UNDERGROUND));
         Preconditions.checkArgument(drawnCards.size() == Constants.ADDITIONAL_TUNNEL_CARDS);
 
@@ -142,6 +167,7 @@ public final class Route {
 
     /**
      * Retourne le nombre de points gagné à la construction de la route
+     *
      * @return le nombre de points gagné à la construction de la route
      */
     public int claimPoints() {

@@ -14,7 +14,9 @@ import java.util.Objects;
 public final class StationPartition implements StationConnectivity {
     private final int[] links;
 
-    private StationPartition() { this.links = new int[0]; }
+    private StationPartition() {
+        this.links = new int[0];
+    }
 
     private StationPartition(int[] links) {
         this.links = links;
@@ -47,7 +49,9 @@ public final class StationPartition implements StationConnectivity {
         }
 
         /**
-         * Connecte deux gares entre elles en élisant au besoin l'une des deux comme représentante ; retourne le bâtisseur (this)
+         * Connecte deux gares entre elles en élisant au besoin l'une des deux comme représentante ; retourne le
+         * bâtisseur (this)
+         *
          * @param s1 station 1
          * @param s2 station 2
          * @return le bâtisseur (this)
@@ -75,8 +79,11 @@ public final class StationPartition implements StationConnectivity {
         }
 
         /**
-         * Retourne la partition aplatie des gares correspondant à la partition profonde en cours de construction par ce bâtisseur
-         * @return la partition aplatie des gares correspondant à la partition profonde en cours de construction par ce bâtisseur
+         * Retourne la partition aplatie des gares correspondant à la partition profonde en cours de construction par
+         * ce bâtisseur
+         *
+         * @return la partition aplatie des gares correspondant à la partition profonde en cours de construction par
+         * ce bâtisseur
          */
         public StationPartition build() {
             return new StationPartition(Arrays.copyOf(this.stations, this.stations.length));

@@ -48,9 +48,10 @@ public enum Card {
 
     /**
      * Retourne le type de carte correspondant à une couleur donnée
+     *
      * @param color la couleur de la carte
      * @return le type de carte correspondant à la couleur ou null si
-     *          aucune carte n'est trouvée pour la couleur donnée.
+     * aucune carte n'est trouvée pour la couleur donnée.
      */
     public static Card of(Color color) {
         return Arrays.stream(Card.values())
@@ -61,7 +62,10 @@ public enum Card {
 
     /**
      * Retourne la couleur de cette carte
+     *
      * @return la couleur de cette carte
      */
-    public Color color() { return this.color; }
+    public Color color() {
+        return this.color;
+    }
 }

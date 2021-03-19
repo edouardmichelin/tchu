@@ -12,7 +12,7 @@ import java.util.List;
  * @author Julien Jordan (315429)
  */
 public class PublicPlayerState {
-  
+
     private final int ticketCount;
     private final int cardCount;
     private final List<Route> routes;

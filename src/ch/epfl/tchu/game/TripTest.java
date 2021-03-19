@@ -29,7 +29,8 @@ class TripTest {
         };
         var all = Trip.all(from, to, points);
         assertEquals(from.size() * to.size(), all.size());
-        outer: for (var expectedFromToId : expectedFromToIds) {
+        outer:
+        for (var expectedFromToId : expectedFromToIds) {
             var fromId = expectedFromToId[0];
             var toId = expectedFromToId[1];
             for (var trip : all) {

@@ -29,24 +29,34 @@ public final class Trail {
 
     /**
      * Retourne la première station du chemin
+     *
      * @return la première station du chemin si la longueur est plus grande que 0, null sinon
      */
-    public Station station1() { return this.length > 0 ? this.routes.get(0).station1() : null; }
+    public Station station1() {
+        return this.length > 0 ? this.routes.get(0).station1() : null;
+    }
 
     /**
      * Retourne la dernière station du chemin
+     *
      * @return la dernière station du chemin si la longueur est plus grande que 0, null sinon
      */
-    public Station station2() { return this.length > 0 ? this.routes.get(this.routes.size() - 1).station2() : null; }
+    public Station station2() {
+        return this.length > 0 ? this.routes.get(this.routes.size() - 1).station2() : null;
+    }
 
     /**
      * Retourne la longueur totale des routes du chemin
+     *
      * @return la longueur totale des routes du chemin
      */
-    public int length() { return this.length; }
+    public int length() {
+        return this.length;
+    }
 
     /**
      * Retourne le chemin le plus long que le joueur possède
+     *
      * @param routes la liste de routes du joueur
      * @return le chemin le plus long que le joueur possède
      */
@@ -92,6 +102,7 @@ public final class Trail {
 
     /**
      * Retourne le nom des stations se trouvant le long du chemin, ainsi que la longueur totale du chemin
+     *
      * @return le nom des stations se trouvant le long du chemin, ainsi que la longueur totale du chemin
      */
     @Override
@@ -152,5 +163,7 @@ public final class Trail {
         return result;
     }
 
-    private static String getRouteKey(Route route) { return route.id(); }
+    private static String getRouteKey(Route route) {
+        return route.id();
+    }
 }

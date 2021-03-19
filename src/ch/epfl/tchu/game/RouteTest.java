@@ -374,6 +374,7 @@ class RouteTest {
             assertEquals(expectedValue, a.claimPoints());
         }
     }
+
     private static final List<Color> COLORS =
             List.of(
                     Color.BLACK,

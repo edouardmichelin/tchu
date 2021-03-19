@@ -28,6 +28,7 @@ public final class Ticket implements Comparable<Ticket> {
 
     /**
      * Retourne le rendu textuel de ce ticket
+     *
      * @return le texte de ce ticket
      */
     public String text() {
@@ -36,6 +37,7 @@ public final class Ticket implements Comparable<Ticket> {
 
     /**
      * Retourne les points que le ticket engendre selon la connexion
+     *
      * @param connectivity connectivité
      * @return les points engendrés par le ticket
      */
@@ -45,6 +47,7 @@ public final class Ticket implements Comparable<Ticket> {
 
     /**
      * Effectue et retourne le rendu du texte à afficher sur le ticket en jeu
+     *
      * @param trips La liste des trajets devant figurer sur le ticket
      * @return Le texte à rendre pour notre tickets
      */
@@ -55,11 +58,11 @@ public final class Ticket implements Comparable<Ticket> {
             return new StringBuilder()
                     .append(String.format("%s - {", firstTrip.from().name()))
                     .append(trips
-                        .stream()
-                        .map(trip -> String.format("%s (%s)", trip.to().name(), trip.points()))
-                        .distinct()
-                        .sorted()
-                        .collect(Collectors.joining(", ")))
+                            .stream()
+                            .map(trip -> String.format("%s (%s)", trip.to().name(), trip.points()))
+                            .distinct()
+                            .sorted()
+                            .collect(Collectors.joining(", ")))
                     .append("}")
                     .toString();
         } else {
@@ -81,6 +84,7 @@ public final class Ticket implements Comparable<Ticket> {
 
     /**
      * Fait une comparaison des textes des deux tickets par ordre alphabétique
+     *
      * @param that objet Ticket avec lequel effectuer la comparaison
      * @return -1 si this est avant that, 1 si that est avant this, 0 si ils sont égaux
      */
@@ -91,6 +95,7 @@ public final class Ticket implements Comparable<Ticket> {
 
     /**
      * Retourne le texte de ce ticket
+     *
      * @return le texte de ce ticket
      */
     @Override

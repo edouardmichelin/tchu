@@ -30,20 +30,29 @@ public final class Station {
 
     /**
      * Retourne l'id de cette gare
+     *
      * @return l'id de cette gare
      */
-    public int id() { return this.id; }
+    public int id() {
+        return this.id;
+    }
 
     /**
      * Retourne le nom de cette gare
+     *
      * @return le nom de cette gare
      */
-    public String name() { return this.name; }
+    public String name() {
+        return this.name;
+    }
 
     /**
      * Retourne le nom de cette gare
+     *
      * @return le nom de cette gare
      */
     @Override
-    public String toString() { return this.name; }
+    public String toString() {
+        return this.name;
+    }
 }

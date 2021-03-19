@@ -28,11 +28,12 @@ public final class Trip {
     /**
      * Composer et retourne une liste de toutes les possibilités de trajets entre deux
      * ensembles de gares avec le nombre de points correspondant attribué.
-     * @param from station  de départ
-     * @param to station d'arrivée
+     *
+     * @param from   station  de départ
+     * @param to     station d'arrivée
      * @param points nombre de points du voyage (trip)
      * @return Une liste de tous les trajets possibles entre deux ensembles de gares
-     *              avec leurs points attribués.
+     * avec leurs points attribués.
      */
     public static List<Trip> all(List<Station> from, List<Station> to, int points) {
         Preconditions.checkArgument(!from.isEmpty());
@@ -48,24 +49,34 @@ public final class Trip {
 
     /**
      * Retourne la gare de départ de ce trajet
+     *
      * @return la gare de départ de ce trajet
      */
-    public Station from() { return this.from; }
+    public Station from() {
+        return this.from;
+    }
 
     /**
      * Retourne la gare d'arrivée de ce trajet
+     *
      * @return la gare d'arrivée de ce trajet
      */
-    public Station to() { return this.to; }
+    public Station to() {
+        return this.to;
+    }
 
     /**
      * Retourne les points de ce trajet
+     *
      * @return les points de ce trajet
      */
-    public int points() { return this.points; }
+    public int points() {
+        return this.points;
+    }
 
     /**
      * Retourne les points de ce trajet en fonction de sa connexion
+     *
      * @param connectivity connectivity
      * @return les points de ce trajet en fonction de sa connexion
      */
