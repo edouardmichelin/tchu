@@ -30,7 +30,7 @@ public class PlayerStateTest {
     Station s11 = new Station(11, "Wassen");
 
     //Route cases 17 cars used
-    private List<Route> givenCase = List.of(
+    List<Route> givenCase = List.of(
             new Route("LauFri", s1, s2, 3, Route.Level.UNDERGROUND, null),
             new Route("FriBer", s2, s3, 1, Route.Level.UNDERGROUND, Color.RED),
             new Route("BerInt", s3, s4, 3, Route.Level.UNDERGROUND, Color.RED),
@@ -42,7 +42,7 @@ public class PlayerStateTest {
             new Route("SchWas", s10, s11, 2, Route.Level.UNDERGROUND, Color.ORANGE)
     );
     //Route cases 35 cars used
-    private List<Route> fewCarsLeftCase = List.of(
+    List<Route> fewCarsLeftCase = List.of(
             new Route("LauFri", s1, s2, 3, Route.Level.UNDERGROUND, null),
             new Route("FriBer", s2, s3, 1, Route.Level.UNDERGROUND, Color.RED),
             new Route("BerInt", s3, s4, 3, Route.Level.UNDERGROUND, Color.RED),
@@ -57,7 +57,7 @@ public class PlayerStateTest {
             new Route("c", s1, s2, 6, Route.Level.UNDERGROUND, null)
     );
 
-    //Tickets cases
+    //Tickets cases should net 7 points on given case
     List<Ticket> ticketsA = List.of(
             new Ticket(s5, s7, 5), //ok on given example
             new Ticket(s5, s2, 3), //not ok
@@ -287,6 +287,47 @@ public class PlayerStateTest {
                 SortedBag.of(1, Card.GREEN, 1, Card.LOCOMOTIVE),
                 SortedBag.of(2, Card.LOCOMOTIVE)
         );
+
         assertEquals(expectedCards, a.possibleAdditionalCards(2, initialCards, drawnCards));
+
+        Route redTunnel = new Route("b", s1, s2, 3, Route.Level.UNDERGROUND, Color.RED);
+        initialCards = SortedBag.of(3, Card.RED);
+        PlayerState b = new PlayerState(SortedBag.of(ticketsA), playerCardsA, givenCase);
+        expectedCards = List.of(
+                SortedBag.of(1, Card.RED, 1, Card.LOCOMOTIVE),
+                SortedBag.of(2, Card.LOCOMOTIVE)
+        );
+
+        assertEquals(expectedCards, b.possibleAdditionalCards(2, initialCards, drawnCards));
+    }
+
+    @Test
+    void withClaimedRouteReturnsExpectedPlayerState() {
+        Route redTunnel = new Route("b", s1, s2, 3, Route.Level.UNDERGROUND, Color.RED);
+        List<Route> expectedRoutes = new ArrayList<>(givenCase);
+        expectedRoutes.add(redTunnel);
+        PlayerState a = new PlayerState(SortedBag.of(ticketsA), playerCardsA, givenCase);
+        SortedBag<Card> expectedCards = new SortedBag.Builder<Card>()
+                .add(3, Card.GREEN)
+                .add(2, Card.LOCOMOTIVE)
+                .add(1, Card.RED)
+                .add(1, Card.BLACK)
+                .build();
+        assertEquals(expectedRoutes, a.withClaimedRoute(redTunnel, SortedBag.of(3, Card.RED)).routes());
+        assertEquals(expectedCards, a.withClaimedRoute(redTunnel, SortedBag.of(3, Card.RED)).cards());
+    }
+
+    @Test
+    void ticketPointsReturnsExpectedValue() {
+        PlayerState a = new PlayerState(SortedBag.of(ticketsA), playerCardsA, givenCase);
+        assertEquals(7, a.ticketPoints());
+    }
+
+    @Test
+    void finalPointsReturnsExpectedValue() {
+        //7 points on given case with first list of tickets + 7 + 4 + 4 + 5 + 2 claim points
+        // total expected = 29
+        PlayerState a = new PlayerState(SortedBag.of(ticketsA), playerCardsA, givenCase);
+        assertEquals(29, a.finalPoints());
     }
 }

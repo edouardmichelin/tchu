@@ -166,7 +166,7 @@ public final class PlayerState extends PublicPlayerState {
     public PlayerState withClaimedRoute(Route route, SortedBag<Card> claimCards) {
         List<Route> routes = this.routes();
         routes.add(route);
-        return new PlayerState(this.tickets, this.cards.difference(claimCards), routes);
+        return new PlayerState(this.tickets, this.cards().difference(claimCards), routes);
     }
 
     /**
@@ -180,12 +180,13 @@ public final class PlayerState extends PublicPlayerState {
             if (route.station1().id() > maxId) {
                 if (route.station2().id() > route.station1().id()) {
                     maxId = route.station2().id();
+                } else {
+                    maxId = route.station1().id();
                 }
-                maxId = route.station1().id();
             }
         }
 
-        StationPartition.Builder spb = new StationPartition.Builder(maxId);
+        StationPartition.Builder spb = new StationPartition.Builder(maxId + 1);
         for (Route route : this.routes()) {
             spb.connect(route.station1(), route.station2());
         }
