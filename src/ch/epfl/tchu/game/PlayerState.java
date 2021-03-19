@@ -35,7 +35,7 @@ public final class PlayerState extends PublicPlayerState {
      * @param initialCards Les cartes initiale du joueur
      * @return l'état initial du joueur
      */
-    static PlayerState initial(SortedBag<Card> initialCards) {
+    public static PlayerState initial(SortedBag<Card> initialCards) {
         Preconditions.checkArgument(initialCards.size() == Constants.INITIAL_CARDS_COUNT);
         return new PlayerState(SortedBag.of(), initialCards, List.of());
     }
