@@ -71,8 +71,7 @@ public final class StationPartition implements StationConnectivity {
          * @return la partition aplatie des gares correspondant à la partition profonde en cours de construction par ce bâtisseur
          */
         public StationPartition build() {
-            int[] links = Arrays.stream(this.stations).map(this::representative).toArray();
-            return new StationPartition(links);
+            return new StationPartition(Arrays.copyOf(this.stations, this.stations.length));
         }
 
         private int representative(int station) {

@@ -32,6 +32,7 @@ public class StationPartitionTest {
         var connectivity = new StationPartition.Builder(size)
                 .connect(GEN, LAU)
                 .connect(LAU, YVE)
+                .connect(MAR, GEN)
                 .connect(LAU, NEU)
                 .connect(LAU, LCF)
                 .connect(ZUR, ZOU)
@@ -43,6 +44,7 @@ public class StationPartitionTest {
         var t1 = connectivity.connected(GEN, LAU);
         var t2 = connectivity.connected(LAU, YVE);
         var t3 = connectivity.connected(ZUR, LUG);
+        var t4 = connectivity.connected(GEN, MAR);
         var f1 = connectivity.connected(LAU, ZUR);
         var f2 = connectivity.connected(LAU, ZOU);
         var f3 = connectivity.connected(LAU, FRI);
@@ -50,6 +52,7 @@ public class StationPartitionTest {
         assertTrue(t1);
         assertTrue(t2);
         assertTrue(t3);
+        assertTrue(t4);
         assertFalse(f1);
         assertFalse(f2);
         assertFalse(f3);
