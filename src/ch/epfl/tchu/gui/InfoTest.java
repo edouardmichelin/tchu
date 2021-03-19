@@ -54,7 +54,8 @@ public class InfoTest {
     public void drawReturnsExpectedValueWithMoreThanTwoPlayers() {
         var playerNames = List.of("Julien", "Edouard", "Schinz", "Lachowska");
 
-        assert Info.draw(playerNames, 20).equals("\nJulien, Edouard, Schinz et Lachowska sont ex æqo avec 20 points !\n");
+        assert Info.draw(playerNames, 20).equals("\nJulien, Edouard, Schinz et Lachowska sont ex æqo avec 20 points " +
+                "!\n");
     }
 
     @Test
@@ -242,7 +243,8 @@ public class InfoTest {
 
         var route3 = new Route("1", s1, s2, 4, Route.Level.UNDERGROUND, null);
         var actual3 = info.claimedRoute(route3, SortedBag.of(4, Card.BLUE, 2, Card.LOCOMOTIVE));
-        var expected3 = "Brian a pris possession de la route Neuchâtel – Lausanne au moyen de 4 bleues et 2 locomotives.\n";
+        var expected3 = "Brian a pris possession de la route Neuchâtel – Lausanne au moyen de 4 bleues et 2 " +
+                "locomotives.\n";
         assertEquals(expected3, actual3);
     }
 
@@ -278,15 +280,18 @@ public class InfoTest {
         assertEquals(expected1, actual1);
 
         var actual2 = info.drewAdditionalCards(SortedBag.of(1, Card.WHITE, 2, Card.RED), 1);
-        var expected2 = "Les cartes supplémentaires sont 2 rouges et 1 blanche. Elles impliquent un coût additionnel de 1 carte.\n";
+        var expected2 = "Les cartes supplémentaires sont 2 rouges et 1 blanche. Elles impliquent un coût additionnel " +
+                "de 1 carte.\n";
         assertEquals(expected2, actual2);
 
         var actual3 = info.drewAdditionalCards(SortedBag.of(1, Card.YELLOW, 2, Card.GREEN), 2);
-        var expected3 = "Les cartes supplémentaires sont 2 vertes et 1 jaune. Elles impliquent un coût additionnel de 2 cartes.\n";
+        var expected3 = "Les cartes supplémentaires sont 2 vertes et 1 jaune. Elles impliquent un coût additionnel de" +
+                " 2 cartes.\n";
         assertEquals(expected3, actual3);
 
         var actual4 = info.drewAdditionalCards(SortedBag.of(1, Card.VIOLET, 2, Card.LOCOMOTIVE), 3);
-        var expected4 = "Les cartes supplémentaires sont 1 violette et 2 locomotives. Elles impliquent un coût additionnel de 3 cartes.\n";
+        var expected4 = "Les cartes supplémentaires sont 1 violette et 2 locomotives. Elles impliquent un coût " +
+                "additionnel de 3 cartes.\n";
         assertEquals(expected4, actual4);
     }
 

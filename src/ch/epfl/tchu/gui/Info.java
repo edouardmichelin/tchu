@@ -57,11 +57,13 @@ public final class Info {
     }
 
     /**
-     * Retourne le message déclarant que les joueurs, dont les noms sont ceux donnés, ont terminé la partie ex æqo en ayant chacun remporté les points donnés
+     * Retourne le message déclarant que les joueurs, dont les noms sont ceux donnés, ont terminé la partie ex æqo en
+     * ayant chacun remporté les points donnés
      *
      * @param playerNames names of the player
      * @param points      amount of points
-     * @return le message déclarant que les joueurs, dont les noms sont ceux donnés, ont terminé la partie ex æqo en ayant chacun remporté les points donnés
+     * @return le message déclarant que les joueurs, dont les noms sont ceux donnés, ont terminé la partie ex æqo en
+     * ayant chacun remporté les points donnés
      */
     public static String draw(List<String> playerNames, int points) {
         int lastIndex = playerNames.size() - 1;
@@ -135,28 +137,34 @@ public final class Info {
      */
     public String claimedRoute(Route route, SortedBag<Card> cards) {
 
-        String info = String.format(StringsFr.CLAIMED_ROUTE, this.playerName, Info.getRouteName(route), getCardsInfo(cards));
+        String info = String.format(StringsFr.CLAIMED_ROUTE, this.playerName, Info.getRouteName(route),
+                getCardsInfo(cards));
 
         return info;
     }
 
     /**
-     * Retourne le message déclarant que le joueur désire s'emparer de la route en tunnel donnée en utilisant initialement les cartes données
+     * Retourne le message déclarant que le joueur désire s'emparer de la route en tunnel donnée en utilisant
+     * initialement les cartes données
      *
      * @param route        le tunnel en question
      * @param initialCards les cartes servant à prendre possession du tunnel
-     * @return le message déclarant que le joueur désire s'emparer de la route en tunnel donnée en utilisant initialement les cartes données
+     * @return le message déclarant que le joueur désire s'emparer de la route en tunnel donnée en utilisant
+     * initialement les cartes données
      */
     public String attemptsTunnelClaim(Route route, SortedBag<Card> initialCards) {
-        return String.format(StringsFr.ATTEMPTS_TUNNEL_CLAIM, this.playerName, getRouteName(route), getCardsInfo(initialCards));
+        return String.format(StringsFr.ATTEMPTS_TUNNEL_CLAIM, this.playerName, getRouteName(route),
+                getCardsInfo(initialCards));
     }
 
     /**
-     * Retourne le message déclarant que le joueur a tiré les trois cartes additionnelles données, et qu'elles impliquent un coût additionel du nombre de cartes donné
+     * Retourne le message déclarant que le joueur a tiré les trois cartes additionnelles données, et qu'elles
+     * impliquent un coût additionel du nombre de cartes donné
      *
      * @param drawnCards     les cartes tirées
      * @param additionalCost le coût additionnel
-     * @return le message déclarant que le joueur a tiré les trois cartes additionnelles données, et qu'elles impliquent un coût additionel du nombre de cartes donné
+     * @return le message déclarant que le joueur a tiré les trois cartes additionnelles données, et qu'elles
+     * impliquent un coût additionel du nombre de cartes donné
      */
     public String drewAdditionalCards(SortedBag<Card> drawnCards, int additionalCost) {
         String additionalCostString = additionalCost == 0 ?
@@ -177,20 +185,24 @@ public final class Info {
     }
 
     /**
-     * Retourne le message déclarant que le joueur n'a plus que le nombre donné (et inférieur ou égale à 2) de wagons, et que le dernier tour commence donc
+     * Retourne le message déclarant que le joueur n'a plus que le nombre donné (et inférieur ou égale à 2) de
+     * wagons, et que le dernier tour commence donc
      *
      * @param carCount le nombre de wagon
-     * @return le message déclarant que le joueur n'a plus que le nombre donné (et inférieur ou égale à 2) de wagons, et que le dernier tour commence donc
+     * @return le message déclarant que le joueur n'a plus que le nombre donné (et inférieur ou égale à 2) de wagons,
+     * et que le dernier tour commence donc
      */
     public String lastTurnBegins(int carCount) {
         return String.format(StringsFr.LAST_TURN_BEGINS, this.playerName, carCount, StringsFr.plural(carCount));
     }
 
     /**
-     * Retourne le message déclarant que le joueur obtient le bonus de fin de partie grâce au chemin donné, qui est le plus long, ou l'un des plus longs
+     * Retourne le message déclarant que le joueur obtient le bonus de fin de partie grâce au chemin donné, qui est
+     * le plus long, ou l'un des plus longs
      *
      * @param longestTrail le chemin en question
-     * @return le message déclarant que le joueur obtient le bonus de fin de partie grâce au chemin donné, qui est le plus long, ou l'un des plus longs
+     * @return le message déclarant que le joueur obtient le bonus de fin de partie grâce au chemin donné, qui est le
+     * plus long, ou l'un des plus longs
      */
     public String getsLongestTrailBonus(Trail longestTrail) {
         String formattedLongestTrail = String.format(
@@ -201,11 +213,13 @@ public final class Info {
     }
 
     /**
-     * Retourne le message déclarant que le joueur remporte la partie avec le nombre de points donnés, son adversaire n'en ayant obtenu que loserPoints.
+     * Retourne le message déclarant que le joueur remporte la partie avec le nombre de points donnés, son adversaire
+     * n'en ayant obtenu que loserPoints.
      *
      * @param points      le nombre de points du vainqueur
      * @param loserPoints le nombre de points du perdant
-     * @return le message déclarant que le joueur remporte la partie avec le nombre de points donnés, son adversaire n'en ayant obtenu que loserPoints.
+     * @return le message déclarant que le joueur remporte la partie avec le nombre de points donnés, son adversaire
+     * n'en ayant obtenu que loserPoints.
      */
     public String won(int points, int loserPoints) {
         return String.format(
