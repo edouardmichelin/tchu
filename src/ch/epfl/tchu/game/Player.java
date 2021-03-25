@@ -58,6 +58,7 @@ public interface Player {
 
     /**
      * Appelée lorsque le joueur a décidé de tirer des billets supplémentaires en cours de partie, afin de lui communiquer les billets tirés et de savoir lesquels il garde
+     *
      * @param options les billets tirés
      * @return les billets choisis
      */
@@ -65,26 +66,48 @@ public interface Player {
 
     /**
      * Appelée lorsque le joueur a décidé de tirer des cartes wagon/locomotive, afin de savoir d'où il désire les tirer : d'un des emplacements contenant une carte face visible — auquel cas la valeur retourne est comprise entre 0 et 4 inclus —, ou de la pioche — auquel cas la valeur retournée vaut Constants.DECK_SLOT
+     *
      * @return le slot
      */
     int drawSlot();
 
     /**
      * Appelée lorsque le joueur a décidé de (tenter de) s'emparer d'une route, afin de savoir de quelle route il s'agit
+     *
      * @return la route
      */
     Route claimedRoute();
 
     /**
      * Appelée lorsque le joueur a décidé de (tenter de) s'emparer d'une route, afin de savoir quelle(s) carte(s) il désire initialement utiliser pour cela
+     *
      * @return les cartes que le joueur décide d'utiliser
      */
     SortedBag<Card> initialClaimCards();
 
     /**
      * Appelée lorsque le joueur a décidé de tenter de s'emparer d'un tunnel et que des cartes additionnelles sont nécessaires, afin de savoir quelle(s) carte(s) il désire utiliser pour cela, les possibilités lui étant passées en argument ; si le multiensemble retourné est vide, cela signifie que le joueur ne désire pas (ou ne peut pas) choisir l'une de ces possibilités
+     *
      * @param options les possibilités de cartes
      * @return les cartes choisies par le joueur
      */
     SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options);
+
+    /**
+     * Représente les trois types d'actions qu'un joueur de tCHu peut effectuer durant un tour
+     */
+    enum TurnKind {
+        DRAW_TICKETS,
+        DRAW_CARDS,
+        CLAIM_ROUTE;
+
+        /**
+         * Retourne la liste de tous les TurnKind
+         *
+         * @return la liste de tous les TurnKind
+         */
+        public static List<TurnKind> all() {
+            return List.of(TurnKind.values());
+        }
+    }
 }
