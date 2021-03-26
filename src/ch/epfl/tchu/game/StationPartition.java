@@ -57,22 +57,16 @@ public final class StationPartition implements StationConnectivity {
          * @return le bâtisseur (this)
          */
         public Builder connect(Station s1, Station s2) {
-            if (this.representatives[s2.id()])
-                this.stations[s1.id()] = s2.id();
-            else if (this.representatives[s1.id()])
-                this.stations[s2.id()] = s1.id();
-            else {
-                if (this.representative(s1.id()) == s1.id() && this.representative(s2.id()) == s2.id())
-                    this.representatives[s1.id()] = true;
-                else if (this.representative(s1.id()) == s1.id() && !(this.representative(s2.id()) == s2.id())) {
-                    this.stations[s1.id()] = this.representative(s2.id());
-                    return this;
-                } else {
-                    this.stations[s2.id()] = this.representative(s1.id());
-                    return this;
-                }
+            if (this.stations[s1.id()] == this.stations[s2.id()])
+                return this;
 
-                connect(s1, s2);
+            int representative1 = this.representative(s1.id());
+            int representative2 = this.representative(s2.id());
+
+            for (int i = 0; i < this.stations.length; i++) {
+                if (this.stations[i] == representative2) {
+                    this.stations[i] = representative1;
+                }
             }
 
             return this;
