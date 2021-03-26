@@ -52,7 +52,7 @@ public final class GameState extends PublicGameState {
 
         List<PlayerId> playerIds = PlayerId.ALL;
 
-        PlayerId firstPlayerToPlay = playerIds.get(PlayerId.COUNT - 1);
+        PlayerId firstPlayerToPlay = playerIds.get(rng.nextInt(PlayerId.COUNT));
 
         Map<PlayerId, PlayerState> playerState = new TreeMap<>();
 
