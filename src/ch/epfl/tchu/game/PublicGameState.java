@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Représente la partie publique de l'état d'une partie de tCHu.
@@ -22,7 +21,12 @@ public class PublicGameState {
     private final PlayerId lastPlayer;
 
     /**
-     * Construit la partie publique de l'état d'une partie de tCHu dans laquelle la pioche de billets a une taille de ticketsCount, l'état public des cartes wagon/locomotive est cardState, le joueur courant est currentPlayerId, l'état public des joueurs est contenu dans playerState, et l'identité du dernier joueur est lastPlayer (qui peut être null si cette identité est encore inconnue) ; lève IllegalArgumentException si la taille de la pioche est strictement négative ou si playerState ne contient pas exactement deux paires clef/valeur, et NullPointerException si l'un des autres arguments (lastPlayer excepté !) est nul
+     * Construit la partie publique de l'état d'une partie de tCHu dans laquelle la pioche de billets a une taille de
+     * ticketsCount, l'état public des cartes wagon/locomotive est cardState, le joueur courant est currentPlayerId,
+     * l'état public des joueurs est contenu dans playerState, et l'identité du dernier joueur est lastPlayer (qui
+     * peut être null si cette identité est encore inconnue) ; lève IllegalArgumentException si la taille de la
+     * pioche est strictement négative ou si playerState ne contient pas exactement deux paires clef/valeur, et
+     * NullPointerException si l'un des autres arguments (lastPlayer excepté !) est nul
      *
      * @param ticketsCount    le nombre de billets
      * @param cardState       l'état des cartes
@@ -30,9 +34,15 @@ public class PublicGameState {
      * @param playerState     l'état du joueur
      * @param lastPlayer      le dernier joueur
      */
-    public PublicGameState(int ticketsCount, PublicCardState cardState, PlayerId currentPlayerId, Map<PlayerId, PublicPlayerState> playerState, PlayerId lastPlayer) {
+    public PublicGameState(
+            int ticketsCount,
+            PublicCardState cardState,
+            PlayerId currentPlayerId,
+            Map<PlayerId, PublicPlayerState> playerState,
+            PlayerId lastPlayer
+    ) {
         Preconditions.checkArgument(ticketsCount < 0);
-        Preconditions.checkArgument(playerState.size() == 2);
+        Preconditions.checkArgument(playerState.size() == PlayerId.COUNT);
 
         this.ticketsCount = ticketsCount;
         this.playerState = playerState;
@@ -70,9 +80,11 @@ public class PublicGameState {
     }
 
     /**
-     * Retourne vrai ssi il est possible de tirer des cartes, c-à-d si la pioche et la défausse contiennent entre elles au moins 5 cartes
+     * Retourne vrai ssi il est possible de tirer des cartes, c-à-d si la pioche et la défausse contiennent entre
+     * elles au moins 5 cartes
      *
-     * @return vrai ssi il est possible de tirer des cartes, c-à-d si la pioche et la défausse contiennent entre elles au moins 5 cartes
+     * @return vrai ssi il est possible de tirer des cartes, c-à-d si la pioche et la défausse contiennent entre
+     * elles au moins 5 cartes
      */
     public boolean canDrawCards() {
         return (this.cardState.deckSize() + this.cardState.discardsSize()) > 0;
@@ -120,9 +132,11 @@ public class PublicGameState {
     }
 
     /**
-     * Retourne l'identité du dernier joueur, ou null si elle n'est pas encore connue car le dernier tour n'a pas commencé
+     * Retourne l'identité du dernier joueur, ou null si elle n'est pas encore connue car le dernier tour n'a pas
+     * commencé
      *
-     * @return l'identité du dernier joueur, ou null si elle n'est pas encore connue car le dernier tour n'a pas commencé
+     * @return l'identité du dernier joueur, ou null si elle n'est pas encore connue car le dernier tour n'a pas
+     * commencé
      */
     public PlayerId lastPlayer() {
         return this.lastPlayer;
