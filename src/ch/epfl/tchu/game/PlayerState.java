@@ -148,9 +148,13 @@ public final class PlayerState extends PublicPlayerState {
                 card -> card == initialType[0] || card == Card.LOCOMOTIVE).collect(Collectors.toList()
         ));
 
-        List<SortedBag<Card>> usableCardsSet = new ArrayList<>(usableCards.subsetsOfSize(additionalCardsCount));
-        usableCardsSet.sort(Comparator.comparingInt(hand -> hand.countOf(Card.LOCOMOTIVE)));
-
+        List<SortedBag<Card>> usableCardsSet;
+        if (usableCards.size() >= additionalCardsCount) {
+            usableCardsSet = new ArrayList<>(usableCards.subsetsOfSize(additionalCardsCount));
+            usableCardsSet.sort(Comparator.comparingInt(hand -> hand.countOf(Card.LOCOMOTIVE)));
+        } else {
+            usableCardsSet = new ArrayList<>();
+        }
         return usableCardsSet;
     }
 
@@ -177,7 +181,7 @@ public final class PlayerState extends PublicPlayerState {
     public int ticketPoints() {
         int maxId = 0;
         for (Route route : this.routes()) {
-            if (route.station1().id() > maxId) {
+            if (route.station1().id() > maxId || route.station2().id() > maxId) {
                 if (route.station2().id() > route.station1().id()) {
                     maxId = route.station2().id();
                 } else {
