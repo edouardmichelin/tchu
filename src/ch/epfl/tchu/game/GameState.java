@@ -254,7 +254,7 @@ public final class GameState extends PublicGameState {
      * donnée au moyen des cartes données
      */
     public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
-        GameState newGameState = new GameState(this.tickets, this.cardState, this.currentPlayerId(), this.playerState
+        GameState newGameState = new GameState(this.tickets, this.cardState.withMoreDiscardedCards(cards), this.currentPlayerId(), this.playerState
                 , this.lastPlayer());
 
         newGameState.playerState.put(this.currentPlayerId(),
