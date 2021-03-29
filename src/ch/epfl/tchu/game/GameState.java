@@ -231,7 +231,8 @@ public final class GameState extends PublicGameState {
     public GameState withBlindlyDrawnCard() {
         Preconditions.checkArgument(this.canDrawCards());
         Card drawnCard = this.cardState.topDeckCard();
-        GameState newGameState = new GameState(this.tickets, this.cardState.withoutTopDeckCard(), this.currentPlayerId(),
+        GameState newGameState = new GameState(this.tickets, this.cardState.withoutTopDeckCard(),
+                this.currentPlayerId(),
                 this.playerState, this.lastPlayer());
 
         newGameState.playerState.put(this.currentPlayerId(),
@@ -250,10 +251,13 @@ public final class GameState extends PublicGameState {
      * donnée au moyen des cartes données
      */
     public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
-        var newPlayerState = Map.copyOf(this.playerState);
-        newPlayerState.put(this.currentPlayerId(),
-                this.playerState.get(this.currentPlayerId()).withClaimedRoute(route, cards));
-        return new GameState(this.tickets, this.cardState, this.currentPlayerId(), newPlayerState, this.lastPlayer());
+        GameState newGameState = new GameState(this.tickets, this.cardState, this.currentPlayerId(), this.playerState
+                , this.lastPlayer());
+
+        newGameState.playerState.put(this.currentPlayerId(),
+                newGameState.playerState.get(this.currentPlayerId()).withClaimedRoute(route, cards));
+
+        return newGameState;
     }
 
     /**
