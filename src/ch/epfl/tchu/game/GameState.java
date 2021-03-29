@@ -231,15 +231,13 @@ public final class GameState extends PublicGameState {
     public GameState withBlindlyDrawnCard() {
         Preconditions.checkArgument(this.canDrawCards());
         Card drawnCard = this.cardState.topDeckCard();
-        GameState newGameState = new GameState(this.tickets, this.cardState, this.currentPlayerId(),
+        GameState newGameState = new GameState(this.tickets, this.cardState.withoutTopDeckCard(), this.currentPlayerId(),
                 this.playerState, this.lastPlayer());
 
         newGameState.playerState.put(this.currentPlayerId(),
                 newGameState.playerState.get(this.currentPlayerId()).withAddedCard(drawnCard));
 
-        return new GameState(newGameState.tickets, newGameState.cardState.withoutTopDeckCard(),
-                newGameState.currentPlayerId(),
-                newGameState.playerState, newGameState.lastPlayer());
+        return newGameState;
     }
 
     /**
