@@ -190,12 +190,14 @@ public final class GameState extends PublicGameState {
      */
     public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) {
         Preconditions.checkArgument(drawnTickets.contains(chosenTickets));
-        SortedBag<Ticket> discardedTickets = drawnTickets.difference(chosenTickets);
-        var newPlayerState = Map.copyOf(this.playerState);
-        newPlayerState.put(this.currentPlayerId(),
-                this.playerState.get(this.currentPlayerId()).withAddedTickets(chosenTickets));
-        return new GameState(this.tickets.withoutTopCards(drawnTickets.size()), this.cardState,
-                this.currentPlayerId(), newPlayerState, this.lastPlayer());
+
+        GameState newGameState = new GameState(this.tickets.withoutTopCards(drawnTickets.size()), this.cardState,
+                this.currentPlayerId(), this.playerState, this.lastPlayer());
+
+        newGameState.playerState.put(this.currentPlayerId(),
+                newGameState.playerState.get(this.currentPlayerId()).withAddedTickets(chosenTickets));
+
+        return newGameState;
     }
 
     /**
