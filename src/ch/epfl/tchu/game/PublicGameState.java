@@ -87,7 +87,7 @@ public class PublicGameState {
      * elles au moins 5 cartes
      */
     public boolean canDrawCards() {
-        return (this.cardState.deckSize() + this.cardState.discardsSize()) > 0;
+        return (this.cardState.deckSize() + this.cardState.discardsSize()) >= 5;
     }
 
     /**
