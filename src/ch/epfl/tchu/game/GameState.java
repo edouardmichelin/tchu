@@ -213,12 +213,13 @@ public final class GameState extends PublicGameState {
         Card pickedCard = this.cardState.faceUpCard(slot);
         CardState newCardState = this.cardState.withDrawnFaceUpCard(slot);
 
-        var newPlayerState = Map.copyOf(this.playerState);
-        newPlayerState.put(this.currentPlayerId(),
-                this.playerState.get(this.currentPlayerId()).withAddedCard(pickedCard));
-
-        return new GameState(this.tickets, newCardState, this.currentPlayerId(), newPlayerState,
+        GameState newGameState = new GameState(this.tickets, newCardState, this.currentPlayerId(), this.playerState,
                 this.lastPlayer());
+
+        newGameState.playerState.put(this.currentPlayerId(),
+                newGameState.playerState.get(this.currentPlayerId()).withAddedCard(pickedCard));
+
+        return newGameState;
     }
 
     /**
