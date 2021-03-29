@@ -67,7 +67,7 @@ public class PublicGameState {
      * @return vrai ssi la pioche de billets n'est pas vide
      */
     public boolean canDrawTickets() {
-        return !this.cardState.isDeckEmpty();
+        return this.ticketsCount > 0;
     }
 
     /**
