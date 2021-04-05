@@ -190,12 +190,14 @@ public final class GameState extends PublicGameState {
      */
     public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) {
         Preconditions.checkArgument(drawnTickets.contains(chosenTickets));
-        SortedBag<Ticket> discardedTickets = drawnTickets.difference(chosenTickets);
-        var newPlayerState = Map.copyOf(this.playerState);
-        newPlayerState.put(this.currentPlayerId(),
-                this.playerState.get(this.currentPlayerId()).withAddedTickets(chosenTickets));
-        return new GameState(this.tickets.withoutTopCards(drawnTickets.size()), this.cardState,
-                this.currentPlayerId(), newPlayerState, this.lastPlayer());
+
+        GameState newGameState = new GameState(this.tickets.withoutTopCards(drawnTickets.size()), this.cardState,
+                this.currentPlayerId(), this.playerState, this.lastPlayer());
+
+        newGameState.playerState.put(this.currentPlayerId(),
+                newGameState.playerState.get(this.currentPlayerId()).withAddedTickets(chosenTickets));
+
+        return newGameState;
     }
 
     /**
@@ -213,12 +215,13 @@ public final class GameState extends PublicGameState {
         Card pickedCard = this.cardState.faceUpCard(slot);
         CardState newCardState = this.cardState.withDrawnFaceUpCard(slot);
 
-        var newPlayerState = Map.copyOf(this.playerState);
-        newPlayerState.put(this.currentPlayerId(),
-                this.playerState.get(this.currentPlayerId()).withAddedCard(pickedCard));
-
-        return new GameState(this.tickets, newCardState, this.currentPlayerId(), newPlayerState,
+        GameState newGameState = new GameState(this.tickets, newCardState, this.currentPlayerId(), this.playerState,
                 this.lastPlayer());
+
+        newGameState.playerState.put(this.currentPlayerId(),
+                newGameState.playerState.get(this.currentPlayerId()).withAddedCard(pickedCard));
+
+        return newGameState;
     }
 
     /**
@@ -231,12 +234,14 @@ public final class GameState extends PublicGameState {
     public GameState withBlindlyDrawnCard() {
         Preconditions.checkArgument(this.canDrawCards());
         Card drawnCard = this.cardState.topDeckCard();
-        var newPlayerState = Map.copyOf(this.playerState);
+        GameState newGameState = new GameState(this.tickets, this.cardState.withoutTopDeckCard(),
+                this.currentPlayerId(),
+                this.playerState, this.lastPlayer());
 
-        newPlayerState.put(this.currentPlayerId(),
-                this.playerState.get(this.currentPlayerId()).withAddedCard(drawnCard));
-        return new GameState(this.tickets, this.cardState.withoutTopDeckCard(), this.currentPlayerId(),
-                newPlayerState, this.lastPlayer());
+        newGameState.playerState.put(this.currentPlayerId(),
+                newGameState.playerState.get(this.currentPlayerId()).withAddedCard(drawnCard));
+
+        return newGameState;
     }
 
     /**
@@ -249,10 +254,13 @@ public final class GameState extends PublicGameState {
      * donnée au moyen des cartes données
      */
     public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
-        var newPlayerState = Map.copyOf(this.playerState);
-        newPlayerState.put(this.currentPlayerId(),
-                this.playerState.get(this.currentPlayerId()).withClaimedRoute(route, cards));
-        return new GameState(this.tickets, this.cardState, this.currentPlayerId(), newPlayerState, this.lastPlayer());
+        GameState newGameState = new GameState(this.tickets, this.cardState.withMoreDiscardedCards(cards),
+                this.currentPlayerId(), this.playerState, this.lastPlayer());
+
+        newGameState.playerState.put(this.currentPlayerId(),
+                newGameState.playerState.get(this.currentPlayerId()).withClaimedRoute(route, cards));
+
+        return newGameState;
     }
 
     /**
@@ -279,7 +287,7 @@ public final class GameState extends PublicGameState {
      * @return un état identique au récépteur <code>this</code>
      */
     public GameState forNextTurn() {
-        PlayerId lastPlayer = this.lastTurnBegins() ? null : this.currentPlayerId();
+        PlayerId lastPlayer = this.lastTurnBegins() ? this.currentPlayerId() : this.lastPlayer();
         return new GameState(this.tickets, this.cardState, this.currentPlayerId().next(), this.playerState, lastPlayer);
     }
 

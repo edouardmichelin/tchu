@@ -41,7 +41,7 @@ public class PublicGameState {
             Map<PlayerId, PublicPlayerState> playerState,
             PlayerId lastPlayer
     ) {
-        Preconditions.checkArgument(ticketsCount > 0);
+        Preconditions.checkArgument(ticketsCount >= 0);
         Preconditions.checkArgument(playerState.size() == PlayerId.COUNT);
 
         this.ticketsCount = ticketsCount;
@@ -67,7 +67,7 @@ public class PublicGameState {
      * @return vrai ssi la pioche de billets n'est pas vide
      */
     public boolean canDrawTickets() {
-        return !this.cardState.isDeckEmpty();
+        return this.ticketsCount > 0;
     }
 
     /**
@@ -87,7 +87,7 @@ public class PublicGameState {
      * elles au moins 5 cartes
      */
     public boolean canDrawCards() {
-        return (this.cardState.deckSize() + this.cardState.discardsSize()) > 0;
+        return (this.cardState.deckSize() + this.cardState.discardsSize()) >= 5;
     }
 
     /**
