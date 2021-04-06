@@ -18,6 +18,7 @@ public final class Game {
                             SortedBag<Ticket> tickets, Random rng) {
         Preconditions.checkArgument(players.size() == 2 && playerNames.size() == 2);
 
+        //Initialise the state of the game (playerstates are being created already there too)
         GameState currentGameState = GameState.initial(tickets, rng);
 
         //Initialise player infos
@@ -26,19 +27,35 @@ public final class Game {
             playerInfos.put(id, new Info(playerNames.get(id)));
         }
 
-        //first call for initPlayers
+        //first call for initPlayers to inform players of their identity
         players.forEach((k, v) -> v.initPlayers(k, playerNames));
 
-        //Choose the first player at random and announce
-        List<PlayerId> PlayerIds = new ArrayList<>(players.keySet());
-        announce(players, playerInfos.get(PlayerIds.get(rng.nextInt(players.size()))).willPlayFirst());
+        //Announce the first player to play
+        announce(players, playerInfos.get(currentGameState.currentPlayerId()).willPlayFirst());
 
-        //set initial tickets for everyone
+        //Show the players their initial ticket choice
         for (PlayerId id : players.keySet()) {
-            players.get(id).setInitialTicketChoice(currentGameState.topTickets(Constants.INITIAL_TICKETS_COUNT));
+            SortedBag<Ticket> ticketChoice = currentGameState.topTickets(Constants.INITIAL_TICKETS_COUNT);
+
             currentGameState = currentGameState.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);
+            players.get(id).setInitialTicketChoice(ticketChoice);
         }
 
+        //Change the state of the game based on the chooseInitialTickets call of all players
+        for (PlayerId id : players.keySet()) {
+            currentGameState.withInitiallyChosenTickets(id, players.get(id).chooseInitialTickets());
+        }
+
+        //Announce how many tickets players have kept
+        final GameState tempGameState = currentGameState;
+        playerInfos.forEach((k, v) -> announce(players, v.keptTickets(tempGameState.playerState(k).ticketCount())));
+
+        //Game loop
+        do{
+
+        } while (!currentGameState.lastTurnBegins());
+
+        //Last turn code
     }
 
     private static void announce(Map<PlayerId, Player> players, String message) {
