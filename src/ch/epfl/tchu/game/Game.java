@@ -50,12 +50,52 @@ public final class Game {
         final GameState tempGameState = currentGameState;
         playerInfos.forEach((k, v) -> announce(players, v.keptTickets(tempGameState.playerState(k).ticketCount())));
 
-        //Game loop
-        do{
+        //Game loop including final turns WIP
+        int finalTurns = 0;
+        boolean lastTurnBegins = false;
+        SortedBag<Card> tempCards;
+        SortedBag<Ticket> tmpTicketChoice;
+        SortedBag<Ticket> tmpChosenTickets;
 
-        } while (!currentGameState.lastTurnBegins());
+        do {
+            PlayerId currentPlayerId = currentGameState.currentPlayerId();
+            Info currentPlayerInfo = playerInfos.get(currentPlayerId);
+            Player currentPlayer = players.get(currentPlayerId);
 
-        //Last turn code
+            if (lastTurnBegins)
+                finalTurns++;
+
+            announce(players, currentPlayerInfo.canPlay());
+
+            //The player plays here
+            switch (currentPlayer.nextTurn()) {
+                case DRAW_CARDS:
+                    announce(players, currentPlayerInfo.drewAdditionalCards());
+                    break;
+
+                case CLAIM_ROUTE:
+                    break;
+
+                case DRAW_TICKETS:
+                    announce(players, currentPlayerInfo.drewTickets(Constants.IN_GAME_TICKETS_COUNT));
+
+                    tmpTicketChoice = currentGameState.topTickets(Constants.IN_GAME_TICKETS_COUNT);
+                    tmpChosenTickets = currentPlayer.chooseTickets(tmpTicketChoice);
+
+                    currentGameState = currentGameState.withChosenAdditionalTickets(tmpTicketChoice, tmpChosenTickets);
+                    announce(players, currentPlayerInfo.keptTickets(tmpChosenTickets.size()));
+                    break;
+            }
+
+
+            if (currentGameState.lastTurnBegins() && !lastTurnBegins)
+                lastTurnBegins = true;
+
+            currentGameState = currentGameState.forNextTurn();
+        } while (finalTurns < players.size());
+
+        //Game over and scoring under here
+
     }
 
     private static void announce(Map<PlayerId, Player> players, String message) {
