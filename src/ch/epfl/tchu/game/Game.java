@@ -51,16 +51,24 @@ public final class Game {
         playerInfos.forEach((k, v) -> announce(players, v.keptTickets(tempGameState.playerState(k).ticketCount())));
 
         //Game loop including final turns WIP
+        PlayerId currentPlayerId;
+        Info currentPlayerInfo;
+        Player currentPlayer;
+        PlayerState currentPlayerState;
+
         int finalTurns = 0;
         boolean lastTurnBegins = false;
+        Card tmpCard;
+        int tmpInt;
         SortedBag<Card> tempCards;
         SortedBag<Ticket> tmpTicketChoice;
         SortedBag<Ticket> tmpChosenTickets;
 
         do {
-            PlayerId currentPlayerId = currentGameState.currentPlayerId();
-            Info currentPlayerInfo = playerInfos.get(currentPlayerId);
-            Player currentPlayer = players.get(currentPlayerId);
+            currentPlayerId = currentGameState.currentPlayerId();
+            currentPlayerInfo = playerInfos.get(currentPlayerId);
+            currentPlayer = players.get(currentPlayerId);
+            currentPlayerState = currentGameState.playerState(currentPlayerId);
 
             if (lastTurnBegins)
                 finalTurns++;
@@ -70,7 +78,19 @@ public final class Game {
             //The player plays here
             switch (currentPlayer.nextTurn()) {
                 case DRAW_CARDS:
-                    announce(players, currentPlayerInfo.drewAdditionalCards());
+                    for (int i = 0; i < 2; i++) {
+                        tmpInt = currentPlayer.drawSlot();
+
+                        if (Constants.FACE_UP_CARD_SLOTS.contains(tmpInt)) {
+                            tmpCard = currentGameState.cardState().faceUpCard(tmpInt);
+                            currentGameState = currentGameState.withDrawnFaceUpCard(tmpInt);
+                            announce(players, currentPlayerInfo.drewVisibleCard(tmpCard));
+                        } else if (tmpInt == Constants.DECK_SLOT) {
+                            currentGameState = currentGameState.withBlindlyDrawnCard();
+                            announce(players, currentPlayerInfo.drewBlindCard());
+                        }
+                        currentGameState = currentGameState.withCardsDeckRecreatedIfNeeded(rng);
+                    }
                     break;
 
                 case CLAIM_ROUTE:
@@ -87,9 +107,11 @@ public final class Game {
                     break;
             }
 
-
-            if (currentGameState.lastTurnBegins() && !lastTurnBegins)
+            //When the last turn begins
+            if (currentGameState.lastTurnBegins() && !lastTurnBegins) {
                 lastTurnBegins = true;
+                announce(players, currentPlayerInfo.lastTurnBegins(currentPlayerState.carCount()));
+            }
 
             currentGameState = currentGameState.forNextTurn();
         } while (finalTurns < players.size());
