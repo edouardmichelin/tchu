@@ -5,6 +5,7 @@ import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.gui.Info;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Partie de tCHu
@@ -47,8 +48,8 @@ public final class Game {
         }
 
         //Announce how many tickets players have kept
-        final GameState tempGameState = currentGameState;
-        playerInfos.forEach((k, v) -> announce(players, v.keptTickets(tempGameState.playerState(k).ticketCount())));
+        final GameState tmpGameState = currentGameState;
+        playerInfos.forEach((k, v) -> announce(players, v.keptTickets(tmpGameState.playerState(k).ticketCount())));
 
         //Game loop including final turns WIP
         PlayerId currentPlayerId;
@@ -116,8 +117,18 @@ public final class Game {
             currentGameState = currentGameState.forNextTurn();
         } while (finalTurns < players.size());
 
+        final GameState gameOverState = currentGameState;
+
         //Game over and scoring under here
 
+        //Map of scores without bonus
+        Map<PlayerId, Integer> playerScores = new HashMap<>();
+        players.forEach((k, v) -> playerScores.put(k, gameOverState.playerState(k).finalPoints()));
+
+        //Map of the longest length from player routes
+        Map<PlayerId, Integer> playerLongestTrail = new HashMap<>();
+        players.forEach((k, v) -> playerLongestTrail.put(k,
+                Trail.longest(gameOverState.playerState(k).routes()).length()));
     }
 
     private static void announce(Map<PlayerId, Player> players, String message) {
