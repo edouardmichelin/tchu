@@ -114,21 +114,27 @@ public final class Game {
                     Route claimedRoute = currentPlayer.claimedRoute();
                     SortedBag<Card> initialClaimCards = currentPlayer.initialClaimCards();
 
-                    // est ce que canClaimRoute a déja été appelé ??
+                    // est ce que canClaimRoute a déja été appelé ?? -> probablement que canClaimRoute est géré par
+                    // player et non par Game.play. L'idée est qu'il ne peut pas sélectionner sur l'interface une route
+                    //qu'il ne peut pas claim
                     boolean canPlayerClaimRoute = currentPlayerState.canClaimRoute(claimedRoute);
 
                     if (claimedRoute.level().equals(Route.Level.UNDERGROUND)) {
-                        // est ce qu'il faut annoncer ici ??
+                        // est ce qu'il faut annoncer ici ?? -> ici ou à la fin peu importe.
                         announce(players, currentPlayerInfo.attemptsTunnelClaim(claimedRoute, initialClaimCards));
 
-                        // comment je choppe les cartes
+                        // comment je choppe les cartes -> which ones?
 
-                        // est ce que c'est ça la bonne condition ??
+                        // est ce que c'est ça la bonne condition ?? -> t'as oublié de check si il y a des cartes
+                        // additionelles à défausser. possibleClaimCards ne devrait pas être intéressant dans Game.play
                         if (claimedRoute.possibleClaimCards().contains(initialClaimCards)) {
-                            // quelque chose mais je sais pas trop quoi...
+                            // quelque chose mais je sais pas trop quoi... -> not sure what you're trying to achieve
                         }
                     } else {
-                        // est ce que le joueur s'est emparé de la route ici ??
+                        // est ce que le joueur s'est emparé de la route ici ?? -> ton else doit être un else if pour
+                        // prendre maintenant en charge les autres cas de routes, aka pas des tunnels. Une fois tous les
+                        // cas traités il suffit de call currentGameState.withClaimedRoute(claimedRoute); pour donner
+                        // la route au joueur puis faire un call à update pour informer tout le monde des nouveaux states
                     }
 
                     update(players, currentGameState);
@@ -177,7 +183,6 @@ public final class Game {
         // Filter to the longest trail
         Optional<Entry<PlayerId, Trail>> maxLength = playerLongestTrailsStream
                 .max(Comparator.comparingInt(entry -> entry.getValue().length()));
-
 
 
         Map<PlayerId, Trail> playersForBonus = playerLongestTrailsStream
