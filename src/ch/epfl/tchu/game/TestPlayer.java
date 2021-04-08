@@ -2,7 +2,9 @@ import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 private static final class TestPlayer implements Player {
     private static final int TURN_LIMIT = 1000;
@@ -14,6 +16,8 @@ private static final class TestPlayer implements Player {
     private int turnCounter;
     private PlayerState ownState;
     private PublicGameState gameState;
+    private PlayerId ownId;
+    private Map<PlayerId, String> playerNames;
 
     // Lorsque nextTurn retourne CLAIM_ROUTE
     private Route routeToClaim;
@@ -23,6 +27,12 @@ private static final class TestPlayer implements Player {
         this.rng = new Random(randomSeed);
         this.allRoutes = List.copyOf(allRoutes);
         this.turnCounter = 0;
+    }
+
+    @Override
+    public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
+        this.ownId = ownId;
+        this.playerNames = playerNames;
     }
 
     @Override
@@ -38,7 +48,8 @@ private static final class TestPlayer implements Player {
             throw new Error("Trop de tours joués !");
 
         // Détermine les routes dont ce joueur peut s'emparer
-        List<Route> claimableRoutes = /* ... */;
+        List<Route> claimableRoutes =
+                this.allRoutes.stream().filter(ownState::canClaimRoute).collect(Collectors.toList());
         if (claimableRoutes.isEmpty()) {
             return TurnKind.DRAW_CARDS;
         } else {
@@ -50,5 +61,10 @@ private static final class TestPlayer implements Player {
             initialClaimCards = cards.get(0);
             return TurnKind.CLAIM_ROUTE;
         }
+    }
+
+    @Override
+    public void receiveInfo(String message) {
+        System.out.println(message);
     }
 }
