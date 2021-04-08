@@ -23,6 +23,7 @@ public final class TestPlayer implements Player {
     // Lorsque nextTurn retourne CLAIM_ROUTE
     private Route routeToClaim;
     private SortedBag<Card> initialClaimCards;
+    private SortedBag<Ticket> initialTicketChoice;
 
     public TestPlayer(long randomSeed, List<Route> allRoutes) {
         this.rng = new Random(randomSeed);
@@ -44,12 +45,13 @@ public final class TestPlayer implements Player {
 
     @Override
     public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
-
+        this.initialTicketChoice = tickets;
+        this.ownState = this.ownState.withAddedTickets(tickets);
     }
 
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {
-        return null;
+        return this.initialTicketChoice;
     }
 
     @Override
@@ -76,7 +78,7 @@ public final class TestPlayer implements Player {
 
     @Override
     public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
-        return null;
+        return options;
     }
 
     @Override
@@ -86,17 +88,17 @@ public final class TestPlayer implements Player {
 
     @Override
     public Route claimedRoute() {
-        return null;
+        return this.routeToClaim;
     }
 
     @Override
     public SortedBag<Card> initialClaimCards() {
-        return null;
+        return this.initialClaimCards;
     }
 
     @Override
     public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
-        return null;
+        return !options.isEmpty() ? options.get(0) : SortedBag.of();
     }
 
     @Override

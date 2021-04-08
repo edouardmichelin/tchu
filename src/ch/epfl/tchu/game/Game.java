@@ -29,6 +29,7 @@ public final class Game {
 
         // Initialize the state of the game (playerstates are being created already there too)
         GameState currentGameState = GameState.initial(tickets, rng);
+        update(players, currentGameState);
 
         // Initialize player infos
         Map<PlayerId, Info> playerInfos = new HashMap<>();
@@ -47,7 +48,8 @@ public final class Game {
             SortedBag<Ticket> ticketChoice = currentGameState.topTickets(Constants.INITIAL_TICKETS_COUNT);
 
             currentGameState = currentGameState.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);
-            players.get(id).setInitialTicketChoice(ticketChoice);
+            players.get(id)
+                    .setInitialTicketChoice(ticketChoice);
         }
 
         update(players, currentGameState);
