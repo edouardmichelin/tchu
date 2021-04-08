@@ -83,7 +83,7 @@ public final class TestPlayer implements Player {
 
     @Override
     public int drawSlot() {
-        return 0;
+        return this.rng.nextBoolean() ? this.rng.nextInt(5) : Constants.DECK_SLOT;
     }
 
     @Override
