@@ -119,6 +119,8 @@ public final class Game {
                         // est ce qu'il faut annoncer ici ??
                         announce(players, currentPlayerInfo.attemptsTunnelClaim(claimedRoute, initialClaimCards));
 
+                        // comment je choppe les cartes
+
                         // est ce que c'est ça la bonne condition ??
                         if (claimedRoute.possibleClaimCards().contains(initialClaimCards)) {
                             // quelque chose mais je sais pas trop quoi...

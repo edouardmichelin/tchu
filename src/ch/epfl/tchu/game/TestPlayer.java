@@ -1,12 +1,13 @@
+package ch.epfl.tchu.game;
+
 import ch.epfl.tchu.SortedBag;
-import ch.epfl.tchu.game.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-private static final class TestPlayer implements Player {
+public final class TestPlayer implements Player {
     private static final int TURN_LIMIT = 1000;
 
     private final Random rng;
@@ -42,6 +43,16 @@ private static final class TestPlayer implements Player {
     }
 
     @Override
+    public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
+
+    }
+
+    @Override
+    public SortedBag<Ticket> chooseInitialTickets() {
+        return null;
+    }
+
+    @Override
     public TurnKind nextTurn() {
         turnCounter += 1;
         if (turnCounter > TURN_LIMIT)
@@ -61,6 +72,31 @@ private static final class TestPlayer implements Player {
             initialClaimCards = cards.get(0);
             return TurnKind.CLAIM_ROUTE;
         }
+    }
+
+    @Override
+    public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
+        return null;
+    }
+
+    @Override
+    public int drawSlot() {
+        return 0;
+    }
+
+    @Override
+    public Route claimedRoute() {
+        return null;
+    }
+
+    @Override
+    public SortedBag<Card> initialClaimCards() {
+        return null;
+    }
+
+    @Override
+    public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
+        return null;
     }
 
     @Override
