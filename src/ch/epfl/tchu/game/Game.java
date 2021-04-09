@@ -199,6 +199,7 @@ public final class Game {
 
         // Game over and scoring under here
         final GameState gameOverState = currentGameState;
+        update(players, gameOverState);
 
         // Map of scores without bonus
         Map<PlayerId, Integer> playerScores = new HashMap<>();
@@ -243,7 +244,6 @@ public final class Game {
                 .filter(entry -> entry.getValue().equals(bestScore.getValue()))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
-        update(players, currentGameState);
 
         // Final announcements results (it's designed for only 2 players here because of how Player works)
         if (winningPlayers.size() > 1) {
