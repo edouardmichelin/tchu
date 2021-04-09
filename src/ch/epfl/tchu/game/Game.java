@@ -139,7 +139,7 @@ public final class Game {
                                     currentPlayerState.possibleAdditionalCards(additionalCardsCount,
                                             initialClaimCards, drawnCards);
 
-                            currentGameState.withMoreDiscardedCards(drawnCards);
+                            currentGameState = currentGameState.withMoreDiscardedCards(drawnCards);
 
                             update(players, currentGameState);
 
@@ -154,7 +154,6 @@ public final class Game {
 
                     SortedBag<Card> claimCards = initialClaimCards.union(additionalChosenCards);
 
-                    currentPlayerState.withClaimedRoute(claimedRoute, claimCards);
                     announce(players, currentPlayerInfo.claimedRoute(claimedRoute, claimCards));
 
                     currentGameState = currentGameState.withClaimedRoute(claimedRoute, claimCards);
@@ -199,16 +198,16 @@ public final class Game {
         players
                 .forEach((k, v) -> playersLongestTrails.put(k, Trail.longest(gameOverState.playerState(k).routes())));
 
-        Stream<Entry<PlayerId, Trail>> playerLongestTrailsStream = playersLongestTrails
-                .entrySet()
-                .stream();
+        Set<Entry<PlayerId, Trail>> playerLongestTrailsSet = playersLongestTrails.entrySet();
 
         // Filter to the longest trail
-        Optional<Entry<PlayerId, Trail>> maxLength = playerLongestTrailsStream
+        Optional<Entry<PlayerId, Trail>> maxLength = playerLongestTrailsSet
+                .stream()
                 .max(Comparator.comparingInt(entry -> entry.getValue().length()));
 
 
-        Map<PlayerId, Trail> playersForBonus = playerLongestTrailsStream
+        Map<PlayerId, Trail> playersForBonus = playerLongestTrailsSet
+                .stream()
                 .filter(entry -> entry.getValue().length() == (maxLength.get().getValue().length()))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
@@ -218,16 +217,17 @@ public final class Game {
             playerScores.put(k, playerScores.get(k) + Constants.LONGEST_TRAIL_BONUS_POINTS);
         });
 
-        Stream<Entry<PlayerId, Integer>> playerScoresStream = playerScores
-                .entrySet()
-                .stream();
+        Set<Entry<PlayerId, Integer>> playerScoresSet = playerScores
+                .entrySet();
 
         // Filter scores to the highest one
-        Entry<PlayerId, Integer> bestScore = playerScoresStream
+        Entry<PlayerId, Integer> bestScore = playerScoresSet
+                .stream()
                 .max(Comparator.comparingInt(Entry::getValue))
                 .orElseThrow();
 
-        Map<PlayerId, Integer> winningPlayers = playerScoresStream
+        Map<PlayerId, Integer> winningPlayers = playerScoresSet
+                .stream()
                 .filter(entry -> entry.getValue().equals(bestScore.getValue()))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
