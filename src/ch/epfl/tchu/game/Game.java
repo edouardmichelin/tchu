@@ -16,6 +16,8 @@ import java.util.stream.Stream;
  * @author Julien Jordan (315429)
  */
 public final class Game {
+    private Game() { }
+
     private static final int NUMBER_OF_PLAYERS = PlayerId.COUNT;
 
     // WIP
@@ -91,11 +93,10 @@ public final class Game {
 
             // The player plays here
             switch (currentPlayer.nextTurn()) {
-                default:
-                    update(players, currentGameState);
                 case DRAW_CARDS:
                     for (int i = 0; i < 2; i++) {
                         tmpInt = currentPlayer.drawSlot();
+                        currentGameState = currentGameState.withCardsDeckRecreatedIfNeeded(rng);
 
                         if (Constants.FACE_UP_CARD_SLOTS.contains(tmpInt)) {
                             tmpCard = currentGameState.cardState().faceUpCard(tmpInt);
@@ -113,34 +114,51 @@ public final class Game {
                 case CLAIM_ROUTE:
                     Route claimedRoute = currentPlayer.claimedRoute();
                     SortedBag<Card> initialClaimCards = currentPlayer.initialClaimCards();
-
-                    // est ce que canClaimRoute a déja été appelé ?? -> probablement que canClaimRoute est géré par
-                    // player et non par Game.play. L'idée est qu'il ne peut pas sélectionner sur l'interface une route
-                    //qu'il ne peut pas claim
-                    boolean canPlayerClaimRoute = currentPlayerState.canClaimRoute(claimedRoute);
+                    SortedBag<Card> additionalChosenCards = SortedBag.of();
 
                     if (claimedRoute.level().equals(Route.Level.UNDERGROUND)) {
-                        // est ce qu'il faut annoncer ici ?? -> ici ou à la fin peu importe.
                         announce(players, currentPlayerInfo.attemptsTunnelClaim(claimedRoute, initialClaimCards));
 
-                        // comment je choppe les cartes -> which ones?
+                        var builder = new SortedBag.Builder<Card>();
 
-                        // est ce que c'est ça la bonne condition ?? -> t'as oublié de check si il y a des cartes
-                        // additionelles à défausser. possibleClaimCards ne devrait pas être intéressant dans Game.play
-                        if (claimedRoute.possibleClaimCards().contains(initialClaimCards)) {
-                            // quelque chose mais je sais pas trop quoi... -> not sure what you're trying to achieve
+                        for (int iteration = 0; iteration < Constants.ADDITIONAL_TUNNEL_CARDS; iteration++) {                            currentGameState = currentGameState.withCardsDeckRecreatedIfNeeded(rng);
+                            builder.add(currentGameState.topCard());
+                            currentGameState = currentGameState.withoutTopCard();
+                            currentGameState = currentGameState.withCardsDeckRecreatedIfNeeded(rng);
                         }
-                    } else {
-                        // est ce que le joueur s'est emparé de la route ici ?? -> ton else doit être un else if pour
-                        // prendre maintenant en charge les autres cas de routes, aka pas des tunnels. Une fois tous les
-                        // cas traités il suffit de call currentGameState.withClaimedRoute(claimedRoute); pour donner
-                        // la route au joueur puis faire un call à update pour informer tout le monde des nouveaux states
+
+                        SortedBag<Card> drawnCards = builder.isEmpty() ? SortedBag.of() : builder.build();
+
+                        int additionalCardsCount = claimedRoute
+                                .additionalClaimCardsCount(initialClaimCards, drawnCards);
+
+                        announce(players, currentPlayerInfo.drewAdditionalCards(drawnCards, additionalCardsCount));
+
+                        if (additionalCardsCount >= 1) {
+                            List<SortedBag<Card>> possibleAdditionalCards =
+                                    currentPlayerState.possibleAdditionalCards(additionalCardsCount,
+                                            initialClaimCards, drawnCards);
+
+                            currentGameState.withMoreDiscardedCards(drawnCards);
+
+                            additionalChosenCards = currentPlayer.chooseAdditionalCards(possibleAdditionalCards);
+
+                            if (additionalChosenCards.isEmpty()) {
+                                announce(players, currentPlayerInfo.didNotClaimRoute(claimedRoute));
+                                break;
+                            }
+                        }
                     }
 
+                    SortedBag<Card> claimCards = initialClaimCards.union(additionalChosenCards);
+
+                    currentPlayerState.withClaimedRoute(claimedRoute, claimCards);
+                    announce(players, currentPlayerInfo.claimedRoute(claimedRoute, claimCards));
+
+                    currentGameState = currentGameState.withClaimedRoute(claimedRoute, claimCards);
                     update(players, currentGameState);
 
                     break;
-
                 case DRAW_TICKETS:
                     announce(players, currentPlayerInfo.drewTickets(Constants.IN_GAME_TICKETS_COUNT));
 
@@ -152,6 +170,8 @@ public final class Game {
                     update(players, currentGameState);
 
                     break;
+                default:
+                    throw new Error("Oh bah non");
             }
 
             // When the last turn begins
@@ -160,6 +180,7 @@ public final class Game {
                 announce(players, currentPlayerInfo.lastTurnBegins(currentPlayerState.carCount()));
             }
 
+            currentGameState = currentGameState.withCardsDeckRecreatedIfNeeded(rng);
             currentGameState = currentGameState.forNextTurn();
         } while (finalTurns < players.size());
 
@@ -195,16 +216,16 @@ public final class Game {
             playerScores.put(k, playerScores.get(k) + Constants.LONGEST_TRAIL_BONUS_POINTS);
         });
 
-        // Filter scores to the highest one
-        Entry<PlayerId, Integer> bestScore = playerScores
+        Stream<Entry<PlayerId, Integer>> playerScoresStream = playerScores
                 .entrySet()
-                .stream()
+                .stream();
+
+        // Filter scores to the highest one
+        Entry<PlayerId, Integer> bestScore = playerScoresStream
                 .max(Comparator.comparingInt(Entry::getValue))
                 .orElseThrow();
 
-        Map<PlayerId, Integer> winningPlayers = playerScores
-                .entrySet()
-                .stream()
+        Map<PlayerId, Integer> winningPlayers = playerScoresStream
                 .filter(entry -> entry.getValue().equals(bestScore.getValue()))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
