@@ -151,7 +151,7 @@ public class GameTest {
 
         @Override
         public int drawSlot() {
-            return this.rng.nextBoolean() ? this.rng.nextInt(5) : Constants.DECK_SLOT;
+            return this.rng.nextBoolean() ? this.rng.nextInt(Constants.FACE_UP_CARDS_COUNT) : Constants.DECK_SLOT;
         }
 
         @Override
