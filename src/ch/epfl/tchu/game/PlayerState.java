@@ -134,7 +134,7 @@ public final class PlayerState extends PublicPlayerState {
         Preconditions.checkArgument(additionalCardsCount >= 1 && additionalCardsCount <= Constants.ADDITIONAL_TUNNEL_CARDS);
         Preconditions.checkArgument(!initialCards.isEmpty());
         Preconditions.checkArgument(initialCards.toSet().size() <= 2);
-        Preconditions.checkArgument(drawnCards.size() == 3);
+        Preconditions.checkArgument(drawnCards.size() == Constants.ADDITIONAL_TUNNEL_CARDS);
 
         final Card[] initialType = {Card.LOCOMOTIVE};
         for (Card card : initialCards) {
