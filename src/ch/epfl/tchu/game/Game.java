@@ -7,7 +7,6 @@ import ch.epfl.tchu.gui.Info;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Partie de tCHu
@@ -16,11 +15,23 @@ import java.util.stream.Stream;
  * @author Julien Jordan (315429)
  */
 public final class Game {
-    private Game() { }
-
     private static final int NUMBER_OF_PLAYERS = PlayerId.COUNT;
 
-    // WIP
+    private Game() {
+    }
+
+    /**
+     * Fait jouer une partie de tCHu aux joueurs donnés, dont les noms figurent dans la table playerNames ; les
+     * billets disponibles pour cette partie sont ceux de tickets, et le générateur aléatoire rng est utilisé pour
+     * créer l'état initial du jeu et pour mélanger les cartes de la défausse pour en faire une nouvelle pioche quand
+     * cela est nécessaire ; lève IllegalArgumentException si l'une des deux tables associatives a une taille
+     * différente de 2
+     *
+     * @param players les joueurs qui vont jouer la partie
+     * @param playerNames les noms des joueurs de <code>players</code>
+     * @param tickets les billets disponibles pour la partie
+     * @param rng le générateur pseudo aléatoire
+     */
     public static void play(
             Map<PlayerId, Player> players,
             Map<PlayerId, String> playerNames,
@@ -121,7 +132,8 @@ public final class Game {
 
                         var builder = new SortedBag.Builder<Card>();
 
-                        for (int iteration = 0; iteration < Constants.ADDITIONAL_TUNNEL_CARDS; iteration++) {                            currentGameState = currentGameState.withCardsDeckRecreatedIfNeeded(rng);
+                        for (int iteration = 0; iteration < Constants.ADDITIONAL_TUNNEL_CARDS; iteration++) {
+                            currentGameState = currentGameState.withCardsDeckRecreatedIfNeeded(rng);
                             builder.add(currentGameState.topCard());
                             currentGameState = currentGameState.withoutTopCard();
                             currentGameState = currentGameState.withCardsDeckRecreatedIfNeeded(rng);

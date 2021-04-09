@@ -19,10 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 public class GameTest {
 
-    /**
-     * Ca lève une erreur parce que les joueurs ne peuvent plus claim de routes et choississent donc de DRAW_CARDS
-     * mais la pioche est vide (le message que je t'ai envoyé sur whatsapp)
-     */
     @Test
     void playWorks() {
         Map<PlayerId, Player> players = new HashMap<>();
@@ -41,8 +37,7 @@ public class GameTest {
     }
 
     /**
-     * Ca lève une erreur parce qu'il n'y a plus de cartes mais le joueur est encore capable de claim une route
-     * (playerState.canClaimRoute retourne true dans TestPlayer.nextTurn lignes 64-65) donc il choisit CLAIM_ROUTES.
+     * Ca lève une erreur parce qu'il n'y a pas assez de routes à prendre, donc les tours passent
      */
     @Test
     void playWorks2() {
