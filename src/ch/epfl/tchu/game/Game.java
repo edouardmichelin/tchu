@@ -141,6 +141,8 @@ public final class Game {
 
                             currentGameState.withMoreDiscardedCards(drawnCards);
 
+                            update(players, currentGameState);
+
                             additionalChosenCards = currentPlayer.chooseAdditionalCards(possibleAdditionalCards);
 
                             if (additionalChosenCards.isEmpty()) {
