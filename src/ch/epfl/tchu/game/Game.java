@@ -27,10 +27,10 @@ public final class Game {
      * cela est nécessaire ; lève IllegalArgumentException si l'une des deux tables associatives a une taille
      * différente de 2
      *
-     * @param players les joueurs qui vont jouer la partie
+     * @param players     les joueurs qui vont jouer la partie
      * @param playerNames les noms des joueurs de <code>players</code>
-     * @param tickets les billets disponibles pour la partie
-     * @param rng le générateur pseudo aléatoire
+     * @param tickets     les billets disponibles pour la partie
+     * @param rng         le générateur pseudo aléatoire
      */
     public static void play(
             Map<PlayerId, Player> players,
@@ -121,7 +121,7 @@ public final class Game {
                         update(players, currentGameState);
                     }
                     break;
-                // yolo
+
                 case CLAIM_ROUTE:
                     Route claimedRoute = currentPlayer.claimedRoute();
                     SortedBag<Card> initialClaimCards = currentPlayer.initialClaimCards();
@@ -155,11 +155,16 @@ public final class Game {
 
                             update(players, currentGameState);
 
-                            additionalChosenCards = currentPlayer.chooseAdditionalCards(possibleAdditionalCards);
-
-                            if (additionalChosenCards.isEmpty()) {
+                            if (possibleAdditionalCards.isEmpty()) {
                                 announce(players, currentPlayerInfo.didNotClaimRoute(claimedRoute));
                                 break;
+                            } else {
+                                additionalChosenCards = currentPlayer.chooseAdditionalCards(possibleAdditionalCards);
+
+                                if (additionalChosenCards.isEmpty()) {
+                                    announce(players, currentPlayerInfo.didNotClaimRoute(claimedRoute));
+                                    break;
+                                }
                             }
                         }
                     }
