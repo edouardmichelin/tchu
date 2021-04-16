@@ -3,7 +3,10 @@ package ch.epfl.tchu.game;
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.TreeMap;
 
 /**
  * Représente l'état d'une partie
@@ -83,12 +86,13 @@ public final class GameState extends PublicGameState {
     }
 
     /**
-     * Retourne les <i>count</i> billets du sommet de la pioche, ou lève IllegalArgumentException si count n'est pas compris
-     * entre 0 et la taille de la pioche (inclus)
+     * Retourne les <i>count</i> billets du sommet de la pioche, ou lève IllegalArgumentException si count n'est pas
+     * compris entre <i>0</i> et la taille de la pioche (inclus)
      *
      * @param count Le nombre de tickets au sommet du tas à retourner.
-     * @return Les <code>count</code> billets du sommet de la pioche, ou lève IllegalArgumentException si count n'est pas
-     * compris entre 0 et la taille de la pioche (inclus)
+     * @return Les <code>count</code> billets du sommet de la pioche
+     * @throws IllegalArgumentException si <code>count</code> n'est pas compris entre <code>0</code> et la taille de
+     *                                  la pioche (inclus)
      */
     public SortedBag<Ticket> topTickets(int count) {
         Preconditions.checkArgument(count >= 0 && count <= this.ticketsCount());
@@ -97,11 +101,12 @@ public final class GameState extends PublicGameState {
 
     /**
      * Retourne un état identique au récepteur, mais sans les count billets du sommet de la pioche, ou lève
-     * IllegalArgumentException si count n'est pas compris entre 0 et la taille de la pioche (inclus)
+     * IllegalArgumentException si <i>count</i> n'est pas compris entre 0 et la taille de la pioche (inclus)
      *
      * @param count Le nombre de billets au sommet du tas à retourner.
-     * @return un état identique au récepteur, mais sans les count billets du sommet de la pioche, ou lève
-     * IllegalArgumentException si count n'est pas compris entre 0 et la taille de la pioche (inclus)
+     * @return un état identique au récepteur, mais sans les <code>count</code> billets du sommet de la pioche
+     * @throws IllegalArgumentException si <code>count</code> n'est pas compris entre <code>0</code> et la taille de
+     *                                  la pioche (inclus)
      */
     public GameState withoutTopTickets(int count) {
         Preconditions.checkArgument(count >= 0 && count <= this.cardState.deckSize());
@@ -110,9 +115,10 @@ public final class GameState extends PublicGameState {
     }
 
     /**
-     * Retourne la carte au sommet de la pioche, ou lève IllegalArgumentException si la pioche est vide
+     * Retourne la carte au sommet de la pioche, ou lève <i>IllegalArgumentException</i> si la pioche est vide
      *
-     * @return la carte au sommet de la pioche, ou lève IllegalArgumentException si la pioche est vide
+     * @return la carte au sommet de la pioche
+     * @throws IllegalArgumentException si la pioche est vide
      */
     public Card topCard() {
         Preconditions.checkArgument(!this.cardState.isDeckEmpty());
@@ -120,11 +126,11 @@ public final class GameState extends PublicGameState {
     }
 
     /**
-     * Retourne un état identique au récepteur mais sans la carte au sommet de la pioche, ou lève
-     * IllegalArgumentException si la pioche est vide
+     * Retourne un état identique au récepteur <i>this</i> mais sans la carte au sommet de la pioche, ou lève
+     * <i>IllegalArgumentException</i> si la pioche est vide
      *
-     * @return un état identique au récepteur mais sans la carte au sommet de la pioche, ou lève
-     * IllegalArgumentException si la pioche est vide
+     * @return un état identique au récepteur <code>this</code> mais sans la carte au sommet de la pioche
+     * @throws IllegalArgumentException si la pioche est vide
      */
     public GameState withoutTopCard() {
         Preconditions.checkArgument(!this.cardState.isDeckEmpty());
@@ -133,10 +139,10 @@ public final class GameState extends PublicGameState {
     }
 
     /**
-     * Retourne un état identique au récepteur mais avec les cartes données ajoutées à la défausse
+     * Retourne un état identique au récepteur <i>this</i> mais avec les cartes données ajoutées à la défausse
      *
      * @param discardedCards les cartes défaussées à ajouter à la pile de défausse
-     * @return un état identique au récepteur mais avec les cartes données ajoutées à la défausse
+     * @return un état identique au récepteur <code>this</code> mais avec les cartes données ajoutées à la défausse
      */
     public GameState withMoreDiscardedCards(SortedBag<Card> discardedCards) {
         return new GameState(this.tickets, this.cardState.withMoreDiscardedCards(discardedCards),
@@ -144,12 +150,12 @@ public final class GameState extends PublicGameState {
     }
 
     /**
-     * Retourne un état identique au récepteur sauf si la pioche de cartes est vide, auquel cas elle est recréée à
-     * partir de la défausse, mélangée au moyen du générateur aléatoire donné
+     * Retourne un état identique au récepteur <i>this</i> sauf si la pioche de cartes est vide, auquel cas elle est
+     * recréée à partir de la défausse, mélangée au moyen du générateur pseudo aléatoire donné
      *
      * @param rng générateur aléatoire à donner pour le mélange des cartes
-     * @return un état identique au récepteur sauf si la pioche de cartes est vide, auquel cas elle est
-     * recréée à partir de la défausse, mélangée au moyen du générateur aléatoire donné
+     * @return un état identique au récepteur <code>this</code> sauf si la pioche de cartes est vide, auquel cas elle
+     * est recréée à partir de la défausse, mélangée au moyen du générateur pseudo aléatoire donné
      */
     public GameState withCardsDeckRecreatedIfNeeded(Random rng) {
         if (this.cardState.isDeckEmpty()) {
@@ -161,12 +167,13 @@ public final class GameState extends PublicGameState {
 
     /**
      * Retourne un état identique au récepteur mais dans lequel les billets donnés ont été ajoutés à la main du
-     * joueur donné; lève IllegalArgumentException si le joueur en question possède déjà au moins un billet
+     * joueur donné; lève <i>IllegalArgumentException</i> si le joueur en question possède déjà au moins un billet
      *
      * @param playerId      l'id du joueur à qui ajouter les tickets
      * @param chosenTickets les tickets à ajouter
      * @return un état identique au récepteur mais dans lequel les billets donnés ont été ajoutés à la main
-     * du joueur donné; lève IllegalArgumentException si le joueur en question possède déjà au moins un billet
+     * du joueur donné
+     * @throws IllegalArgumentException si le joueur en question possède déjà au moins un billet
      */
     public GameState withInitiallyChosenTickets(PlayerId playerId, SortedBag<Ticket> chosenTickets) {
         Preconditions.checkArgument(!(this.playerState.get(playerId).ticketCount() > 0));
@@ -177,14 +184,14 @@ public final class GameState extends PublicGameState {
 
     /**
      * Retourne un état identique au récepteur, mais dans lequel le joueur courant a tiré les billets drawnTickets du
-     * sommet de la pioche, et choisi de garder ceux contenus dans chosenTicket ; lève IllegalArgumentException si
+     * sommet de la pioche, et choisi de garder ceux contenus dans chosenTicket ; lève <i>IllegalArgumentException</i> si
      * l'ensemble des billets gardés n'est pas inclus dans celui des billets tirés
      *
      * @param drawnTickets  les tickets tirés
      * @param chosenTickets les tickets choisis par le joueur parmis ceux tirés
      * @return un état identique au récepteur, mais dans lequel le joueur courant a tiré les billets
-     * drawnTickets du sommet de la pioche, et choisi de garder ceux contenus dans chosenTicket ; lève
-     * IllegalArgumentException si l'ensemble des billets gardés n'est pas inclus dans celui des billets tirés
+     * drawnTickets du sommet de la pioche, et choisi de garder ceux contenus dans chosenTicket
+     * @throws IllegalArgumentException si l'ensemble des billets gardés n'est pas inclus dans celui des billets tirés
      */
     public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) {
         Preconditions.checkArgument(drawnTickets.contains(chosenTickets));
@@ -201,12 +208,12 @@ public final class GameState extends PublicGameState {
     /**
      * Retourne un état identique au récepteur si ce n'est que la carte face retournée à l'emplacement donné a été
      * placée dans la main du joueur courant, et remplacée par celle au sommet de la pioche; lève
-     * IllegalArgumentException s'il n'est pas possible de tirer des cartes
+     * <i>IllegalArgumentException</i> s'il n'est pas possible de tirer des cartes
      *
      * @param slot emplacement de la carte retournée piochée par le joueur
      * @return un état identique au récepteur si ce n'est que la carte face retournée à l'emplacement donné
-     * a été placée dans la main du joueur courant, et remplacée par celle au sommet de la pioche; lève
-     * IllegalArgumentException s'il n'est pas possible de tirer des cartes
+     * a été placée dans la main du joueur courant, et remplacée par celle au sommet de la pioche
+     * @throws IllegalArgumentException s'il n'est pas possible de tirer des cartes
      */
     public GameState withDrawnFaceUpCard(int slot) {
         Preconditions.checkArgument(this.canDrawCards());
@@ -224,10 +231,11 @@ public final class GameState extends PublicGameState {
 
     /**
      * Retourne un état identique au récepteur si ce n'est que la carte du sommet de la pioche a été placée dans la
-     * main du joueur courant; lève IllegalArgumentException s'il n'est pas possible de tirer des cartes
+     * main du joueur courant; lève <i>IllegalArgumentException</i> s'il n'est pas possible de tirer des cartes
      *
      * @return un état identique au récepteur si ce n'est que la carte du sommet de la pioche a été placée
-     * dans la main du joueur courant; lève IllegalArgumentException s'il n'est pas possible de tirer des cartes
+     * dans la main du joueur courant
+     * @throws IllegalArgumentException s'il n'est pas possible de tirer des cartes
      */
     public GameState withBlindlyDrawnCard() {
         Preconditions.checkArgument(this.canDrawCards());
