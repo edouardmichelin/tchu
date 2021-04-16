@@ -21,16 +21,18 @@ public final class Game {
     }
 
     /**
-     * Fait jouer une partie de tCHu aux joueurs donnés, dont les noms figurent dans la table playerNames ; les
-     * billets disponibles pour cette partie sont ceux de tickets, et le générateur aléatoire rng est utilisé pour
-     * créer l'état initial du jeu et pour mélanger les cartes de la défausse pour en faire une nouvelle pioche quand
-     * cela est nécessaire ; lève IllegalArgumentException si l'une des deux tables associatives a une taille
-     * différente de 2
+     * Fait jouer une partie de tCHu aux joueurs donnés, dont les noms figurent dans la table <i>playerNames</i> ; les
+     * billets disponibles pour cette partie sont ceux de <i>tickets</i>, et le générateur pseudo aléatoire
+     * <i>rng</i> est utilisé pour créer l'état initial du jeu et pour mélanger les cartes de la défausse pour en
+     * faire une nouvelle pioche quand cela est nécessaire ; lève <i>IllegalArgumentException</i> si l'une des deux
+     * tables associatives
+     * a une taille différente de <i>2</i>
      *
      * @param players     les joueurs qui vont jouer la partie
      * @param playerNames les noms des joueurs de <code>players</code>
      * @param tickets     les billets disponibles pour la partie
      * @param rng         le générateur pseudo aléatoire
+     * @throws IllegalArgumentException si l'une des deux tables associatives a une taille différente de <code>2</code>
      */
     public static void play(
             Map<PlayerId, Player> players,
