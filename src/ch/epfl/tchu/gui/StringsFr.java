@@ -1,5 +1,10 @@
 package ch.epfl.tchu.gui;
 
+/**
+ * Contient la totalité des chaînes de caractères utilisées dans le jeu, rédigées en français
+ *
+ * @author Michel Schinz & cie.
+ */
 public final class StringsFr {
     private StringsFr() {}
 

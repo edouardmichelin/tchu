@@ -5,14 +5,19 @@
 
 package ch.epfl.tchu.game;
 
-
+/**
+ *
+ *
+ * @author Edouard Michelin (314770)
+ * @author Julien Jordan (315429)
+ */
 public interface StationConnectivity {
     /**
-     * Retourne vrai si les deux stations spécifiée sont connectées
+     * Retourne vrai ssi les deux stations spécifiées en argument sont connectées
      *
      * @param s1 première station
      * @param s2 seconde station
-     * @return vrai si les stations sont connectées
+     * @return <code>true</code> ssi les stations sont connectées
      */
     boolean connected(Station s1, Station s2);
 

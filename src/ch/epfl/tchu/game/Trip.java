@@ -12,11 +12,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Représente un trajet
+ *
+ * @author Edouard Michelin (314770)
+ * @author Julien Jordan (315429)
+ */
 public final class Trip {
     private final Station from;
     private final Station to;
     private final int points;
 
+    /**
+     * Construit un nouveau trajet entre les deux gares données et valant le nombre de points donné, ou lève
+     * NullPointerException si l'une des deux gares est nulle et IllegalArgumentException si le nombre de points
+     * n'est pas strictement positif (> 0)
+     *
+     * @param from gare de départ
+     * @param to gare d'arrivée
+     * @param points points attribubés au trajet
+     */
     public Trip(Station from, Station to, int points) {
         Preconditions.checkArgument(points > 0);
 

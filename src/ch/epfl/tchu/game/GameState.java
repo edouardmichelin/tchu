@@ -6,7 +6,7 @@ import ch.epfl.tchu.SortedBag;
 import java.util.*;
 
 /**
- * L'état d'une partie
+ * Représente l'état d'une partie
  *
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
@@ -47,8 +47,7 @@ public final class GameState extends PublicGameState {
     public static GameState initial(SortedBag<Ticket> tickets, Random rng) {
         Deck<Ticket> ticketsDeck = Deck.of(tickets, rng);
 
-        List<Deck<Card>> cardsDeck = new ArrayList<>();
-        cardsDeck.add(Deck.of(Constants.ALL_CARDS, rng));
+        Deck<Card> cardsDeck = Deck.of(Constants.ALL_CARDS, rng);
 
         List<PlayerId> playerIds = PlayerId.ALL;
 
@@ -56,13 +55,12 @@ public final class GameState extends PublicGameState {
 
         Map<PlayerId, PlayerState> playerState = new TreeMap<>();
 
-        playerIds.forEach(playerId -> {
-            playerState.put(playerId, PlayerState.initial(cardsDeck.get(0).topCards(Constants.INITIAL_CARDS_COUNT)));
-            cardsDeck.set(0, cardsDeck.get(0).withoutTopCards(Constants.INITIAL_CARDS_COUNT));
-        });
+        for (PlayerId playerId : playerIds) {
+            playerState.put(playerId, PlayerState.initial(cardsDeck.topCards(Constants.INITIAL_CARDS_COUNT)));
+            cardsDeck = cardsDeck.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
+        }
 
-
-        return new GameState(ticketsDeck, CardState.of(cardsDeck.get(0)), firstPlayerToPlay, playerState, null);
+        return new GameState(ticketsDeck, CardState.of(cardsDeck), firstPlayerToPlay, playerState, null);
     }
 
     /**
@@ -85,11 +83,11 @@ public final class GameState extends PublicGameState {
     }
 
     /**
-     * Retourne les count billets du sommet de la pioche, ou lève IllegalArgumentException si count n'est pas compris
+     * Retourne les <i>count</i> billets du sommet de la pioche, ou lève IllegalArgumentException si count n'est pas compris
      * entre 0 et la taille de la pioche (inclus)
      *
      * @param count Le nombre de tickets au sommet du tas à retourner.
-     * @return Les count billets du sommet de la pioche, ou lève IllegalArgumentException si count n'est pas
+     * @return Les <code>count</code> billets du sommet de la pioche, ou lève IllegalArgumentException si count n'est pas
      * compris entre 0 et la taille de la pioche (inclus)
      */
     public SortedBag<Ticket> topTickets(int count) {

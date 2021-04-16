@@ -114,7 +114,7 @@ public interface Player {
         /**
          * Retourne la liste de tous les TurnKind
          *
-         * @return la liste de tous les TurnKind
+         * @return la liste de tous les <code>TurnKind</code>
          */
         public static List<TurnKind> all() {
             return List.of(TurnKind.values());

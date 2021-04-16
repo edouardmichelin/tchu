@@ -5,17 +5,34 @@ import ch.epfl.tchu.game.Route.Level;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Listes des stations, des routes et des tickets disponibles en jeu
+ *
+ * @author Michel Schinz & cie.
+ */
 public final class ChMap {
     private ChMap() { }
 
+    /**
+     * Retourne la liste de toutes les gares de tCHu
+     * @return la liste de toutes les gares de tCHu
+     */
     public static List<Station> stations() {
         return ALL_STATIONS;
     }
 
+    /**
+     * Retourne la liste de toutes les routes de tCHu
+     * @return la liste de toutes les routes de tCHu
+     */
     public static List<Route> routes() {
         return ALL_ROUTES;
     }
 
+    /**
+     * Retourne la liste de tous les billets de tCHu
+     * @return la liste de tous les billets de tCHu
+     */
     public static List<Ticket> tickets() {
         return ALL_TICKETS;
     }

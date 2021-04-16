@@ -40,6 +40,7 @@ public final class Game {
     ) {
         Preconditions.checkArgument(players.size() == NUMBER_OF_PLAYERS && playerNames.size() == NUMBER_OF_PLAYERS);
 
+        // region init
         // Initialize the state of the game (playerstates are being created already there too)
         GameState currentGameState = GameState.initial(tickets, rng);
         update(players, currentGameState);
@@ -76,19 +77,16 @@ public final class Game {
         final GameState tmpGameState = currentGameState;
         playerInfos.forEach((k, v) -> announce(players, v.keptTickets(tmpGameState.playerState(k).ticketCount())));
 
-        //Game loop including final turns WIP
+        // endregion
+
+        // region flow
         PlayerId currentPlayerId;
         Info currentPlayerInfo;
         Player currentPlayer;
         PlayerState currentPlayerState;
 
-        int finalTurns = 0;
+        int finalTurnsAmount = 0;
         boolean hasLastTurnBegun = false;
-        Card tmpCard;
-        int tmpInt;
-        SortedBag<Card> tempCards;
-        SortedBag<Ticket> tmpTicketChoice;
-        SortedBag<Ticket> tmpChosenTickets;
 
         do {
             currentPlayerId = currentGameState.currentPlayerId();
@@ -97,7 +95,7 @@ public final class Game {
             currentPlayerState = currentGameState.playerState(currentPlayerId);
 
             if (hasLastTurnBegun)
-                finalTurns++;
+                finalTurnsAmount++;
 
             update(players, currentGameState);
             announce(players, currentPlayerInfo.canPlay());
@@ -106,14 +104,14 @@ public final class Game {
             switch (currentPlayer.nextTurn()) {
                 case DRAW_CARDS:
                     for (int i = 0; i < 2; i++) {
-                        tmpInt = currentPlayer.drawSlot();
+                        int slotDrawn = currentPlayer.drawSlot();
                         currentGameState = currentGameState.withCardsDeckRecreatedIfNeeded(rng);
 
-                        if (Constants.FACE_UP_CARD_SLOTS.contains(tmpInt)) {
-                            tmpCard = currentGameState.cardState().faceUpCard(tmpInt);
-                            currentGameState = currentGameState.withDrawnFaceUpCard(tmpInt);
-                            announce(players, currentPlayerInfo.drewVisibleCard(tmpCard));
-                        } else if (tmpInt == Constants.DECK_SLOT) {
+                        if (Constants.FACE_UP_CARD_SLOTS.contains(slotDrawn)) {
+                            Card card = currentGameState.cardState().faceUpCard(slotDrawn);
+                            currentGameState = currentGameState.withDrawnFaceUpCard(slotDrawn);
+                            announce(players, currentPlayerInfo.drewVisibleCard(card));
+                        } else if (slotDrawn == Constants.DECK_SLOT) {
                             currentGameState = currentGameState.withBlindlyDrawnCard();
                             announce(players, currentPlayerInfo.drewBlindCard());
                         }
@@ -180,11 +178,11 @@ public final class Game {
                 case DRAW_TICKETS:
                     announce(players, currentPlayerInfo.drewTickets(Constants.IN_GAME_TICKETS_COUNT));
 
-                    tmpTicketChoice = currentGameState.topTickets(Constants.IN_GAME_TICKETS_COUNT);
-                    tmpChosenTickets = currentPlayer.chooseTickets(tmpTicketChoice);
+                    SortedBag<Ticket> ticketChoice = currentGameState.topTickets(Constants.IN_GAME_TICKETS_COUNT);
+                    SortedBag<Ticket> chosenTickets = currentPlayer.chooseTickets(ticketChoice);
 
-                    currentGameState = currentGameState.withChosenAdditionalTickets(tmpTicketChoice, tmpChosenTickets);
-                    announce(players, currentPlayerInfo.keptTickets(tmpChosenTickets.size()));
+                    currentGameState = currentGameState.withChosenAdditionalTickets(ticketChoice, chosenTickets);
+                    announce(players, currentPlayerInfo.keptTickets(chosenTickets.size()));
                     update(players, currentGameState);
 
                     break;
@@ -200,9 +198,12 @@ public final class Game {
 
             currentGameState = currentGameState.withCardsDeckRecreatedIfNeeded(rng);
             currentGameState = currentGameState.forNextTurn();
-        } while (finalTurns < players.size());
+        } while (finalTurnsAmount < players.size());
 
-        // Game over and scoring under here
+        // endregion
+
+        // region ending
+
         final GameState gameOverState = currentGameState;
         update(players, gameOverState);
 
@@ -272,6 +273,7 @@ public final class Game {
 
             announce(players, playerInfos.get(bestScore.getKey()).won(winnerPoints, loserPoints));
         }
+        // endregion
     }
 
     private static void announce(Map<PlayerId, Player> players, String message) {

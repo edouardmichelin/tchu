@@ -39,7 +39,7 @@ public final class Deck<C extends Comparable<C>> {
     /**
      * Retourne vrai ssi le tas est vide
      *
-     * @return vrai ssi le tas est vide
+     * @return <code>true</code> ssi le tas est vide
      */
     public boolean isEmpty() {
         return cards.isEmpty();

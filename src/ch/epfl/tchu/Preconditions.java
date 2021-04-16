@@ -6,6 +6,12 @@
  */
 package ch.epfl.tchu;
 
+/**
+ * Les pré-conditions
+ *
+ * @author Edouard Michelin (314770)
+ * @author Julien Jordan (315429)
+ */
 public final class Preconditions {
     private Preconditions() {}
 
