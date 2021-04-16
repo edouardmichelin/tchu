@@ -33,6 +33,9 @@ public class PublicGameState {
      * @param currentPlayerId l'ID du joueur courrant
      * @param playerState     l'état du joueur
      * @param lastPlayer      le dernier joueur
+     * @throws IllegalArgumentException si la taille de la pioche est strictement négative
+     * @throws IllegalArgumentException si playerState ne contient pas exactement deux paires clef/valeur
+     * @throws NullPointerException si l'un des autres arguments (lastPlayer excepté !) est nul
      */
     public PublicGameState(
             int ticketsCount,

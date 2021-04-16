@@ -31,7 +31,11 @@ public final class Route {
     private final Color color;
 
     /**
-     * Construit une route
+     * Construit une route avec l'identité, les gares, la longueur, le niveau et la couleur donnés ; lève
+     * IllegalArgumentException si les deux gares sont égales (au sens de la méthode equals) ou si la longueur n'est
+     * pas comprise dans les limites acceptables (fournies par l'interface Constants), ou NullPointerException si
+     * l'identité, l'une des deux gares ou le niveau sont nuls. Notez bien que la couleur peut par contre être nulle,
+     * ce qui signifie que la route est de couleur neutre.
      *
      * @param id       identifiant unique de la route
      * @param station1 station de départ de la route
@@ -39,6 +43,8 @@ public final class Route {
      * @param length   taille de la route
      * @param level    niveau sur lequel se situe la route (route ou tunnel)
      * @param color    couleur de la route
+     * @throws IllegalArgumentException si les deux gares sont égales (au sens de la méthode equals)
+     * @throws NullPointerException     si l'identité, l'une des deux gares ou le niveau sont nuls
      */
     public Route(String id, Station station1, Station station2, int length, Level level, Color color) {
         Preconditions.checkArgument(station1.id() != station2.id());
@@ -83,7 +89,7 @@ public final class Route {
     /**
      * Retourne la taille de la route
      *
-     * @return
+     * @return la taille de la route
      */
     public int length() {
         return this.length;
@@ -117,10 +123,12 @@ public final class Route {
     }
 
     /**
-     * Retourne la station opposée à la station de référence passée en paramètre
+     * Retourne la gare de la route qui n'est pas celle donnée, ou lève IllegalArgumentException si la gare donnée
+     * n'est ni la première ni la seconde gare de la route
      *
      * @param station station de référence
-     * @return la station opposée à la station de référence passée en paramètre
+     * @return la gare de la route qui n'est pas celle donnée
+     * @throws IllegalArgumentException si la gare donnée n'est ni la première ni la seconde gare de la route
      */
     public Station stationOpposite(Station station) {
         Preconditions.checkArgument(station.equals(this.station1) || station.equals(this.station2));
@@ -143,11 +151,18 @@ public final class Route {
     }
 
     /**
-     * Retourne le nombre de carte supplémentaire à payer pour construire le tunnel
+     * Retourne le nombre de cartes additionnelles à jouer pour s'emparer de la route (en tunnel), sachant que le
+     * joueur a initialement posé les cartes claimCards et que les trois cartes tirées du sommet de la pioche sont
+     * drawnCards ; lève l'exception IllegalArgumentException si la route à laquelle on l'applique n'est pas un
+     * tunnel, ou si drawnCards ne contient pas exactement 3 cartes
      *
      * @param claimCards main du joueur pour construire le tunnel
      * @param drawnCards pioche de la pile
-     * @return le nombre de carte supplémentaire à payer pour construire le tunnel
+     * @return le nombre de cartes additionnelles à jouer pour s'emparer de la route (en tunnel), sachant que le
+     * joueur a initialement posé les cartes claimCards et que les trois cartes tirées du sommet de la pioche sont
+     * drawnCards
+     * @throws IllegalArgumentException si la route à laquelle on l'applique n'est pas un tunnel
+     * @throws IllegalArgumentException si drawnCards ne contient pas exactement 3 cartes
      */
     public int additionalClaimCardsCount(SortedBag<Card> claimCards, SortedBag<Card> drawnCards) {
         Preconditions.checkArgument(this.level.equals(Level.UNDERGROUND));
