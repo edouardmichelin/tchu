@@ -53,7 +53,8 @@ public class PublicCardState {
      * compris entre 0 (inclus) et 5 (exclus)
      *
      * @param slot l'identifiant de l'emplacement de la carte parmis les cartes retournées
-     * @return
+     * @return la carte face visible à l'index donné
+     * @throws IndexOutOfBoundsException si cet index n'est pas compris entre 0 (inclus) et 5 (exclus)
      */
     public Card faceUpCard(int slot) {
         return this.faceUpCards.get(Objects.checkIndex(slot, Constants.FACE_UP_CARDS_COUNT));

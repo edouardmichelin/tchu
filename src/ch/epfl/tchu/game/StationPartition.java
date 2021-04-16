@@ -53,6 +53,7 @@ public final class StationPartition implements StationConnectivity {
          * et stationCount (exclus), ou lève IllegalArgumentException si stationCount est strictement négatif (< 0)
          *
          * @param stationCount le nombre de stations
+         * @throws IllegalArgumentException si stationCount est strictement négatif (< 0)
          */
         public Builder(int stationCount) {
             Preconditions.checkArgument(stationCount >= 0);

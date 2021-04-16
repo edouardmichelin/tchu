@@ -26,6 +26,8 @@ public final class Ticket implements Comparable<Ticket> {
      * vide, ou si toutes les gares de départ des trajets n'ont pas le même nom
      *
      * @param trips liste de trajets
+     * @throws IllegalArgumentException si celle-ci est vide
+     * @throws IllegalArgumentException ou si toutes les gares de départ des trajets n'ont pas le même nom
      */
     public Ticket(List<Trip> trips) {
         Preconditions.checkArgument(!trips.isEmpty());
