@@ -6,8 +6,6 @@ import ch.epfl.tchu.SortedBag;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Représente l'état complet des cartes wagon/locomotive qui ne sont pas en main des joueurs
@@ -20,8 +18,13 @@ public final class CardState extends PublicCardState {
     private final Deck<Card> deck;
     private final SortedBag<Card> discards;
 
-    private CardState(List<Card> faceUpCards, Deck<Card> deck, SortedBag<Card> discarded, int deckSize,
-                      int discardsSize) {
+    private CardState(
+            List<Card> faceUpCards,
+            Deck<Card> deck,
+            SortedBag<Card> discarded,
+            int deckSize,
+            int discardsSize
+    ) {
         super(faceUpCards, deckSize, discardsSize);
         this.deck = deck;
         this.discards = discarded;

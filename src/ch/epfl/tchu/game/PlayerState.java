@@ -6,9 +6,7 @@ import ch.epfl.tchu.SortedBag;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * L'état complet d'un joueur
@@ -20,7 +18,6 @@ public final class PlayerState extends PublicPlayerState {
 
     private final SortedBag<Ticket> tickets;
     private final SortedBag<Card> cards;
-
 
     public PlayerState(SortedBag<Ticket> tickets, SortedBag<Card> cards, List<Route> routes) {
         super(tickets.size(), cards.size(), routes);
@@ -129,8 +126,11 @@ public final class PlayerState extends PublicPlayerState {
      * @return la liste de tous les ensembles de cartes que le joueur pourrait utiliser pour s'emparer d'un
      * tunnel, trié par ordre croissant du nombre de cartes locomotives,
      */
-    public List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards,
-                                                         SortedBag<Card> drawnCards) {
+    public List<SortedBag<Card>> possibleAdditionalCards(
+            int additionalCardsCount,
+            SortedBag<Card> initialCards,
+            SortedBag<Card> drawnCards
+    ) {
         Preconditions.checkArgument(additionalCardsCount >= 1 && additionalCardsCount <= Constants.ADDITIONAL_TUNNEL_CARDS);
         Preconditions.checkArgument(!initialCards.isEmpty());
         Preconditions.checkArgument(initialCards.toSet().size() <= 2);

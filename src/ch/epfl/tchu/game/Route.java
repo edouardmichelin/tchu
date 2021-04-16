@@ -15,6 +15,9 @@ import java.util.stream.Collectors;
  * @author Julien Jordan (315429)
  */
 public final class Route {
+    /**
+     * Représente les deux niveaux auxquels une route peut se trouver
+     */
     public enum Level {
         OVERGROUND,
         UNDERGROUND
@@ -177,8 +180,8 @@ public final class Route {
     private static List<SortedBag<Card>> possibleClaimCardsForUndergroundRoute(int length, Color color) {
         List<SortedBag<Card>> result = new ArrayList<>();
         if (color == null) {
-            for (int locAmount = 0; locAmount < length; locAmount++)
-                result.addAll(Route.possibleClaimCardsForNeutralRoute(length, locAmount));
+            for (int locomotiveAmount = 0; locomotiveAmount < length; locomotiveAmount++)
+                result.addAll(Route.possibleClaimCardsForNeutralRoute(length, locomotiveAmount));
         } else {
             for (int locAmount = 0; locAmount < length; locAmount++)
                 result.add((new SortedBag.Builder<Card>())

@@ -39,7 +39,7 @@ public enum Card {
     public final static int COUNT = ALL.size();
 
     /**
-     * Liste uniquement les cartes wagons (qui ont des couleurs)
+     * Liste uniquement les cartes wagons (celles qui ont des couleurs)
      */
     public final static List<Card> CARS = Arrays
             .stream(Card.values())
@@ -50,7 +50,7 @@ public enum Card {
      * Retourne le type de carte correspondant à une couleur donnée
      *
      * @param color la couleur de la carte
-     * @return le type de carte correspondant à la couleur ou null si
+     * @return le type de carte correspondant à la couleur ou <code>null</code> si
      * aucune carte n'est trouvée pour la couleur donnée.
      */
     public static Card of(Color color) {
