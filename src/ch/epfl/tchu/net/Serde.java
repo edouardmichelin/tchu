@@ -21,20 +21,25 @@ public interface Serde<T> {
      * correspondant
      *
      * @param serializer  la fonction de sérialisation
-     * @param deserialize la fonction de dé-sérialisation
+     * @param deserializer la fonction de dé-sérialisation
      * @param <E>         le type à (dé-)sérialiser
      * @return un <code>Serde</code> capable de (dé-)sérialiser le type <code>E</code> passé en argument
      */
-    static <E> Serde<E> of(Function<E, String> serializer, Function<String, E> deserialize) {
+    static <E> Serde<E> of(Function<E, String> serializer, Function<String, E> deserializer) {
         return new Serde<>() {
             @Override
             public String serialize(E object) {
+                if (object instanceof String && ((String) object).length() == 0) return "";
+                if (object == null) return "";
+
                 return serializer.apply(object);
             }
 
             @Override
             public E deserialize(String str) {
-                return deserialize.apply(str);
+                if (str.length() == 0) return null;
+
+                return deserializer.apply(str);
             }
         };
     }
@@ -60,15 +65,19 @@ public interface Serde<T> {
      * @param <E>       le type à (dé-)sérialiser
      * @return le <code>Serde</code> correspondant
      */
-    static <E extends Comparable<E>> Serde<List<E>> listOf(Serde<E> serde, CharSequence separator) {
+    static <E> Serde<List<E>> listOf(Serde<E> serde, CharSequence separator) {
         return new Serde<>() {
             @Override
             public String serialize(List<E> object) {
+                if (object.isEmpty()) return "";
+
                 return object.stream().map(serde::serialize).collect(Collectors.joining(separator));
             }
 
             @Override
             public List<E> deserialize(String str) {
+                if (str.length() == 0) return List.of();
+
                 return Arrays.stream(str.split(Pattern.quote(separator.toString()), -1)).map(serde::deserialize).collect(Collectors.toList());
             }
         };
@@ -88,11 +97,15 @@ public interface Serde<T> {
         return new Serde<>() {
             @Override
             public String serialize(SortedBag<E> object) {
+                if (object.isEmpty()) return "";
+
                 return object.stream().map(serde::serialize).collect(Collectors.joining(separator));
             }
 
             @Override
             public SortedBag<E> deserialize(String str) {
+                if (str.length() == 0) return SortedBag.of();
+
                 return SortedBag.of(Arrays.stream(str.split(Pattern.quote(separator.toString()), -1)).map(serde::deserialize).collect(Collectors.toList()));
             }
         };
