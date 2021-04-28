@@ -20,9 +20,9 @@ public interface Serde<T> {
      * Prend en arguments une fonction de sérialisation et une fonction de désérialisation, et retourne le serde
      * correspondant
      *
-     * @param serializer  la fonction de sérialisation
+     * @param serializer   la fonction de sérialisation
      * @param deserializer la fonction de dé-sérialisation
-     * @param <E>         le type à (dé-)sérialiser
+     * @param <E>          le type à (dé-)sérialiser
      * @return un <code>Serde</code> capable de (dé-)sérialiser le type <code>E</code> passé en argument
      */
     static <E> Serde<E> of(Function<E, String> serializer, Function<String, E> deserializer) {
@@ -78,7 +78,9 @@ public interface Serde<T> {
             public List<E> deserialize(String str) {
                 if (str.length() == 0) return List.of();
 
-                return Arrays.stream(str.split(Pattern.quote(separator.toString()), -1)).map(serde::deserialize).collect(Collectors.toList());
+                return Arrays
+                        .stream(str.split(Pattern.quote(separator.toString()), -1))
+                        .map(serde::deserialize).collect(Collectors.toList());
             }
         };
     }
@@ -106,7 +108,11 @@ public interface Serde<T> {
             public SortedBag<E> deserialize(String str) {
                 if (str.length() == 0) return SortedBag.of();
 
-                return SortedBag.of(Arrays.stream(str.split(Pattern.quote(separator.toString()), -1)).map(serde::deserialize).collect(Collectors.toList()));
+                return SortedBag.of(Arrays
+                        .stream(str.split(Pattern.quote(separator.toString()), -1))
+                        .map(serde::deserialize)
+                        .collect(Collectors.toList())
+                );
             }
         };
     }

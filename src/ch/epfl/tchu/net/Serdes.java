@@ -169,9 +169,10 @@ public final class Serdes {
                         INT.deserialize(params[0]),
                         PUBLICCARDSTATE.deserialize(params[1]),
                         PLAYERID.deserialize(params[2]),
-                        ALL_PLAYERID.stream().map(id -> new AbstractMap.SimpleEntry<>(id,
-                                playerStates.get(id.ordinal()))).collect(Collectors.toMap(Map.Entry::getKey,
-                                Map.Entry::getValue)),
+                        ALL_PLAYERID
+                                .stream()
+                                .map(id -> new AbstractMap.SimpleEntry<>(id, playerStates.get(id.ordinal())))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
                         PLAYERID.deserialize(params[4])
                 );
             }
