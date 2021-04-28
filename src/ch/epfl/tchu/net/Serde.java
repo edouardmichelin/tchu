@@ -1,7 +1,10 @@
 package ch.epfl.tchu.net;
 
+import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
+import ch.epfl.tchu.game.Color;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -53,7 +56,11 @@ public interface Serde<T> {
      * @return le <code>Serde</code> correspondant
      */
     static <E> Serde<E> oneOf(List<E> list) {
-        return null;
+        Preconditions.checkArgument(!list.isEmpty());
+        return of(
+                object -> Integer.toString(list.indexOf(object)),
+                str -> list.get(Integer.parseInt(str))
+        );
     }
 
     /**

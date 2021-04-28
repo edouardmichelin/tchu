@@ -33,30 +33,15 @@ public final class Serdes {
             b64 -> new String(BASE64_DECODER.decode(b64), StandardCharsets.UTF_8)
     );
 
-    public final static Serde<PlayerId> PLAYERID = Serde.of(
-            playerId -> Integer.toString(playerId.ordinal()),
-            str -> ALL_PLAYERID.get(Integer.parseInt(str))
-    );
+    public final static Serde<PlayerId> PLAYERID = Serde.oneOf(ALL_PLAYERID);
 
-    public final static Serde<Player.TurnKind> TURNKIND = Serde.of(
-            turnKind -> Integer.toString(turnKind.ordinal()),
-            str -> ALL_TURNKIND.get(Integer.parseInt(str))
-    );
+    public final static Serde<Player.TurnKind> TURNKIND = Serde.oneOf(ALL_TURNKIND);
 
-    public final static Serde<Card> CARD = Serde.of(
-            card -> Integer.toString(card.ordinal()),
-            str -> ALL_CARD.get(Integer.parseInt(str))
-    );
+    public final static Serde<Card> CARD = Serde.oneOf(ALL_CARD);
 
-    public final static Serde<Route> ROUTE = Serde.of(
-            route -> Integer.toString(ALL_ROUTE.indexOf(route)),
-            str -> ALL_ROUTE.get(Integer.parseInt(str))
-    );
+    public final static Serde<Route> ROUTE = Serde.oneOf(ALL_ROUTE);
 
-    public final static Serde<Ticket> TICKET = Serde.of(
-            ticket -> Integer.toString(ALL_TICKET.indexOf(ticket)),
-            str -> ALL_TICKET.get(Integer.parseInt(str))
-    );
+    public final static Serde<Ticket> TICKET = Serde.oneOf(ALL_TICKET);
 
     public final static Serde<List<String>> LIST_STRING = Serde.listOf(STRING, ",");
     public final static Serde<List<Card>> LIST_CARD = Serde.listOf(CARD, ",");
