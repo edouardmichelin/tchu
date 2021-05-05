@@ -147,7 +147,7 @@ public class RemotePlayerClient {
                 throw new UncheckedIOException(e);
             }
         }
-    }g
+    }
 
 
     private static class MessageContent {
