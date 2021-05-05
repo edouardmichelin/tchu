@@ -48,6 +48,7 @@ public class RemotePlayerClient {
                         new BufferedWriter(
                                 new OutputStreamWriter(socket.getOutputStream(),
                                         US_ASCII))) {
+            this.socket = socket;
             this.reader = reader;
             this.writer = writer;
         } catch (IOException e) {
