@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
- * Title
+ * Classe d'outils pour le package <i>ch.epfl.tchu.net</i>
  *
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
