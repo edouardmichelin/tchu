@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Chemin
+ * Représente un chemin
  *
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
@@ -25,33 +25,6 @@ public final class Trail {
 
     private Trail(List<Route> routes) {
         this(routes, routes == null ? 0 : routes.stream().mapToInt(Route::length).sum());
-    }
-
-    /**
-     * Retourne la première station du chemin
-     *
-     * @return la première station du chemin si la longueur est plus grande que 0, null sinon
-     */
-    public Station station1() {
-        return this.length > 0 ? this.routes.get(0).station1() : null;
-    }
-
-    /**
-     * Retourne la dernière station du chemin
-     *
-     * @return la dernière station du chemin si la longueur est plus grande que 0, null sinon
-     */
-    public Station station2() {
-        return this.length > 0 ? this.routes.get(this.routes.size() - 1).station2() : null;
-    }
-
-    /**
-     * Retourne la longueur totale des routes du chemin
-     *
-     * @return la longueur totale des routes du chemin
-     */
-    public int length() {
-        return this.length;
     }
 
     /**
@@ -100,33 +73,6 @@ public final class Trail {
         return currentLongestTrail;
     }
 
-    /**
-     * Retourne le nom des stations se trouvant le long du chemin, ainsi que la longueur totale du chemin
-     *
-     * @return le nom des stations se trouvant le long du chemin, ainsi que la longueur totale du chemin
-     */
-    @Override
-    public String toString() {
-        if (this.length <= 0) return "";
-
-        var sj = new StringJoiner(
-                StringsFr.EN_DASH_SEPARATOR,
-                this.station1() + StringsFr.EN_DASH_SEPARATOR,
-                String.format(" (%d)", this.length)
-        );
-
-        this.routes.forEach(route -> sj.add(route.station2().name()));
-
-        return sj.toString();
-    }
-
-    private Trail copyAndExtend(Route route) {
-        List<Route> newRoutes = new ArrayList<>(this.routes);
-        newRoutes.add(route);
-
-        return new Trail(newRoutes, this.length + route.length());
-    }
-
     private static Route reverseRoute(Route route) {
         return new Route(
                 route.id(),
@@ -165,5 +111,61 @@ public final class Trail {
 
     private static String getRouteKey(Route route) {
         return route.id();
+    }
+
+    /**
+     * Retourne la première station du chemin
+     *
+     * @return la première station du chemin ssi la longueur est plus grande que 0, <code>null</code> sinon
+     */
+    public Station station1() {
+        return this.length > 0 ? this.routes.get(0).station1() : null;
+    }
+
+    /**
+     * Retourne la dernière station du chemin
+     *
+     * @return la dernière station du chemin ssi la longueur est plus grande que 0, <code>null</code> sinon
+     */
+    public Station station2() {
+        return this.length > 0 ? this.routes.get(this.routes.size() - 1).station2() : null;
+    }
+
+    /**
+     * Retourne la longueur totale des routes du chemin
+     *
+     * @return la longueur totale des routes du chemin
+     */
+    public int length() {
+        return this.length;
+    }
+
+    /**
+     * Retourne le nom des stations se trouvant le long du chemin, ainsi que la longueur totale du chemin, le tout
+     * formatté avec style
+     *
+     * @return le nom des stations se trouvant le long du chemin, ainsi que la longueur totale du chemin, le tout
+     * formatté avec style
+     */
+    @Override
+    public String toString() {
+        if (this.length <= 0) return "";
+
+        var sj = new StringJoiner(
+                StringsFr.EN_DASH_SEPARATOR,
+                this.station1() + StringsFr.EN_DASH_SEPARATOR,
+                String.format(" (%d)", this.length)
+        );
+
+        this.routes.forEach(route -> sj.add(route.station2().name()));
+
+        return sj.toString();
+    }
+
+    private Trail copyAndExtend(Route route) {
+        List<Route> newRoutes = new ArrayList<>(this.routes);
+        newRoutes.add(route);
+
+        return new Trail(newRoutes, this.length + route.length());
     }
 }

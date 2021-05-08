@@ -4,6 +4,11 @@ import ch.epfl.tchu.SortedBag;
 
 import java.util.List;
 
+/**
+ * Contient la totalité des constantes liées aux règles du jeu
+ *
+ * @author Michel Schinz & cie.
+ */
 public final class Constants {
     private Constants() {
     }

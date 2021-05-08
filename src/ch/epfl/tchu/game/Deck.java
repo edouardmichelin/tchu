@@ -20,6 +20,16 @@ public final class Deck<C extends Comparable<C>> {
         this.cards = cards;
     }
 
+    /**
+     * Retourne un tas de cartes ayant les mêmes cartes que le multiensemble cards, mélangées au moyen du générateur
+     * de nombres pseudo aléatoires <i>rng</i>
+     *
+     * @param cards les cartes
+     * @param rng   le PRNG
+     * @param <C>   types cartes du deck
+     * @return un tas de cartes ayant les mêmes cartes que le multiensemble cards, mélangées au moyen du générateur
+     * de nombres pseudo aléatoires <code>rng</code>
+     */
     public static <C extends Comparable<C>> Deck<C> of(SortedBag<C> cards, Random rng) {
         List<C> shuffledCards = cards.toList();
         Collections.shuffle(shuffledCards, rng);
@@ -39,16 +49,17 @@ public final class Deck<C extends Comparable<C>> {
     /**
      * Retourne vrai ssi le tas est vide
      *
-     * @return vrai ssi le tas est vide
+     * @return <code>true</code> ssi le tas est vide
      */
     public boolean isEmpty() {
         return cards.isEmpty();
     }
 
     /**
-     * Retourne la carte au sommet du tas, ou lève IllegalArgumentException si le tas est vide
+     * Retourne la carte au sommet du tas, ou lève <i>IllegalArgumentException</i> si le tas est vide
      *
-     * @return la carte au sommet du tas, ou lève IllegalArgumentException si le tas est vide
+     * @return la carte au sommet du tas
+     * @throws IllegalArgumentException si le tas est vide
      */
     public C topCard() {
         if (this.isEmpty()) throw new IllegalArgumentException();
@@ -57,11 +68,12 @@ public final class Deck<C extends Comparable<C>> {
     }
 
     /**
-     * Retourne un tas identique au récepteur (this) mais sans la carte au sommet, ou lève IllegalArgumentException
+     * Retourne un tas identique au récepteur <i>this</i> mais sans la carte au sommet, ou lève
+     * <i>IllegalArgumentException</i>
      * si le tas est vide
      *
-     * @return un tas identique au récepteur (this) mais sans la carte au sommet, ou lève IllegalArgumentException si
-     * le tas est vide
+     * @return un tas identique au récepteur <code>this</code> mais sans la carte au sommet
+     * @throws IllegalArgumentException si le tas est vide
      */
     public Deck<C> withoutTopCard() {
         return new Deck<>(this.cards.subList(1, this.cards.size()));
@@ -69,11 +81,13 @@ public final class Deck<C extends Comparable<C>> {
 
     /**
      * Retourne un multiensemble contenant les count cartes se trouvant au sommet du tas; lève
-     * IllegalArgumentException si count n'est pas compris entre 0 (inclus) et la taille du tas (incluse)
+     * <i>IllegalArgumentException</i> si <i>count</i> n'est pas compris entre <i>0</i> (inclus) et la taille du tas
+     * (incluse)
      *
      * @param count nombre de cartes à prendre en compte
-     * @return un multiensemble contenant les count cartes se trouvant au sommet du tas; lève
-     * IllegalArgumentException si count n'est pas compris entre 0 (inclus) et la taille du tas (incluse)
+     * @return un multiensemble contenant les count cartes se trouvant au sommet du tas
+     * @throws IllegalArgumentException si <code>count</code> n'est pas compris entre <code>0</code> (inclus) et la
+     *                                  taille du tas (incluse)
      */
     public SortedBag<C> topCards(int count) {
         Objects.checkIndex(0, this.cards.size() + 1);
@@ -82,12 +96,14 @@ public final class Deck<C extends Comparable<C>> {
     }
 
     /**
-     * Retourne un tas identique au récepteur (this) mais sans les count cartes du sommet, ou lève
-     * IllegalArgumentException si count n'est pas compris entre 0 (inclus) et la taille du tas (incluse)
+     * Retourne un tas identique au récepteur <i>this</i> mais sans les <i>count</i> cartes du sommet, ou lève
+     * <i>IllegalArgumentException</i> si <i>count</i> n'est pas compris entre <i>0</i> (inclus) et la taille du tas
+     * (incluse)
      *
      * @param count nombre de cartes à prendree en compte
-     * @return un tas identique au récepteur (this) mais sans les count cartes du sommet, ou lève
-     * IllegalArgumentException si count n'est pas compris entre 0 (inclus) et la taille du tas (incluse)
+     * @return un tas identique au récepteur <code>this</code> mais sans les <code>count</code> cartes du sommet
+     * @throws IllegalArgumentException si <code>count</code> n'est pas compris entre <code>0</code> (inclus) et la
+     *                                  taille du tas (incluse)
      */
     public Deck<C> withoutTopCards(int count) {
         Objects.checkIndex(0, this.cards.size() + 1);

@@ -9,20 +9,18 @@ package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.Preconditions;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * Représente les stations du tCHu
+ *
+ * @author Edouard Michelin (314770)
+ * @author Julien Jordan (315429)
+ */
 public final class Station {
-    private static final List<Integer> ids = new ArrayList<>();
-
     private final int id;
     private final String name;
 
     public Station(int id, String name) {
         Preconditions.checkArgument(id >= 0);
-        // Preconditions.checkArgument(!ids.contains(id));
-
-        ids.add(id);
 
         this.id = id;
         this.name = name;

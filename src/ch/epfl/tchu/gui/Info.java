@@ -2,13 +2,10 @@ package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
-import ch.epfl.tchu.game.Color;
 import ch.epfl.tchu.game.Route;
 import ch.epfl.tchu.game.Trail;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Permet de générer les textes décrivant le déroulement de la partie
@@ -19,6 +16,11 @@ import java.util.Set;
 public final class Info {
     private final String playerName;
 
+    /**
+     * Construit un générateur de messages liés au joueur ayant le nom donné
+     *
+     * @param playerName nom du joueur
+     */
     public Info(String playerName) {
         this.playerName = playerName;
     }
@@ -70,6 +72,10 @@ public final class Info {
         String commas = String.join(", ", playerNames.subList(0, lastIndex));
 
         return String.format(StringsFr.DRAW, String.format("%s et %s", commas, playerNames.get(lastIndex)), points);
+    }
+
+    private static String getRouteName(Route route) {
+        return String.format("%s%s%s", route.station1(), StringsFr.EN_DASH_SEPARATOR, route.station2());
     }
 
     /**
@@ -229,10 +235,6 @@ public final class Info {
                 StringsFr.plural(points),
                 loserPoints,
                 StringsFr.plural(loserPoints));
-    }
-
-    private static String getRouteName(Route route) {
-        return String.format("%s%s%s", route.station1(), StringsFr.EN_DASH_SEPARATOR, route.station2());
     }
 
     private String getCardsInfo(SortedBag<Card> cards) {

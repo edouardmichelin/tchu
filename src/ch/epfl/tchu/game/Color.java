@@ -9,6 +9,12 @@ package ch.epfl.tchu.game;
 
 import java.util.List;
 
+/**
+ * Couleurs du jeu
+ *
+ * @author Edouard Michelin (314770)
+ * @author Julien Jordan (315429)
+ */
 public enum Color {
     BLACK,
     VIOLET,

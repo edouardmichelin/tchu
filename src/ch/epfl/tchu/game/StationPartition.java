@@ -3,7 +3,7 @@ package ch.epfl.tchu.game;
 import ch.epfl.tchu.Preconditions;
 
 import java.util.Arrays;
-import java.util.Objects;
+import java.util.stream.IntStream;
 
 /**
  * Partition de stations
@@ -22,6 +22,13 @@ public final class StationPartition implements StationConnectivity {
         this.links = links;
     }
 
+    /**
+     * Retourne vrai ssi les deux stations spécifiées en argument sont connectées
+     *
+     * @param s1 première station
+     * @param s2 seconde station
+     * @return <code>true</code> ssi les stations sont connectées
+     */
     @Override
     public boolean connected(Station s1, Station s2) {
         try {
@@ -31,21 +38,27 @@ public final class StationPartition implements StationConnectivity {
         }
     }
 
+    /**
+     * Représente un bâtisseur de partition de gare
+     */
     public static final class Builder {
         private final int[] stations;
-        private final boolean[] representatives;
 
         private Builder() {
             this.stations = null;
-            this.representatives = null;
         }
 
+        /**
+         * Construit un bâtisseur de partition d'un ensemble de gares dont l'identité est comprise entre 0 (inclus)
+         * et stationCount (exclus), ou lève IllegalArgumentException si stationCount est strictement négatif (< 0)
+         *
+         * @param stationCount le nombre de stations
+         * @throws IllegalArgumentException si stationCount est strictement négatif (< 0)
+         */
         public Builder(int stationCount) {
             Preconditions.checkArgument(stationCount >= 0);
 
-            this.representatives = new boolean[stationCount];
-            this.stations = new int[stationCount];
-            Arrays.setAll(this.stations, p -> p);
+            this.stations = IntStream.range(0, stationCount).toArray();
         }
 
         /**
@@ -84,9 +97,6 @@ public final class StationPartition implements StationConnectivity {
         }
 
         private int representative(int station) {
-            if (this.representatives[station])
-                return station;
-
             int witness = -1;
             int representative = station;
 

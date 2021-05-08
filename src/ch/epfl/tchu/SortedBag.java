@@ -7,6 +7,8 @@ import java.util.stream.Stream;
  * Multiensemble trié et immuable.
  *
  * @param <E> le type des éléments du multiensemble.
+ *
+ * @author Michel Schinz & cie.
  */
 public final class SortedBag<E extends Comparable<E>> implements Iterable<E> {
     // Table associant sa multiplicité à chaque élément de l'ensemble.
