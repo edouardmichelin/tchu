@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
@@ -19,46 +18,22 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-public class RemotePlayerProxy implements Player {
-    private BufferedReader reader;
-    private BufferedWriter writer;
+public class RemotePlayerProxy implements Player, AutoCloseable {
+    private final Helpers.MessageHandler handler;
 
     private RemotePlayerProxy() {
+        this.handler = null;
     }
 
+    /**
+     * Créé une instance de <i>RemotePlayerProxy</i>
+     * @param socket le socket
+     */
     public RemotePlayerProxy(Socket socket) {
-        try (
-                BufferedReader reader =
-                        new BufferedReader(
-                                new InputStreamReader(socket.getInputStream(),
-                                        US_ASCII));
-                BufferedWriter writer =
-                        new BufferedWriter(
-                                new OutputStreamWriter(socket.getOutputStream(),
-                                        US_ASCII))) {
-            this.reader = reader;
-            this.writer = writer;
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    private String formatMessage(MessageId messageId, String message) {
-        return String.format("%s %s\n", messageId.name(), message);
-    }
-
-    private void sendMessage(MessageId messageId, String message) {
         try {
-            this.writer.write(formatMessage(messageId, message));
-            this.writer.flush();
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    private MessageContent getMessageContent() {
-        try {
-            return new MessageContent(this.reader.readLine());
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), US_ASCII));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), US_ASCII));
+            this.handler = new Helpers.MessageHandler(reader, writer);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -71,14 +46,14 @@ public class RemotePlayerProxy implements Player {
                 Serdes.PLAYERID.serialize(ownId), Serdes.LIST_STRING.serialize(new ArrayList<>(playerNames.values()))
         );
 
-        sendMessage(MessageId.INIT_PLAYERS, message);
+        this.handler.post(MessageId.INIT_PLAYERS, message);
     }
 
     @Override
     public void receiveInfo(String info) {
         String message = Serdes.STRING.serialize(info);
 
-        sendMessage(MessageId.RECEIVE_INFO, message);
+        this.handler.post(MessageId.RECEIVE_INFO, message);
     }
 
     @Override
@@ -89,19 +64,19 @@ public class RemotePlayerProxy implements Player {
                 Serdes.PLAYERSTATE.serialize(ownState)
         );
 
-        sendMessage(MessageId.UPDATE_STATE, message);
+        this.handler.post(MessageId.UPDATE_STATE, message);
     }
 
     @Override
     public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
         String message = Serdes.BAG_TICKET.serialize(tickets);
 
-        sendMessage(MessageId.SET_INITIAL_TICKETS, message);
+        this.handler.post(MessageId.SET_INITIAL_TICKETS, message);
     }
 
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {
-        MessageContent message = getMessageContent();
+        Helpers.Payload message = this.handler.get();
 
         Preconditions.checkArgument(message.id().equals(MessageId.CHOOSE_INITIAL_TICKETS));
 
@@ -110,7 +85,7 @@ public class RemotePlayerProxy implements Player {
 
     @Override
     public TurnKind nextTurn() {
-        MessageContent message = getMessageContent();
+        Helpers.Payload message = this.handler.get();
 
         Preconditions.checkArgument(message.id().equals(MessageId.NEXT_TURN));
 
@@ -119,9 +94,9 @@ public class RemotePlayerProxy implements Player {
 
     @Override
     public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
-        sendMessage(MessageId.CHOOSE_TICKETS, Serdes.BAG_TICKET.serialize(options));
+        this.handler.post(MessageId.CHOOSE_TICKETS, Serdes.BAG_TICKET.serialize(options));
 
-        MessageContent message = getMessageContent();
+        Helpers.Payload message = this.handler.get();
 
         Preconditions.checkArgument(message.id().equals(MessageId.CHOOSE_TICKETS));
 
@@ -130,7 +105,7 @@ public class RemotePlayerProxy implements Player {
 
     @Override
     public int drawSlot() {
-        MessageContent message = getMessageContent();
+        Helpers.Payload message = this.handler.get();
 
         Preconditions.checkArgument(message.id().equals(MessageId.DRAW_SLOT));
 
@@ -139,7 +114,7 @@ public class RemotePlayerProxy implements Player {
 
     @Override
     public Route claimedRoute() {
-        MessageContent message = getMessageContent();
+        Helpers.Payload message = this.handler.get();
 
         Preconditions.checkArgument(message.id().equals(MessageId.ROUTE));
 
@@ -148,7 +123,7 @@ public class RemotePlayerProxy implements Player {
 
     @Override
     public SortedBag<Card> initialClaimCards() {
-        MessageContent message = getMessageContent();
+        Helpers.Payload message = this.handler.get();
 
         Preconditions.checkArgument(message.id().equals(MessageId.CARDS));
 
@@ -157,34 +132,18 @@ public class RemotePlayerProxy implements Player {
 
     @Override
     public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
-        sendMessage(MessageId.CHOOSE_ADDITIONAL_CARDS, Serdes.LIST_BAG_CARD.serialize(options));
+        this.handler.post(MessageId.CHOOSE_ADDITIONAL_CARDS, Serdes.LIST_BAG_CARD.serialize(options));
 
-        MessageContent message = getMessageContent();
+        Helpers.Payload message = this.handler.get();
 
         Preconditions.checkArgument(message.id().equals(MessageId.CHOOSE_ADDITIONAL_CARDS));
 
         return Serdes.BAG_CARD.deserialize(message.content().get(0));
     }
 
-    private static class MessageContent {
-        private final MessageId id;
-        private final List<String> content;
 
-        public MessageContent(String message) {
-            String[] messageParts = message.split(Pattern.quote(" "), -1);
-
-            assert messageParts.length >= 2;
-
-            this.id = MessageId.valueOf(messageParts[0]);
-            this.content = List.of(messageParts).subList(1, messageParts.length);
-        }
-
-        public MessageId id() {
-            return this.id;
-        }
-
-        public List<String> content() {
-            return this.content;
-        }
+    @Override
+    public void close() throws Exception {
+        this.handler.dispose();
     }
 }
