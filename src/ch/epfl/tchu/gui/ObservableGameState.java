@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class ObservableGameState {
     private final static List<Route> ALL_ROUTES = ChMap.routes();
-    private final static int INITIAL_TICKETS_COUNT = ChMap.tickets().size();
+    private final static int TICKETS_COUNT = ChMap.tickets().size();
     private final PlayerId playerId;
     private final IntegerProperty ticketsPercentage = new SimpleIntegerProperty(0);
     private final IntegerProperty cardsPercentage = new SimpleIntegerProperty(0);
@@ -124,8 +124,8 @@ public class ObservableGameState {
                     );
         }
 
-        this.ticketsPercentage.set((gameState.ticketsCount() / INITIAL_TICKETS_COUNT) * 100);
-        this.cardsPercentage.set((gameState.cardState().deckSize() / Constants.INITIAL_CAR_COUNT) * 100);
+        this.ticketsPercentage.set((gameState.ticketsCount() * 100 / TICKETS_COUNT));
+        this.cardsPercentage.set((gameState.cardState().deckSize() * 100 / Constants.TOTAL_CARDS_COUNT));
 
         this.playerTickets.setAll(playerState.tickets().toList());
 
@@ -173,11 +173,11 @@ public class ObservableGameState {
         return FXCollections.unmodifiableObservableList(this.playerTickets);
     }
 
-    public ReadOnlyIntegerProperty playerTickets(Card card) {
+    public ReadOnlyIntegerProperty numberOfCard(Card card) {
         return this.playerHand.get(card);
     }
 
-    public ReadOnlyBooleanProperty claimableRoutes(String id) {
+    public ReadOnlyBooleanProperty canClaimRoute(String id) {
         return this.claimableRoutes.get(id);
     }
 

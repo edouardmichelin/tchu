@@ -3,13 +3,18 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
+import ch.epfl.tchu.game.Constants;
 import ch.epfl.tchu.game.Ticket;
 import ch.epfl.tchu.gui.ActionHandlers.DrawCardHandler;
 import ch.epfl.tchu.gui.ActionHandlers.DrawTicketsHandler;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -40,9 +45,9 @@ class DecksViewCreator {
         HBox handCardsView = new HBox();
         handCardsView.setId("hand-pane");
         for (Card card : Card.ALL) {
-            if (hand.contains(card)) {
-                handCardsView.getChildren().add(createCardView(card, hand.countOf(card)));
-            }
+            StackPane cardView = createCardView(card, gameState.numberOfCard(card), false);
+            cardView.visibleProperty().bind(Bindings.greaterThan(gameState.numberOfCard(card), 0));
+            handCardsView.getChildren().add(cardView);
         }
 
         HBox playerHandPane = new HBox(ticketsView, handCardsView);
@@ -56,27 +61,51 @@ class DecksViewCreator {
             ObjectProperty<DrawTicketsHandler> drawTickets,
             ObjectProperty<DrawCardHandler> drawCard
     ) {
-        VBox faceUpCardsView = new VBox();
-        for (Card card : gameState.faceUpCards()) {
-            faceUpCardsView.getChildren().add(createCardView(card));
-        }
+        Button drawTicketsButton = createDrawButton("Billets", gameState.ticketsPercentage());
+        drawTicketsButton.setOnMouseClicked(event -> drawTickets.get().onDrawTickets());
+        drawTicketsButton.disableProperty().bind(drawTickets.isNull());
+
+        Button drawCardsButton = createDrawButton("Cartes", gameState.cardsPercentage());
+        drawCardsButton.setOnMouseClicked(event -> drawCard.get().onDrawCard(-1));
+        drawCardsButton.disableProperty().bind(drawCard.isNull());
 
         VBox decksPane = new VBox();
         decksPane.setId("card-pane");
         decksPane.getStylesheets().addAll("decks.css", "colors.css");
-        return null;
+
+        decksPane.getChildren().add(drawTicketsButton);
+
+
+        for (int index : Constants.FACE_UP_CARD_SLOTS) {
+
+            StackPane cardView = createCardView(gameState.faceUpCards().get(index));
+            cardView.setOnMouseClicked(event -> drawCard.get().onDrawCard(index));
+            cardView.disableProperty().bind(drawCard.isNull());
+
+            decksPane.getChildren().add(cardView);
+        }
+
+        decksPane.getChildren().add(drawCardsButton);
+
+        return decksPane;
     }
 
-    private static Node createDrawButton(String label, IntegerProperty percentage) {
+    private static Button createDrawButton(String label, ReadOnlyIntegerProperty percentage) {
+        Rectangle background = new Rectangle(50, 5);
+        background.getStyleClass().add("background");
 
+        Rectangle foreground = new Rectangle(50, 5);
+        foreground.widthProperty().bind(percentage.multiply(50).divide(100));
+        foreground.getStyleClass().add("foreground");
 
-        Button button = new Button();
+        Button button = new Button(label);
         button.getStyleClass().add("gauged");
-        return null;
+        button.setGraphic(new Group(background, foreground));
+
+        return button;
     }
 
-    private static Node createCardView(Card card, int quantity) {
-        Preconditions.checkArgument(quantity > 0);
+    private static StackPane createCardView(Card card, ReadOnlyIntegerProperty count, boolean isFaceUpCard) {
         String color = card.color() == null ? "NEUTRAL" : card.color().toString();
 
 
@@ -89,27 +118,19 @@ class DecksViewCreator {
         Rectangle trainImage = new Rectangle(40, 70);
         trainImage.getStyleClass().add("train-image");
 
-        Text count = new Text();
-        count.getStyleClass().add("count");
-        if (quantity != 1) {
-            count.setText("" + quantity);
-        }
+        Text countText = new Text();
+        countText.getStyleClass().add("count");
+        countText.textProperty().bind(Bindings.convert(count));
 
-        StackPane mainCardPane = new StackPane(cardBorder, cardColor, trainImage, count);
+
+        StackPane mainCardPane = isFaceUpCard || count.get() == 1 ? new StackPane(cardBorder, cardColor, trainImage) :
+                new StackPane(cardBorder, cardColor, trainImage, countText);
         mainCardPane.getStyleClass().addAll(color, "card");
 
         return mainCardPane;
     }
 
-    private static Node createCardView(Card card) {
-        return createCardView(card, 1);
-    }
-
-    private static HBox createHorizontalCardsView(SortedBag<Card> cards) {
-        return null;
-    }
-
-    private static VBox createVerticalCardsView(SortedBag<Card> cards) {
-        return null;
+    private static StackPane createCardView(Card card) {
+        return createCardView(card, new SimpleIntegerProperty(), true);
     }
 }

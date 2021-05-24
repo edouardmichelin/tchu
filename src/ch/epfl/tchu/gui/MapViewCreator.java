@@ -67,7 +67,7 @@ public class MapViewCreator {
             group.disableProperty().bind(
                     claimRouteHandler
                     .isNull()
-                            .or(gameState.claimableRoutes(id).not())
+                            .or(gameState.canClaimRoute(id).not())
                             .or(gameState.routes(id).isNull().not())
             );
 
