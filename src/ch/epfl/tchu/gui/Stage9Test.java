@@ -29,6 +29,8 @@ public final class Stage9Test extends Application {
     public void start(Stage primaryStage) {
         ObservableGameState gameState = new ObservableGameState(PlayerId.PLAYER_1);
 
+        setState(gameState);
+
         ObjectProperty<ClaimRouteHandler> claimRoute =
                 new SimpleObjectProperty<>(Stage9Test::claimRoute);
         ObjectProperty<DrawTicketsHandler> drawTickets =
@@ -47,15 +49,13 @@ public final class Stage9Test extends Application {
                 new BorderPane(mapView, null, cardsView, handView, null);
         primaryStage.setScene(new Scene(mainPane));
         primaryStage.show();
-
-        setState(gameState);
     }
 
     private void setState(ObservableGameState gameState) {
         PlayerState p1State =
                 new PlayerState(SortedBag.of(ChMap.tickets().subList(0, 3)),
                         SortedBag.of(1, Card.WHITE, 3, Card.RED),
-                        ChMap.routes().subList(0, 3));
+                        ChMap.routes().subList(0, 20));
 
         PublicPlayerState p2State =
                 new PublicPlayerState(0, 0, ChMap.routes().subList(3, 6));
