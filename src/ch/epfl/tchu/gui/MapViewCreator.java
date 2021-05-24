@@ -26,10 +26,10 @@ public class MapViewCreator {
             ObjectProperty<ClaimRouteHandler> claimRoute,
             CardChooser chooseCards
     ) {
-        Pane node = new Pane();
-        ImageView background = new ImageView();
-
+        Pane node = new Pane(new ImageView());
+        
         node.getStylesheets().addAll("map.css", "colors.css");
+
 
         for (Route route : ChMap.routes()) {
 
