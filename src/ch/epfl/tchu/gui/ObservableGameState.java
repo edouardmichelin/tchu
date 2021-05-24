@@ -3,9 +3,11 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
 import javafx.beans.property.*;
-import javafx.collections.ObservableList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Représente l'état observable d'une partie de tCHu
@@ -16,22 +18,17 @@ import java.util.*;
 public class ObservableGameState {
     private final static List<Route> ALL_ROUTES = ChMap.routes();
     private final static int INITIAL_TICKETS_COUNT = ChMap.tickets().size();
-
-    private PublicGameState currentGameState;
-    private PlayerState currentPlayerState;
-
     private final PlayerId playerId;
-
     private final IntegerProperty ticketsPercentage = new SimpleIntegerProperty(0);
     private final IntegerProperty cardsPercentage = new SimpleIntegerProperty(0);
     private final List<ObjectProperty<Card>> faceUpCards;
     private final Map<String, ObjectProperty<PlayerId>> routes;
-
     private final Map<PlayerId, ObjectProperty<PlayerBelongingsDTO>> playersBelongings;
-
     private final ListProperty<Ticket> playerTickets;
     private final Map<Card, IntegerProperty> playerHand;
     private final Map<String, BooleanProperty> claimableRoutes;
+    private PublicGameState currentGameState;
+    private PlayerState currentPlayerState;
 
     public ObservableGameState(PlayerId playerId) {
         this.playerId = playerId;
@@ -74,7 +71,7 @@ public class ObservableGameState {
                     0,
                     0,
                     0
-                    )));
+            )));
         }
 
         return r;
@@ -183,12 +180,29 @@ public class ObservableGameState {
 
     // region méthodes-de-PublicGameState
 
+    public boolean canDrawTickets() {
+        return this.currentGameState.canDrawTickets();
+    }
 
+    public boolean canDrawCards() {
+        return this.currentGameState.canDrawCards();
+    }
 
+    public List<Card> faceUpCards() {
+        return this.currentGameState.cardState().faceUpCards();
+    }
 
     // endregion
 
     // region méthodes-de-PlayerState
+
+    public List<SortedBag<Card>> possibleClaimCards(Route route) {
+        return this.currentPlayerState.possibleClaimCards(route);
+    }
+
+    public SortedBag<Card> cards() {
+        return this.currentPlayerState.cards();
+    }
 
     // endregion
 
