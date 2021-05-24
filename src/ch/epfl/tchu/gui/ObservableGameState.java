@@ -3,6 +3,8 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +26,7 @@ public class ObservableGameState {
     private final List<ObjectProperty<Card>> faceUpCards;
     private final Map<String, ObjectProperty<PlayerId>> routes;
     private final Map<PlayerId, ObjectProperty<PlayerBelongingsDTO>> playersBelongings;
-    private final ListProperty<Ticket> playerTickets;
+    private final ObservableList<Ticket> playerTickets;
     private final Map<Card, IntegerProperty> playerHand;
     private final Map<String, BooleanProperty> claimableRoutes;
     private PublicGameState currentGameState;
@@ -46,9 +48,9 @@ public class ObservableGameState {
     // region initializers
 
     private static List<ObjectProperty<Card>> initializeFaceUpCards() {
-        List<ObjectProperty<Card>> fuc = new ArrayList<>();
+        List<ObjectProperty<Card>> fuc = new ArrayList<>(Constants.FACE_UP_CARDS_COUNT);
         for (int slot : Constants.FACE_UP_CARD_SLOTS) {
-            fuc.set(slot, new SimpleObjectProperty<>());
+            fuc.add(new SimpleObjectProperty<>());
         }
 
         return fuc;
@@ -152,27 +154,27 @@ public class ObservableGameState {
         return routes.get(id);
     }
 
-    private ReadOnlyIntegerProperty ticketsPercentage() {
+    public ReadOnlyIntegerProperty ticketsPercentage() {
         return this.ticketsPercentage;
     }
 
-    private ReadOnlyIntegerProperty cardsPercentage() {
+    public ReadOnlyIntegerProperty cardsPercentage() {
         return this.cardsPercentage;
     }
 
-    private ReadOnlyObjectProperty<PlayerBelongingsDTO> playerBelongings(PlayerId player) {
+    public ReadOnlyObjectProperty<PlayerBelongingsDTO> playerBelongings(PlayerId player) {
         return this.playersBelongings.get(player);
     }
 
-    private ReadOnlyListProperty<Ticket> playerTickets() {
-        return this.playerTickets;
+    public ObservableList<Ticket> playerTickets() {
+        return FXCollections.unmodifiableObservableList(this.playerTickets);
     }
 
-    private ReadOnlyIntegerProperty playerTickets(Card card) {
+    public ReadOnlyIntegerProperty playerTickets(Card card) {
         return this.playerHand.get(card);
     }
 
-    private ReadOnlyBooleanProperty claimableRoutes(String id) {
+    public ReadOnlyBooleanProperty claimableRoutes(String id) {
         return this.claimableRoutes.get(id);
     }
 
