@@ -100,6 +100,9 @@ public class ObservableGameState {
     // endregion
 
     public void setState(PublicGameState gameState, PlayerState playerState) {
+        this.currentGameState = gameState;
+        this.currentPlayerState = playerState;
+
         for (int slot : Constants.FACE_UP_CARD_SLOTS) {
             Card newCard = gameState.cardState().faceUpCard(slot);
             this.faceUpCards.get(slot).set(newCard);
