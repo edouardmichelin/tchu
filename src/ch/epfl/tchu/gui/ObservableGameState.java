@@ -40,7 +40,7 @@ public class ObservableGameState {
 
         this.playersBelongings = initializePlayersBelongings();
 
-        this.playerTickets = new SimpleListProperty<>();
+        this.playerTickets = FXCollections.observableArrayList();
         this.playerHand = initializePlayerHand();
         this.claimableRoutes = initializeClaimableRoutes();
     }
