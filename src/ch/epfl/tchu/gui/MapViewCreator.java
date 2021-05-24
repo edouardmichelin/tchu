@@ -62,10 +62,14 @@ public class MapViewCreator {
             else
                 classes.add(route.color().name());
             if (route.level().equals(Route.Level.UNDERGROUND)) classes.add("UNDERGROUND");
-            if ((owner = gameState.routes(id).get()) != null)
-                classes.add(owner.name());
+            if ((owner = gameState.routes(id).get()) != null) classes.add(owner.name());
 
-            group.disableProperty().bind(claimRouteHandler.isNull().or(gameState.claimableRoutes(id).not()));
+            group.disableProperty().bind(
+                    claimRouteHandler
+                    .isNull()
+                            .or(gameState.claimableRoutes(id).not())
+                            .or(gameState.routes(id).isNull().not())
+            );
 
             for (int caseIndex = 1; caseIndex <= route.length(); caseIndex++) {
                 Group routeCase = new Group();
