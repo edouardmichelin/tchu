@@ -34,6 +34,14 @@ import java.util.List;
  * @author Julien Jordan (315429)
  */
 class DecksViewCreator {
+    /**
+     * Permet de créer la vue de la main du joueur en fonction de l'état de jeu observable passé en argument. C'est à
+     * dire la vue du panel du bas de la fenêtre du jeu. Elle content les cartes en main du joueur ainsi que la liste
+     * de ses tickets.
+     *
+     * @param gameState l'état observable du jeu.
+     * @return le node contenant la vue de la main de joueur, c'est à dire le panel du bas de la fenêtre du jeu.
+     */
     public static Node createHandView(ObservableGameState gameState) {
 
         SortedBag<Card> hand = gameState.cards();
@@ -56,6 +64,16 @@ class DecksViewCreator {
         return playerHandPane;
     }
 
+    /**
+     * Permet de créer la vue des piles de cartes et tickets ainsi que des 5 cartes retournées qui composent donc le
+     * panel à droite de la fenêtre du jeu. Elle est composé des 5 cartes face retournées ainsi que des boutons pour
+     * priocher des tickets ou des cartes.
+     *
+     * @param gameState   l'état observable du jeu.
+     * @param drawTickets le gestionnaire d'action du tirage des tickets.
+     * @param drawCard    le gestionnaire d'action du tirage des cartes.
+     * @return le node contenant la vue des pioches de tickets et cartes ainsi que des 5 cartes de faces retournées.
+     */
     public static Node createCardsView(
             ObservableGameState gameState,
             ObjectProperty<DrawTicketsHandler> drawTickets,
