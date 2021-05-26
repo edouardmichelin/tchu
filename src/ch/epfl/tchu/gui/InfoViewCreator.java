@@ -52,8 +52,9 @@ class InfoViewCreator {
             //– %s points.
             var playerBelongings = gameState.playerBelongings(nextPlayer);
             Text playerInfos = new Text(StringsFr.PLAYER_STATS);
-            playerInfos.textProperty().bind(Bindings.format(StringsFr.PLAYER_STATS, playerNames.get(playerId), "3",
-                    "5", "40", "0"));
+            playerInfos.textProperty().bind(Bindings.format(StringsFr.PLAYER_STATS, playerNames.get(playerId),
+                    playerBelongings.ownedTickets(), playerBelongings.ownedCards(), playerBelongings.ownedCars(),
+                    playerBelongings.claimPoints()));
 
             TextFlow playerInfosBox = new TextFlow(circle, playerInfos);
             playerInfosBox.getStyleClass().add(playerId.toString());
