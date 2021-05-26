@@ -351,4 +351,11 @@ public class InfoTest {
         var expected2 = "\nBjarne remporte la victoire avec 3 points, contre 2 points !\n";
         assertEquals(expected2, actual2);
     }
+
+    @Test
+    void renduTest() {
+        assertEquals("Les cartes supplémentaires sont 1 noire, 1 violette et 1 rouge. Elles impliquent un coût " +
+                "additionnel de 2 cartes.\n", new Info("inf").drewAdditionalCards(SortedBag.of(1, Card.VIOLET, 1,
+                Card.RED).union(SortedBag.of(1, Card.BLACK)), 2));
+    }
 }

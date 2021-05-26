@@ -12,11 +12,13 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 /**
  * Title
@@ -69,12 +71,9 @@ final class ModalsViewCreator {
 
         TextFlow introBox = new TextFlow(intro);
 
-        ListView<Ticket> choiceList = new ListView<>();
-        choiceList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
         Button confirmButton = new Button(StringsFr.CHOOSE);
 
-        return new VBox(introBox, choiceList, confirmButton);
+        return new VBox(introBox, createListView(choices), confirmButton);
     }
 
     private static Stage createCardsChoice(
@@ -86,12 +85,27 @@ final class ModalsViewCreator {
 
         TextFlow introBox = new TextFlow(intro);
 
-        ListView<Ticket> choiceList =
+        ListView<SortedBag<Card>> choiceList = createListView(choices);
+        choiceList.setCellFactory(v -> new TextFieldListCell<>(new CardBagStringConverter()));
         return null;
     }
 
     private static <T> ListView<T> createListView(ObservableList<T> list) {
-        ListView<T> view = new ListView<T>();
+        ListView<T> view = new ListView<T>(list);
+        view.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         return view;
+    }
+
+    private static class CardBagStringConverter extends StringConverter<SortedBag<Card>> {
+
+        @Override
+        public String toString(SortedBag<Card> object) {
+            return null;
+        }
+
+        @Override
+        public SortedBag<Card> fromString(String string) {
+            throw new UnsupportedOperationException();
+        }
     }
 }
