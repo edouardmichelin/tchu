@@ -33,20 +33,27 @@ public class GraphicalPlayer {
 
     private final ObservableList<Text> infos = FXCollections.observableArrayList();
 
+    private final ObservableList<Ticket> initialTicketsChoice = FXCollections.observableArrayList();
+    private final ObservableList<Ticket> ticketsChoice = FXCollections.observableArrayList();
+    private final ObservableList<SortedBag<Card>> initialCardsChoice = FXCollections.observableArrayList();
+    private final ObservableList<SortedBag<Card>> additionalCardsChoice = FXCollections.observableArrayList();
+
     public GraphicalPlayer(PlayerId playerId, Map<PlayerId, String> playerNames) {
         this.gameState = new ObservableGameState(playerId);
-
-        MapViewCreator.CardChooser cardChooser = null;
 
         Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, this::chooseClaimCards);
         Node cardsView = DecksViewCreator.createCardsView(gameState, drawTicketsHandler, drawCardHandler);
         Node handView = DecksViewCreator.createHandView(gameState);
         Node infoView = InfoViewCreator.createInfoView(playerId, playerNames, gameState, this.infos);
 
-        Node initialTicketsChoiceModal = null;
-        Node ticketsChoiceModal = null;
-        Node initialCardsChoiceModal = null;
-        Node additionalCardsChoiceModal = null;
+        Node initialTicketsChoiceModal = ModalsViewCreator
+                .createInitialTicketsChoiceView(this.initialTicketsChoice, this.chooseTicketsHandler);
+        Node ticketsChoiceModal = ModalsViewCreator
+                .createTicketsChoiceView(this.ticketsChoice, this.chooseTicketsHandler);
+        Node initialCardsChoiceModal = ModalsViewCreator
+                .createInitialCardsChoiceView(this.initialCardsChoice, this.chooseCardsHandler);
+        Node additionalCardsChoiceModal = ModalsViewCreator
+                .createAdditionalCardsChoiceView(this.additionalCardsChoice, this.chooseCardsHandler);
 
     }
 
@@ -61,14 +68,15 @@ public class GraphicalPlayer {
      * @param info le message à passer
      */
     public void receiveInfo(String info) {
+        Text text = new Text(info);
         ObservableList<Text> newInfos = FXCollections.observableArrayList();
-        var text = new Text(info);
 
-        var effectiveSize = Math.min(this.infos.size(), MAX_DISPLAYED_INFORMATIONS - 1);
+        int effectiveSize = Math.min(this.infos.size(), MAX_DISPLAYED_INFORMATIONS - 1);
 
         for (int index = 0; index < effectiveSize; index++) {
             newInfos.add(this.infos.get(index));
         }
+
         newInfos.add(text);
 
         this.infos.setAll(newInfos);
@@ -112,11 +120,21 @@ public class GraphicalPlayer {
      * @throws IllegalArgumentException ssi la taille de <code>tickets</code> est différente de 3 ou 5
      */
     public void chooseTickets(SortedBag<Ticket> tickets, ChooseTicketsHandler chooseTicketsHandler) {
-        Preconditions.checkArgument(tickets.size() == 3 || tickets.size() == 5);
+        Preconditions.checkArgument(
+                tickets.size() == Constants.IN_GAME_TICKETS_COUNT ||
+                        tickets.size() == Constants.INITIAL_TICKETS_COUNT
+        );
+
+        if (tickets.size() == Constants.IN_GAME_TICKETS_COUNT)
+            this.ticketsChoice.setAll(tickets.toList());
+        else
+            this.initialTicketsChoice.setAll(tickets.toList());
 
         this.chooseTicketsHandler.set(tks -> {
             chooseTicketsHandler.onChooseTickets(tks);
             this.chooseTicketsHandler.set(null);
+            this.initialTicketsChoice.clear();
+            this.ticketsChoice.clear();
         });
     }
 
@@ -148,9 +166,12 @@ public class GraphicalPlayer {
             List<SortedBag<Card>> setsOfCards,
             ChooseCardsHandler chooseCardsHandler
     ) {
+        this.initialCardsChoice.setAll(setsOfCards);
+
         this.chooseCardsHandler.set(cards -> {
             chooseCardsHandler.onChooseCards(cards);
             this.chooseCardsHandler.set(null);
+            this.initialCardsChoice.clear();
         });
     }
 
@@ -167,9 +188,12 @@ public class GraphicalPlayer {
             List<SortedBag<Card>> setsOfCards,
             ChooseCardsHandler chooseCardsHandler
     ) {
+        this.additionalCardsChoice.setAll(setsOfCards);
+
         this.chooseCardsHandler.set(cards -> {
             chooseCardsHandler.onChooseCards(cards);
             this.chooseCardsHandler.set(null);
+            this.additionalCardsChoice.clear();
         });
     }
 
