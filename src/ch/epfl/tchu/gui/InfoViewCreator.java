@@ -21,13 +21,14 @@ import java.util.Map;
 class InfoViewCreator {
 
     /**
-     * Permet de créer la vue contenant les informations se trouvant à gauche de la fenêtre du jeu. Notamment les statistiques observables des joueurs ainsi
+     * Permet de créer la vue contenant les informations se trouvant à gauche de la fenêtre du jeu. Notamment les
+     * statistiques observables des joueurs ainsi
      * qu'une liste des dernières actions qui se sont déroulée durant la partie.
      *
-     * @param playerId joueur concerné par la vue
+     * @param playerId    joueur concerné par la vue
      * @param playerNames le nom des joueurs
-     * @param gameState l'état observable du jeu
-     * @param infos liste des messages désignant les dernières actions jouées
+     * @param gameState   l'état observable du jeu
+     * @param infos       liste des messages désignant les dernières actions jouées
      * @return la vue des informations des joueurs et des dernières actions jouées.
      */
     public static Node createInfoView(
@@ -51,7 +52,8 @@ class InfoViewCreator {
             //– %s points.
             var playerBelongings = gameState.playerBelongings(nextPlayer);
             Text playerInfos = new Text(StringsFr.PLAYER_STATS);
-            playerInfos.textProperty().bind(Bindings.format(StringsFr.PLAYER_STATS, "TestPlayer", "3", "5", "40", "0"));
+            playerInfos.textProperty().bind(Bindings.format(StringsFr.PLAYER_STATS, playerNames.get(playerId), "3",
+                    "5", "40", "0"));
 
             TextFlow playerInfosBox = new TextFlow(circle, playerInfos);
             playerInfosBox.getStyleClass().add(playerId.toString());
