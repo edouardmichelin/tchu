@@ -19,6 +19,13 @@ public final class Station {
     private final int id;
     private final String name;
 
+    /**
+     * Construit une gare ayant le numéro d'identification et le nom donnés, ou lève IllegalArgumentException si le
+     * numéro d'identification est strictement négatif (< 0).
+     *
+     * @param id identifiant de la gare
+     * @param name nom de la gare
+     */
     public Station(int id, String name) {
         Preconditions.checkArgument(id >= 0);
 
