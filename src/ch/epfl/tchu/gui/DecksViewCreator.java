@@ -78,11 +78,11 @@ final class DecksViewCreator {
             ObjectProperty<DrawTicketsHandler> drawTickets,
             ObjectProperty<DrawCardHandler> drawCard
     ) {
-        Button drawTicketsButton = createDrawButton("Billets", gameState.ticketsPercentage());
+        Button drawTicketsButton = createDrawButton(StringsFr.TICKETS, gameState.ticketsPercentage());
         drawTicketsButton.setOnMouseClicked(event -> drawTickets.get().onDrawTickets());
         drawTicketsButton.disableProperty().bind(drawTickets.isNull());
 
-        Button drawCardsButton = createDrawButton("Cartes", gameState.cardsPercentage());
+        Button drawCardsButton = createDrawButton(StringsFr.CARDS, gameState.cardsPercentage());
         drawCardsButton.setOnMouseClicked(event -> drawCard.get().onDrawCard(-1));
         drawCardsButton.disableProperty().bind(drawCard.isNull());
 
