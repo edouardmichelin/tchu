@@ -18,7 +18,8 @@ import java.util.Map;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-class InfoViewCreator {
+final class InfoViewCreator {
+    private InfoViewCreator() {}
 
     /**
      * Permet de créer la vue contenant les informations se trouvant à gauche de la fenêtre du jeu. Notamment les

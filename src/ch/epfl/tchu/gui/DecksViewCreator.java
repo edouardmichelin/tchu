@@ -30,7 +30,9 @@ import javafx.scene.text.Text;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-class DecksViewCreator {
+final class DecksViewCreator {
+    private DecksViewCreator() {}
+
     /**
      * Permet de créer la vue de la main du joueur en fonction de l'état de jeu observable passé en argument. C'est à
      * dire la vue du panel du bas de la fenêtre du jeu. Elle content les cartes en main du joueur ainsi que la liste

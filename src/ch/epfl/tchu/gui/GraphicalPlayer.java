@@ -20,7 +20,7 @@ import java.util.Map;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-public class GraphicalPlayer {
+final class GraphicalPlayer {
     private final int MAX_DISPLAYED_INFORMATIONS = 5;
 
     private final ObservableGameState gameState;
