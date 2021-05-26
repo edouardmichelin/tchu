@@ -17,7 +17,7 @@ import java.util.Map;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-public class ObservableGameState {
+final class ObservableGameState {
     private final static List<Route> ALL_ROUTES = ChMap.routes();
     private final static int TICKETS_COUNT = ChMap.tickets().size();
     private final PlayerId playerId;
@@ -25,7 +25,7 @@ public class ObservableGameState {
     private final IntegerProperty cardsPercentage = new SimpleIntegerProperty(0);
     private final List<ObjectProperty<Card>> faceUpCards;
     private final Map<String, ObjectProperty<PlayerId>> routes;
-    private final Map<PlayerId, ObjectProperty<PlayerBelongingsDTO>> playersBelongings;
+    private final Map<PlayerId, PlayerBelongingsProperty> playersBelongings;
     private final ObservableList<Ticket> playerTickets;
     private final Map<Card, IntegerProperty> playerHand;
     private final Map<String, BooleanProperty> claimableRoutes;
@@ -65,15 +65,15 @@ public class ObservableGameState {
         return r;
     }
 
-    private static Map<PlayerId, ObjectProperty<PlayerBelongingsDTO>> initializePlayersBelongings() {
-        Map<PlayerId, ObjectProperty<PlayerBelongingsDTO>> r = new HashMap<>();
+    private static Map<PlayerId, PlayerBelongingsProperty> initializePlayersBelongings() {
+        Map<PlayerId, PlayerBelongingsProperty> r = new HashMap<>();
         for (PlayerId player : PlayerId.ALL) {
-            r.put(player, new SimpleObjectProperty<>(new PlayerBelongingsDTO(
-                    Constants.INITIAL_TICKETS_COUNT,
-                    0,
-                    0,
-                    0
-            )));
+            r.put(player, new PlayerBelongingsProperty(
+                    new SimpleIntegerProperty(Constants.INITIAL_TICKETS_COUNT),
+                    new SimpleIntegerProperty(0),
+                    new SimpleIntegerProperty(0),
+                    new SimpleIntegerProperty(0)
+            ));
         }
 
         return r;
@@ -114,14 +114,11 @@ public class ObservableGameState {
                 this.routes.get(playerRoute.id()).set(playerId);
             }
 
-            this.playersBelongings
-                    .get(player)
-                    .set(new PlayerBelongingsDTO(
-                            iterationPlayerState.ticketCount(),
-                            iterationPlayerState.cardCount(),
-                            iterationPlayerState.carCount(),
-                            iterationPlayerState.claimPoints())
-                    );
+            var pb = this.playersBelongings.get(player);
+            pb.ownedTickets().set(iterationPlayerState.ticketCount());
+            pb.ownedCards().set(iterationPlayerState.cardCount());
+            pb.ownedCars().set(iterationPlayerState.carCount());
+            pb.claimPoints().set(iterationPlayerState.claimPoints());
         }
 
         this.ticketsPercentage.set((gameState.ticketsCount() * 100 / TICKETS_COUNT));
@@ -165,7 +162,7 @@ public class ObservableGameState {
         return this.cardsPercentage;
     }
 
-    public ReadOnlyObjectProperty<PlayerBelongingsDTO> playerBelongings(PlayerId player) {
+    public ReadOnlyPlayerBelongingsProperty playerBelongings(PlayerId player) {
         return this.playersBelongings.get(player);
     }
 
@@ -211,17 +208,49 @@ public class ObservableGameState {
 
     // endregion
 
-    protected static class PlayerBelongingsDTO {
-        public final int ownedTickets;
-        public final int ownedCards;
-        public final int ownedCars;
-        public final int claimPoints;
+    public interface ReadOnlyPlayerBelongingsProperty {
+        ReadOnlyIntegerProperty ownedTickets();
+        ReadOnlyIntegerProperty ownedCards();
+        ReadOnlyIntegerProperty ownedCars();
+        ReadOnlyIntegerProperty claimPoints();
+    }
 
-        public PlayerBelongingsDTO(int ownedTickets, int ownedCards, int ownedCars, int claimPoints) {
+    public static class PlayerBelongingsProperty implements ReadOnlyPlayerBelongingsProperty {
+        private final IntegerProperty ownedTickets;
+        private final IntegerProperty ownedCards;
+        private final IntegerProperty ownedCars;
+        private final IntegerProperty claimPoints;
+
+        public PlayerBelongingsProperty(
+                IntegerProperty ownedTickets,
+                IntegerProperty ownedCards,
+                IntegerProperty ownedCars,
+                IntegerProperty claimPoints
+        ) {
             this.ownedTickets = ownedTickets;
             this.ownedCards = ownedCards;
             this.ownedCars = ownedCars;
             this.claimPoints = claimPoints;
+        }
+
+        @Override
+        public IntegerProperty ownedTickets() {
+            return this.ownedTickets;
+        }
+
+        @Override
+        public IntegerProperty ownedCards() {
+            return this.ownedCards;
+        }
+
+        @Override
+        public IntegerProperty ownedCars() {
+            return this.ownedCars;
+        }
+
+        @Override
+        public IntegerProperty claimPoints() {
+            return this.claimPoints;
         }
     }
 }
