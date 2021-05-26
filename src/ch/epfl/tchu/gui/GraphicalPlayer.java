@@ -3,8 +3,13 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
+import ch.epfl.tchu.gui.ActionHandlers.*;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.text.Text;
 
 import java.util.List;
 import java.util.Map;
@@ -16,20 +21,32 @@ import java.util.Map;
  * @author Julien Jordan (315429)
  */
 public class GraphicalPlayer {
+    private final int MAX_DISPLAYED_INFORMATIONS = 5;
+
     private final ObservableGameState gameState;
+
+    private final ObjectProperty<DrawTicketsHandler> drawTicketsHandler = new SimpleObjectProperty<>();
+    private final ObjectProperty<DrawCardHandler> drawCardHandler = new SimpleObjectProperty<>();
+    private final ObjectProperty<ClaimRouteHandler> claimRouteHandler = new SimpleObjectProperty<>();
+    private final ObjectProperty<ChooseTicketsHandler> chooseTicketsHandler = new SimpleObjectProperty<>();
+    private final ObjectProperty<ChooseCardsHandler> chooseCardsHandler = new SimpleObjectProperty<>();
+
+    private final ObservableList<Text> infos = FXCollections.observableArrayList();
 
     public GraphicalPlayer(PlayerId playerId, Map<PlayerId, String> playerNames) {
         this.gameState = new ObservableGameState(playerId);
 
-        ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTicketsHandler = null;
-        ObjectProperty<ActionHandlers.DrawCardHandler> drawCardHandler = null;
-        ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRouteHandler = null;
-
         MapViewCreator.CardChooser cardChooser = null;
 
-        Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, cardChooser);
+        Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, this::chooseClaimCards);
         Node cardsView = DecksViewCreator.createCardsView(gameState, drawTicketsHandler, drawCardHandler);
         Node handView = DecksViewCreator.createHandView(gameState);
+        Node infoView = InfoViewCreator.createInfoView(playerId, playerNames, gameState, this.infos);
+
+        Node initialTicketsChoiceModal = null;
+        Node ticketsChoiceModal = null;
+        Node initialCardsChoiceModal = null;
+        Node additionalCardsChoiceModal = null;
 
     }
 
@@ -38,13 +55,23 @@ public class GraphicalPlayer {
     }
 
     /**
-     * Prend un message — de type String — et l'ajoute au bas des informations sur le déroulement de la partie,
+     * Prend un message — de type <i>String</i> — et l'ajoute au bas des informations sur le déroulement de la partie,
      * qui sont présentées dans la partie inférieure de la vue des informations.
      *
      * @param info le message à passer
      */
     public void receiveInfo(String info) {
+        ObservableList<Text> newInfos = FXCollections.observableArrayList();
+        var text = new Text(info);
 
+        var effectiveSize = Math.min(this.infos.size(), MAX_DISPLAYED_INFORMATIONS - 1);
+
+        for (int index = 0; index < effectiveSize; index++) {
+            newInfos.add(this.infos.get(index));
+        }
+        newInfos.add(text);
+
+        this.infos.setAll(newInfos);
     }
 
     /**
@@ -56,10 +83,24 @@ public class GraphicalPlayer {
      * @param claimRouteHandler  le gestionnaire de prise de possession d'une route
      */
     public void startTurn(
-            ActionHandlers.DrawTicketsHandler drawTicketsHandler,
-            ActionHandlers.DrawCardHandler drawCardHandler,
-            ActionHandlers.ClaimRouteHandler claimRouteHandler
+            DrawTicketsHandler drawTicketsHandler,
+            DrawCardHandler drawCardHandler,
+            ClaimRouteHandler claimRouteHandler
     ) {
+        this.drawTicketsHandler.set(gameState.canDrawTickets() ? () -> {
+            drawTicketsHandler.onDrawTickets();
+            resetHandlers();
+        } : null);
+
+        this.drawCardHandler.set(gameState.canDrawCards() ? slot -> {
+            drawCardHandler.onDrawCard(slot);
+            resetHandlers();
+        } : null);
+
+        this.claimRouteHandler.set(((route, cards) -> {
+            claimRouteHandler.onClaimRoute(route, cards);
+            resetHandlers();
+        }));
     }
 
     /**
@@ -70,8 +111,13 @@ public class GraphicalPlayer {
      *
      * @throws IllegalArgumentException ssi la taille de <code>tickets</code> est différente de 3 ou 5
      */
-    public void chooseTickets(SortedBag<Ticket> tickets, ActionHandlers.ChooseTicketsHandler chooseTicketsHandler) {
+    public void chooseTickets(SortedBag<Ticket> tickets, ChooseTicketsHandler chooseTicketsHandler) {
         Preconditions.checkArgument(tickets.size() == 3 || tickets.size() == 5);
+
+        this.chooseTicketsHandler.set(tks -> {
+            chooseTicketsHandler.onChooseTickets(tks);
+            this.chooseTicketsHandler.set(null);
+        });
     }
 
     /**
@@ -82,8 +128,11 @@ public class GraphicalPlayer {
      *
      * @param drawCardHandler le gestionnaire de tirage de carte
      */
-    public void drawCard(ActionHandlers.DrawCardHandler drawCardHandler) {
-
+    public void drawCard(DrawCardHandler drawCardHandler) {
+        this.drawCardHandler.set(slot -> {
+            drawCardHandler.onDrawCard(slot);
+            resetHandlers();
+        });
     }
 
     /**
@@ -92,14 +141,17 @@ public class GraphicalPlayer {
      * qui ouvre une fenêtre similaire à celle de la figure 5 permettant au joueur de faire son choix ; une fois que
      * celui-ci a été fait et confirmé, le gestionnaire de choix est appelé avec le choix du joueur en argument
      *
-     * @param setsOfCards          la liste de multiensembles de cartes
-     * @param chooseTicketsHandler le gestionnaire de choix de cartes
+     * @param setsOfCards        la liste de multiensembles de cartes
+     * @param chooseCardsHandler le gestionnaire de choix de cartes
      */
     private void chooseClaimCards(
             List<SortedBag<Card>> setsOfCards,
-            ActionHandlers.ChooseTicketsHandler chooseTicketsHandler
+            ChooseCardsHandler chooseCardsHandler
     ) {
-
+        this.chooseCardsHandler.set(cards -> {
+            chooseCardsHandler.onChooseCards(cards);
+            this.chooseCardsHandler.set(null);
+        });
     }
 
     /**
@@ -113,8 +165,17 @@ public class GraphicalPlayer {
      */
     public void chooseAdditionalCards(
             List<SortedBag<Card>> setsOfCards,
-            ActionHandlers.ChooseCardsHandler chooseCardsHandler
+            ChooseCardsHandler chooseCardsHandler
     ) {
+        this.chooseCardsHandler.set(cards -> {
+            chooseCardsHandler.onChooseCards(cards);
+            this.chooseCardsHandler.set(null);
+        });
+    }
 
+    private void resetHandlers() {
+        this.drawCardHandler.set(null);
+        this.drawTicketsHandler.set(null);
+        this.claimRouteHandler.set(null);
     }
 }
