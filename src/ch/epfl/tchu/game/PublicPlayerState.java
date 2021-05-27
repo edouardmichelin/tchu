@@ -20,12 +20,19 @@ public class PublicPlayerState {
     private final int carCount;
     private final int claimPoints;
 
+    /**
+     * Construit un l'état du joueur qui est visible aux joueurs de la partie
+     *
+     * @param ticketCount le nombre de tickets du joueurs
+     * @param cardCount   le nombre de cartes du joueur
+     * @param routes      la liste de routes dont le joueur s'est emparé
+     */
     public PublicPlayerState(int ticketCount, int cardCount, List<Route> routes) {
         Preconditions.checkArgument(!(ticketCount < 0 || cardCount < 0));
 
         this.ticketCount = ticketCount;
         this.cardCount = cardCount;
-        this.routes = new ArrayList<>(routes);
+        this.routes = List.copyOf(routes);
         this.carCount = Constants.INITIAL_CAR_COUNT - getUsedCars(routes);
         this.claimPoints = getClaimPoints(routes);
     }
@@ -54,7 +61,7 @@ public class PublicPlayerState {
      * @return les routes dont le joueur s'est emparé
      */
     public List<Route> routes() {
-        return new ArrayList<>(this.routes);
+        return this.routes;
     }
 
     /**
@@ -86,7 +93,7 @@ public class PublicPlayerState {
     private static int getClaimPoints(List<Route> routes) {
         int claimPoints = 0;
         for (Route route : routes) {
-            claimPoints += Constants.ROUTE_CLAIM_POINTS.get(route.length());
+            claimPoints += route.claimPoints();
         }
         return claimPoints;
     }
