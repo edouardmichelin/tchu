@@ -92,14 +92,11 @@ public final class StationPartition implements StationConnectivity {
             int witness = -1;
             int representative = station;
 
-            while (true) {
+            while (witness != representative) {
                 representative = this.stations[representative];
-
-                if (witness == representative)
-                    return representative;
-
                 witness = representative;
             }
+            return representative;
         }
     }
 }
