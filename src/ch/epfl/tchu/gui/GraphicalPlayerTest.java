@@ -54,10 +54,10 @@ public final class GraphicalPlayerTest extends Application {
                 };
 
         ActionHandlers.ChooseTicketsHandler chooseTickets = tickets -> {
-            String names = tickets.stream().map(Ticket::toString).collect(Collectors.joining());
+            String names = tickets.stream().map(Ticket::toString).collect(Collectors.joining(" "));
             p.receiveInfo(String.format("J'ai tiré : %s\n", names));
             p.chooseTickets(SortedBag.of(ChMap.tickets().subList(5, 10)), tkts -> {
-                String namesT = tkts.stream().map(Ticket::toString).collect(Collectors.joining());
+                String namesT = tkts.stream().map(Ticket::toString).collect(Collectors.joining(" "));
                 p.receiveInfo(String.format("J'ai tiré : %s", namesT));
                 p.startTurn(drawTicketsH, drawCardH, claimRouteH);
             });

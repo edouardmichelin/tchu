@@ -37,11 +37,13 @@ final class ModalsViewCreator {
     public static Scene createTicketsChoiceView(
             ObservableList<Ticket> ticketsChoice,
             ObjectProperty<ChooseTicketsHandler> chooseTicketsHandler,
-            Stage owner
+            Stage owner,
+            boolean isInitial
     ) {
         assert isFxApplicationThread();
 
-        int choiceCount = ticketsChoice.size() - Constants.DISCARDABLE_TICKETS_COUNT;
+        int choiceCount =
+                (isInitial ? Constants.INITIAL_TICKETS_COUNT : Constants.IN_GAME_TICKETS_COUNT) - Constants.DISCARDABLE_TICKETS_COUNT;
 
         Text intro = new Text(String.format(StringsFr.CHOOSE_TICKETS,
                 choiceCount, StringsFr.plural(choiceCount)));
@@ -50,7 +52,7 @@ final class ModalsViewCreator {
 
         ListView<Ticket> choiceList = createListView(ticketsChoice);
 
-        Button confirmButton = createConfirmButton(choiceList, ticketsChoice.size());
+        Button confirmButton = createConfirmButton(choiceList, choiceCount);
         confirmButton.setOnAction(event -> {
             owner.hide();
             chooseTicketsHandler.get().onChooseTickets(SortedBag.of(choiceList.getSelectionModel().getSelectedItems()));
@@ -61,6 +63,14 @@ final class ModalsViewCreator {
         scene.getStylesheets().add("chooser.css");
 
         return scene;
+    }
+
+    public static Scene createTicketsChoiceView(
+            ObservableList<Ticket> ticketsChoice,
+            ObjectProperty<ChooseTicketsHandler> chooseTicketsHandler,
+            Stage owner
+    ) {
+        return createTicketsChoiceView(ticketsChoice, chooseTicketsHandler, owner, false);
     }
 
     public static Scene createCardsChoiceView(
@@ -78,7 +88,7 @@ final class ModalsViewCreator {
         ListView<SortedBag<Card>> choiceList = createListView(cardsChoice);
         choiceList.setCellFactory(v -> new TextFieldListCell<>(new CardBagStringConverter()));
 
-        Button confirmButton = createConfirmButton(choiceList, cardsChoice.size());
+        Button confirmButton = createConfirmButton(choiceList, isAdditional ? 0 : 1);
 
         confirmButton.setOnAction(event -> {
             owner.hide();

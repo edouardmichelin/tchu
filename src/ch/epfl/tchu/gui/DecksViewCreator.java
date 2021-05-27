@@ -45,7 +45,7 @@ final class DecksViewCreator {
 
         SortedBag<Card> hand = gameState.cards();
 
-        ObservableList<Ticket> playerTickets = FXCollections.observableArrayList(gameState.playerTickets());
+        ObservableList<Ticket> playerTickets = gameState.playerTickets();
         ListView<Ticket> ticketsView = new ListView<>(playerTickets);
         ticketsView.setId("tickets");
 

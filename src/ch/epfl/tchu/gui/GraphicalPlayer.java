@@ -8,7 +8,9 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
@@ -64,7 +66,7 @@ final class GraphicalPlayer {
         Node infoView = InfoViewCreator.createInfoView(playerId, playerNames, gameState, this.infos);
 
         this.initialTicketsChoiceModal = ModalsViewCreator
-                .createTicketsChoiceView(this.initialTicketsChoice, this.chooseTicketsHandler, modalStage);
+                .createTicketsChoiceView(this.initialTicketsChoice, this.chooseTicketsHandler, modalStage, true);
         this.ticketsChoiceModal = ModalsViewCreator
                 .createTicketsChoiceView(this.ticketsChoice, this.chooseTicketsHandler, modalStage);
         this.initialCardsChoiceModal = ModalsViewCreator
@@ -79,6 +81,9 @@ final class GraphicalPlayer {
 
         this.modalStage.initOwner(primaryStage);
         this.modalStage.initModality(Modality.WINDOW_MODAL);
+        this.modalStage.setOnCloseRequest(Event::consume);
+
+        dumpTree(handView);
 
         primaryStage.show();
     }
@@ -248,5 +253,22 @@ final class GraphicalPlayer {
         this.drawCardHandler.set(null);
         this.drawTicketsHandler.set(null);
         this.claimRouteHandler.set(null);
+    }
+
+    private static void dumpTree(Node root) {
+        dumpTree(0, root);
+    }
+
+    private static void dumpTree(int indent, Node root) {
+        System.out.printf("%s%s (id: %s, classes: [%s])%n",
+                " ".repeat(indent),
+                root.getTypeSelector(),
+                root.getId(),
+                String.join(", ", root.getStyleClass()));
+        if (root instanceof Parent) {
+            Parent parent = ((Parent) root);
+            for (Node child : parent.getChildrenUnmodifiable())
+                dumpTree(indent + 2, child);
+        }
     }
 }
