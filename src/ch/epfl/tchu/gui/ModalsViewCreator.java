@@ -6,6 +6,7 @@ import ch.epfl.tchu.game.Constants;
 import ch.epfl.tchu.gui.ActionHandlers.*;
 
 import ch.epfl.tchu.game.Ticket;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -13,12 +14,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.cell.TextFieldListCell;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+
 
 /**
  * Title
@@ -30,77 +31,83 @@ final class ModalsViewCreator {
     private ModalsViewCreator() {
     }
 
-
-    public static Node createInitialTicketsChoiceView(
-            ObservableList<Ticket> initialTicketsChoice,
-            ObjectProperty<ChooseTicketsHandler> chooseTicketsHandler
-    ) {
-
-        return new Pane();
-    }
-
     public static Node createTicketsChoiceView(
             ObservableList<Ticket> ticketsChoice,
-            ObjectProperty<ChooseTicketsHandler> chooseTicketsHandler
+            ObjectProperty<ChooseTicketsHandler> chooseTicketsHandler,
+            Stage owner
     ) {
-        return new Pane();
-    }
-
-    public static Node createInitialCardsChoiceView(
-            ObservableList<SortedBag<Card>> initialCardsChoice,
-            ObjectProperty<ChooseCardsHandler> chooseCardsHandler
-    ) {
-        return new Pane();
-    }
-
-    public static Node createAdditionalCardsChoiceView(
-            ObservableList<SortedBag<Card>> additionalCardsChoice,
-            ObjectProperty<ChooseCardsHandler> chooseCardsHandler
-    ) {
-        return new Pane();
-    }
-
-    private static VBox createTicketsChoice(
-            ObservableList<Ticket> choices,
-            ObjectProperty<ChooseTicketsHandler> handler
-    ) {
-        int choiceCount = choices.size() - Constants.DISCARDABLE_TICKETS_COUNT;
+        int choiceCount = ticketsChoice.size() - Constants.DISCARDABLE_TICKETS_COUNT;
 
         Text intro = new Text(String.format(StringsFr.CHOOSE_TICKETS,
                 choiceCount, StringsFr.plural(choiceCount)));
 
         TextFlow introBox = new TextFlow(intro);
 
-        Button confirmButton = new Button(StringsFr.CHOOSE);
+        ListView<Ticket> choiceList = createListView(ticketsChoice);
 
-        return new VBox(introBox, createListView(choices), confirmButton);
+        Button confirmButton = createConfirmButton(choiceList, ticketsChoice.size());
+        confirmButton.setOnAction(event -> {
+            owner.hide();
+            chooseTicketsHandler.get().onChooseTickets(SortedBag.of(choiceList.getSelectionModel().getSelectedItems()));
+        });
+
+        return new VBox(introBox, choiceList, confirmButton);
     }
 
-    private static Stage createCardsChoice(
-            ObservableList<SortedBag<Card>> choices,
-            ObjectProperty<ChooseCardsHandler> handler,
+    public static Node createCardsChoiceView(
+            ObservableList<SortedBag<Card>> cardsChoice,
+            ObjectProperty<ChooseCardsHandler> chooseCardsHandler,
+            Stage owner,
             boolean isAdditional
     ) {
         Text intro = new Text(isAdditional ? StringsFr.CHOOSE_ADDITIONAL_CARDS : StringsFr.CHOOSE_CARDS);
 
         TextFlow introBox = new TextFlow(intro);
 
-        ListView<SortedBag<Card>> choiceList = createListView(choices);
+        ListView<SortedBag<Card>> choiceList = createListView(cardsChoice);
         choiceList.setCellFactory(v -> new TextFieldListCell<>(new CardBagStringConverter()));
-        return null;
+
+        Button confirmButton = createConfirmButton(choiceList, cardsChoice.size());
+
+        confirmButton.setOnAction(event -> {
+            owner.hide();
+            chooseCardsHandler.get().onChooseCards(choiceList.getSelectionModel().getSelectedItem());
+        });
+
+        return new VBox(introBox, createListView(cardsChoice), confirmButton);
+    }
+
+    public static Node createCardsChoiceView(
+            ObservableList<SortedBag<Card>> cardsChoice,
+            ObjectProperty<ChooseCardsHandler> chooseCardsHandler,
+            Stage owner
+    ) {
+        return createCardsChoiceView(cardsChoice, chooseCardsHandler, owner, false);
     }
 
     private static <T> ListView<T> createListView(ObservableList<T> list) {
-        ListView<T> view = new ListView<T>(list);
+        ListView<T> view = new ListView<>(list);
         view.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         return view;
+    }
+
+    private static <T> Button createConfirmButton(ListView<T> choiceList, int requiredChoice) {
+        Button confirmButton = new Button(StringsFr.CHOOSE);
+        confirmButton.disableProperty().bind(Bindings.size(choiceList
+                .getSelectionModel()
+                .getSelectedItems())
+                .greaterThanOrEqualTo(requiredChoice)
+                .not()
+        );
+
+        return confirmButton;
     }
 
     private static class CardBagStringConverter extends StringConverter<SortedBag<Card>> {
 
         @Override
         public String toString(SortedBag<Card> object) {
-            return null;
+            return Info.getCardsInfo(object);
         }
 
         @Override

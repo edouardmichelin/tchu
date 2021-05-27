@@ -237,20 +237,20 @@ public final class Info {
                 StringsFr.plural(loserPoints));
     }
 
-    public String getCardsInfo(SortedBag<Card> cards) {
+    public static String getCardsInfo(SortedBag<Card> cards) {
         StringBuilder cardsInfo = new StringBuilder();
 
         int setSize = cards.toSet().size();
-        int i = 0;
+        int addedCardTypes = 0;
         for (Card card : cards.toSet()) {
-                if (i > 0)
-                    cardsInfo.append(i + 1 == setSize ? StringsFr.AND_SEPARATOR : ", ");
+                if (addedCardTypes > 0)
+                    cardsInfo.append(addedCardTypes + 1 == setSize ? StringsFr.AND_SEPARATOR : ", ");
 
                 int count = cards.countOf(card);
 
                 cardsInfo.append(count).append(" ").append(cardName(card, count));
 
-                i++;
+            addedCardTypes++;
         }
         return cardsInfo.toString();
     }

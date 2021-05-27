@@ -358,4 +358,5 @@ public class InfoTest {
                 "additionnel de 2 cartes.\n", new Info("inf").drewAdditionalCards(SortedBag.of(1, Card.VIOLET, 1,
                 Card.RED).union(SortedBag.of(1, Card.BLACK)), 2));
     }
+
 }
