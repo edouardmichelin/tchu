@@ -30,7 +30,9 @@ import javafx.scene.text.Text;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-class DecksViewCreator {
+final class DecksViewCreator {
+    private DecksViewCreator() {}
+
     /**
      * Permet de créer la vue de la main du joueur en fonction de l'état de jeu observable passé en argument. C'est à
      * dire la vue du panel du bas de la fenêtre du jeu. Elle content les cartes en main du joueur ainsi que la liste
@@ -43,8 +45,8 @@ class DecksViewCreator {
 
         SortedBag<Card> hand = gameState.cards();
 
-        ObservableList<Ticket> playerTickets = FXCollections.observableArrayList(gameState.playerTickets());
-        ListView<Ticket> ticketsView = new ListView<Ticket>(playerTickets);
+        ObservableList<Ticket> playerTickets = gameState.playerTickets();
+        ListView<Ticket> ticketsView = new ListView<>(playerTickets);
         ticketsView.setId("tickets");
 
         HBox handCardsView = new HBox();
@@ -76,11 +78,11 @@ class DecksViewCreator {
             ObjectProperty<DrawTicketsHandler> drawTickets,
             ObjectProperty<DrawCardHandler> drawCard
     ) {
-        Button drawTicketsButton = createDrawButton("Billets", gameState.ticketsPercentage());
+        Button drawTicketsButton = createDrawButton(StringsFr.TICKETS, gameState.ticketsPercentage());
         drawTicketsButton.setOnMouseClicked(event -> drawTickets.get().onDrawTickets());
         drawTicketsButton.disableProperty().bind(drawTickets.isNull());
 
-        Button drawCardsButton = createDrawButton("Cartes", gameState.cardsPercentage());
+        Button drawCardsButton = createDrawButton(StringsFr.CARDS, gameState.cardsPercentage());
         drawCardsButton.setOnMouseClicked(event -> drawCard.get().onDrawCard(-1));
         drawCardsButton.disableProperty().bind(drawCard.isNull());
 

@@ -25,7 +25,9 @@ import java.util.List;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-public class MapViewCreator {
+final class MapViewCreator {
+    private MapViewCreator() {}
+
     public static Node createMapView(
             ObservableGameState gameState,
             ObjectProperty<ClaimRouteHandler> claimRouteHandler,
