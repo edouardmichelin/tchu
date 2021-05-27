@@ -63,6 +63,7 @@ public final class CardState extends PublicCardState {
      * @throws IllegalArgumentException  si la pioche est vide
      */
     public CardState withDrawnFaceUpCard(int slot) {
+        Preconditions.checkArgument(!this.isDeckEmpty());
         List<Card> faceUpCards = this.faceUpCards();
         faceUpCards.set(Objects.checkIndex(slot, Constants.FACE_UP_CARDS_COUNT), this.deck.topCard());
         Deck<Card> remainingDeck = this.deck.withoutTopCard();
@@ -78,7 +79,7 @@ public final class CardState extends PublicCardState {
      * @throws IllegalArgumentException si la pioche est vide
      */
     public Card topDeckCard() {
-        Preconditions.checkArgument(this.deckSize() > 0);
+        Preconditions.checkArgument(!this.isDeckEmpty());
         return this.deck.topCard();
     }
 
