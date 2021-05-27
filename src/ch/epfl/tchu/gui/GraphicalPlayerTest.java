@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Title
@@ -52,6 +53,17 @@ public final class GraphicalPlayerTest extends Application {
                     p.receiveInfo(String.format("Je m'empare de %s avec %s", rn, cs));
                 };
 
-        p.startTurn(drawTicketsH, drawCardH, claimRouteH);
+        ActionHandlers.ChooseTicketsHandler chooseTickets = tickets -> {
+            String names = tickets.stream().map(Ticket::toString).collect(Collectors.joining());
+            p.receiveInfo(String.format("J'ai tiré : %s\n", names));
+            p.chooseTickets(SortedBag.of(ChMap.tickets().subList(5, 10)), tkts -> {
+                String namesT = tkts.stream().map(Ticket::toString).collect(Collectors.joining());
+                p.receiveInfo(String.format("J'ai tiré : %s", namesT));
+                p.startTurn(drawTicketsH, drawCardH, claimRouteH);
+            });
+        };
+
+        // p.startTurn(drawTicketsH, drawCardH, claimRouteH);
+        p.chooseTickets(SortedBag.of(ChMap.tickets().subList(0, 3)), chooseTickets);
     }
 }
