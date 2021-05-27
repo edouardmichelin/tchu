@@ -34,7 +34,7 @@ final class GraphicalPlayer {
 
     private final ObservableGameState gameState;
 
-    private final Stage modalStage = new Stage(StageStyle.UTILITY);
+    private final Stage modalStage;
     private final Scene initialTicketsChoiceModal;
     private final Scene ticketsChoiceModal;
     private final Scene initialCardsChoiceModal;
@@ -57,6 +57,7 @@ final class GraphicalPlayer {
         assert isFxApplicationThread();
 
         Stage primaryStage = new Stage();
+        this.modalStage = new Stage(StageStyle.UTILITY);
 
         this.gameState = new ObservableGameState(playerId);
 
