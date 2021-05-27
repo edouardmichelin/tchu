@@ -84,7 +84,7 @@ class Helpers {
         public Payload(String message) {
             String[] messageParts = message.split(Pattern.quote(" "), -1);
 
-            Preconditions.checkArgument(messageParts.length >= 2);
+            Preconditions.checkArgument(messageParts.length >= 1);
 
             this.id = MessageId.valueOf(messageParts[0]);
             this.content = List.of(messageParts).subList(1, messageParts.length);

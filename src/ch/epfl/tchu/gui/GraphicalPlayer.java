@@ -84,7 +84,7 @@ final class GraphicalPlayer {
         this.modalStage.initModality(Modality.WINDOW_MODAL);
         this.modalStage.setOnCloseRequest(Event::consume);
 
-        dumpTree(handView);
+        // dumpTree(handView);
 
         primaryStage.show();
     }

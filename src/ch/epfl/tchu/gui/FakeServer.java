@@ -19,7 +19,8 @@ public final class FakeServer {
             "INIT_PLAYERS 0 QWRh,Q2hhcmxlcw==",
             "RECEIVE_INFO QWRhIGpvdWVyYSBlbiBwcmVtaWVyLgoK",
             "SET_INITIAL_TICKETS 6,1,44,42,42",
-            "UPDATE_STATE 36:6,7,4,7,1;97;0:0:0;4;:0;4;: ;0,1,5,5;",
+            // "UPDATE_STATE 36:6,7,4,7,1;97;0:0:0;4;:0;4;: ;0,1,5,5;",
+            "UPDATE_STATE 36:6,7,2,0,6;97;0:1:0;4;!0;4;: ;0,1,5,5;",
             "CHOOSE_INITIAL_TICKETS");
 
     public static void main(String[] args) throws IOException {
