@@ -43,6 +43,9 @@ final class ObservableGameState {
         this.playerTickets = FXCollections.observableArrayList();
         this.playerHand = initializePlayerHand();
         this.claimableRoutes = initializeClaimableRoutes();
+
+        this.currentGameState = initializeGameState(playerId);
+        this.currentPlayerState = new PlayerState(SortedBag.of(), SortedBag.of(), List.of());
     }
 
     // region initializers
@@ -95,6 +98,21 @@ final class ObservableGameState {
         }
 
         return r;
+    }
+
+    private static PublicGameState initializeGameState(PlayerId playerId) {
+        Map<PlayerId, PublicPlayerState> playerState = new HashMap<>();
+
+        for (PlayerId player : PlayerId.ALL) {
+            playerState.put(player, new PublicPlayerState(0, 0, List.of()));
+        }
+
+        return new PublicGameState(
+                TICKETS_COUNT,
+                new PublicCardState(Card.ALL.subList(0, Constants.FACE_UP_CARDS_COUNT), 0, 0),
+                playerId,
+                playerState,
+                null);
     }
 
     // endregion
@@ -210,8 +228,11 @@ final class ObservableGameState {
 
     public interface ReadOnlyPlayerBelongingsProperty {
         ReadOnlyIntegerProperty ownedTickets();
+
         ReadOnlyIntegerProperty ownedCards();
+
         ReadOnlyIntegerProperty ownedCars();
+
         ReadOnlyIntegerProperty claimPoints();
     }
 

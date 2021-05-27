@@ -9,10 +9,17 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.util.List;
 import java.util.Map;
+
+import static javafx.application.Platform.isFxApplicationThread;
 
 /**
  * Représente l'interface graphique d'un joueur de tCHu
@@ -24,6 +31,12 @@ final class GraphicalPlayer {
     private final int MAX_DISPLAYED_INFORMATIONS = 5;
 
     private final ObservableGameState gameState;
+
+    private final Stage modalStage = new Stage(StageStyle.UTILITY);
+    private final Scene initialTicketsChoiceModal;
+    private final Scene ticketsChoiceModal;
+    private final Scene initialCardsChoiceModal;
+    private final Scene additionalCardsChoiceModal;
 
     private final ObjectProperty<DrawTicketsHandler> drawTicketsHandler = new SimpleObjectProperty<>();
     private final ObjectProperty<DrawCardHandler> drawCardHandler = new SimpleObjectProperty<>();
@@ -39,6 +52,10 @@ final class GraphicalPlayer {
     private final ObservableList<SortedBag<Card>> additionalCardsChoice = FXCollections.observableArrayList();
 
     public GraphicalPlayer(PlayerId playerId, Map<PlayerId, String> playerNames) {
+        assert isFxApplicationThread();
+
+        Stage primaryStage = new Stage();
+
         this.gameState = new ObservableGameState(playerId);
 
         Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, this::chooseClaimCards);
@@ -46,15 +63,24 @@ final class GraphicalPlayer {
         Node handView = DecksViewCreator.createHandView(gameState);
         Node infoView = InfoViewCreator.createInfoView(playerId, playerNames, gameState, this.infos);
 
-        Node initialTicketsChoiceModal = ModalsViewCreator
-                .createInitialTicketsChoiceView(this.initialTicketsChoice, this.chooseTicketsHandler);
-        Node ticketsChoiceModal = ModalsViewCreator
-                .createTicketsChoiceView(this.ticketsChoice, this.chooseTicketsHandler);
-        Node initialCardsChoiceModal = ModalsViewCreator
-                .createInitialCardsChoiceView(this.initialCardsChoice, this.chooseCardsHandler);
-        Node additionalCardsChoiceModal = ModalsViewCreator
-                .createAdditionalCardsChoiceView(this.additionalCardsChoice, this.chooseCardsHandler);
+        this.initialTicketsChoiceModal = ModalsViewCreator
+                .createTicketsChoiceView(this.initialTicketsChoice, this.chooseTicketsHandler, modalStage);
+        this.ticketsChoiceModal = ModalsViewCreator
+                .createTicketsChoiceView(this.ticketsChoice, this.chooseTicketsHandler, modalStage);
+        this.initialCardsChoiceModal = ModalsViewCreator
+                .createCardsChoiceView(this.initialCardsChoice, this.chooseCardsHandler, modalStage);
+        this.additionalCardsChoiceModal = ModalsViewCreator
+                .createCardsChoiceView(this.additionalCardsChoice, this.chooseCardsHandler, modalStage, true);
 
+        BorderPane root = new BorderPane(mapView, null, cardsView, handView, infoView);
+
+        primaryStage.setScene(new Scene(root));
+        primaryStage.setTitle(String.format("tCHu — %s", playerNames.get(playerId)));
+
+        this.modalStage.initOwner(primaryStage);
+        this.modalStage.initModality(Modality.WINDOW_MODAL);
+
+        primaryStage.show();
     }
 
     public void setState(PublicGameState gameState, PlayerState playerState) {
@@ -68,16 +94,18 @@ final class GraphicalPlayer {
      * @param info le message à passer
      */
     public void receiveInfo(String info) {
+        assert isFxApplicationThread();
+
         Text text = new Text(info);
         ObservableList<Text> newInfos = FXCollections.observableArrayList();
 
         int effectiveSize = Math.min(this.infos.size(), MAX_DISPLAYED_INFORMATIONS - 1);
 
+        newInfos.add(text);
+
         for (int index = 0; index < effectiveSize; index++) {
             newInfos.add(this.infos.get(index));
         }
-
-        newInfos.add(text);
 
         this.infos.setAll(newInfos);
     }
@@ -95,6 +123,8 @@ final class GraphicalPlayer {
             DrawCardHandler drawCardHandler,
             ClaimRouteHandler claimRouteHandler
     ) {
+        assert isFxApplicationThread();
+
         this.drawTicketsHandler.set(gameState.canDrawTickets() ? () -> {
             drawTicketsHandler.onDrawTickets();
             resetHandlers();
@@ -120,21 +150,28 @@ final class GraphicalPlayer {
      * @throws IllegalArgumentException ssi la taille de <code>tickets</code> est différente de 3 ou 5
      */
     public void chooseTickets(SortedBag<Ticket> tickets, ChooseTicketsHandler chooseTicketsHandler) {
+        assert isFxApplicationThread();
+
         Preconditions.checkArgument(
                 tickets.size() == Constants.IN_GAME_TICKETS_COUNT ||
                         tickets.size() == Constants.INITIAL_TICKETS_COUNT
         );
 
-        if (tickets.size() == Constants.IN_GAME_TICKETS_COUNT)
+        if (tickets.size() == Constants.IN_GAME_TICKETS_COUNT) {
             this.ticketsChoice.setAll(tickets.toList());
-        else
+            this.modalStage.setScene(this.ticketsChoiceModal);
+        } else {
             this.initialTicketsChoice.setAll(tickets.toList());
+            this.modalStage.setScene(this.initialTicketsChoiceModal);
+        }
+
+        this.modalStage.show();
 
         this.chooseTicketsHandler.set(tks -> {
-            chooseTicketsHandler.onChooseTickets(tks);
-            this.chooseTicketsHandler.set(null);
             this.initialTicketsChoice.clear();
             this.ticketsChoice.clear();
+            this.chooseTicketsHandler.set(null);
+            chooseTicketsHandler.onChooseTickets(tks);
         });
     }
 
@@ -147,6 +184,8 @@ final class GraphicalPlayer {
      * @param drawCardHandler le gestionnaire de tirage de carte
      */
     public void drawCard(DrawCardHandler drawCardHandler) {
+        assert isFxApplicationThread();
+
         this.drawCardHandler.set(slot -> {
             drawCardHandler.onDrawCard(slot);
             resetHandlers();
@@ -166,12 +205,16 @@ final class GraphicalPlayer {
             List<SortedBag<Card>> setsOfCards,
             ChooseCardsHandler chooseCardsHandler
     ) {
+        assert isFxApplicationThread();
+
         this.initialCardsChoice.setAll(setsOfCards);
+        this.modalStage.setScene(this.initialCardsChoiceModal);
+        this.modalStage.show();
 
         this.chooseCardsHandler.set(cards -> {
-            chooseCardsHandler.onChooseCards(cards);
             this.chooseCardsHandler.set(null);
             this.initialCardsChoice.clear();
+            chooseCardsHandler.onChooseCards(cards);
         });
     }
 
@@ -188,12 +231,16 @@ final class GraphicalPlayer {
             List<SortedBag<Card>> setsOfCards,
             ChooseCardsHandler chooseCardsHandler
     ) {
+        assert isFxApplicationThread();
+
         this.additionalCardsChoice.setAll(setsOfCards);
+        this.modalStage.setScene(this.additionalCardsChoiceModal);
+        this.modalStage.show();
 
         this.chooseCardsHandler.set(cards -> {
-            chooseCardsHandler.onChooseCards(cards);
             this.chooseCardsHandler.set(null);
             this.additionalCardsChoice.clear();
+            chooseCardsHandler.onChooseCards(cards);
         });
     }
 

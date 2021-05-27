@@ -10,6 +10,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
@@ -19,6 +20,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+
+import static javafx.application.Platform.isFxApplicationThread;
 
 
 /**
@@ -31,11 +34,13 @@ final class ModalsViewCreator {
     private ModalsViewCreator() {
     }
 
-    public static Node createTicketsChoiceView(
+    public static Scene createTicketsChoiceView(
             ObservableList<Ticket> ticketsChoice,
             ObjectProperty<ChooseTicketsHandler> chooseTicketsHandler,
             Stage owner
     ) {
+        assert isFxApplicationThread();
+
         int choiceCount = ticketsChoice.size() - Constants.DISCARDABLE_TICKETS_COUNT;
 
         Text intro = new Text(String.format(StringsFr.CHOOSE_TICKETS,
@@ -51,15 +56,21 @@ final class ModalsViewCreator {
             chooseTicketsHandler.get().onChooseTickets(SortedBag.of(choiceList.getSelectionModel().getSelectedItems()));
         });
 
-        return new VBox(introBox, choiceList, confirmButton);
+        Scene scene = new Scene(new VBox(introBox, choiceList, confirmButton));
+
+        scene.getStylesheets().add("chooser.css");
+
+        return scene;
     }
 
-    public static Node createCardsChoiceView(
+    public static Scene createCardsChoiceView(
             ObservableList<SortedBag<Card>> cardsChoice,
             ObjectProperty<ChooseCardsHandler> chooseCardsHandler,
             Stage owner,
             boolean isAdditional
     ) {
+        assert isFxApplicationThread();
+
         Text intro = new Text(isAdditional ? StringsFr.CHOOSE_ADDITIONAL_CARDS : StringsFr.CHOOSE_CARDS);
 
         TextFlow introBox = new TextFlow(intro);
@@ -74,10 +85,14 @@ final class ModalsViewCreator {
             chooseCardsHandler.get().onChooseCards(choiceList.getSelectionModel().getSelectedItem());
         });
 
-        return new VBox(introBox, createListView(cardsChoice), confirmButton);
+        Scene scene = new Scene(new VBox(introBox, createListView(cardsChoice), confirmButton));
+
+        scene.getStylesheets().add("chooser.css");
+
+        return scene;
     }
 
-    public static Node createCardsChoiceView(
+    public static Scene createCardsChoiceView(
             ObservableList<SortedBag<Card>> cardsChoice,
             ObjectProperty<ChooseCardsHandler> chooseCardsHandler,
             Stage owner
