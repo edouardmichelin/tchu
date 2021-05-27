@@ -4,12 +4,16 @@ import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
 import ch.epfl.tchu.gui.ActionHandlers.*;
+import static javafx.application.Platform.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.Map;
@@ -39,6 +43,11 @@ final class GraphicalPlayer {
     private final ObservableList<SortedBag<Card>> additionalCardsChoice = FXCollections.observableArrayList();
 
     public GraphicalPlayer(PlayerId playerId, Map<PlayerId, String> playerNames) {
+        assert isFxApplicationThread();
+
+        Stage primaryStage = new Stage();
+        Stage modalStage = new Stage();
+
         this.gameState = new ObservableGameState(playerId);
 
         Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, this::chooseClaimCards);
@@ -47,13 +56,16 @@ final class GraphicalPlayer {
         Node infoView = InfoViewCreator.createInfoView(playerId, playerNames, gameState, this.infos);
 
         Node initialTicketsChoiceModal = ModalsViewCreator
-                .createInitialTicketsChoiceView(this.initialTicketsChoice, this.chooseTicketsHandler);
+                .createTicketsChoiceView(this.initialTicketsChoice, this.chooseTicketsHandler);
         Node ticketsChoiceModal = ModalsViewCreator
                 .createTicketsChoiceView(this.ticketsChoice, this.chooseTicketsHandler);
         Node initialCardsChoiceModal = ModalsViewCreator
                 .createInitialCardsChoiceView(this.initialCardsChoice, this.chooseCardsHandler);
         Node additionalCardsChoiceModal = ModalsViewCreator
                 .createAdditionalCardsChoiceView(this.additionalCardsChoice, this.chooseCardsHandler);
+
+        BorderPane root = new BorderPane(mapView, null, cardsView, handView, infoView);
+        primaryStage.setScene(new Scene(root));
 
     }
 
@@ -68,6 +80,8 @@ final class GraphicalPlayer {
      * @param info le message à passer
      */
     public void receiveInfo(String info) {
+        assert isFxApplicationThread();
+
         Text text = new Text(info);
         ObservableList<Text> newInfos = FXCollections.observableArrayList();
 
@@ -95,6 +109,8 @@ final class GraphicalPlayer {
             DrawCardHandler drawCardHandler,
             ClaimRouteHandler claimRouteHandler
     ) {
+        assert isFxApplicationThread();
+
         this.drawTicketsHandler.set(gameState.canDrawTickets() ? () -> {
             drawTicketsHandler.onDrawTickets();
             resetHandlers();
@@ -120,6 +136,8 @@ final class GraphicalPlayer {
      * @throws IllegalArgumentException ssi la taille de <code>tickets</code> est différente de 3 ou 5
      */
     public void chooseTickets(SortedBag<Ticket> tickets, ChooseTicketsHandler chooseTicketsHandler) {
+        assert isFxApplicationThread();
+
         Preconditions.checkArgument(
                 tickets.size() == Constants.IN_GAME_TICKETS_COUNT ||
                         tickets.size() == Constants.INITIAL_TICKETS_COUNT
@@ -147,6 +165,8 @@ final class GraphicalPlayer {
      * @param drawCardHandler le gestionnaire de tirage de carte
      */
     public void drawCard(DrawCardHandler drawCardHandler) {
+        assert isFxApplicationThread();
+
         this.drawCardHandler.set(slot -> {
             drawCardHandler.onDrawCard(slot);
             resetHandlers();
@@ -166,6 +186,8 @@ final class GraphicalPlayer {
             List<SortedBag<Card>> setsOfCards,
             ChooseCardsHandler chooseCardsHandler
     ) {
+        assert isFxApplicationThread();
+
         this.initialCardsChoice.setAll(setsOfCards);
 
         this.chooseCardsHandler.set(cards -> {
@@ -188,6 +210,8 @@ final class GraphicalPlayer {
             List<SortedBag<Card>> setsOfCards,
             ChooseCardsHandler chooseCardsHandler
     ) {
+        assert isFxApplicationThread();
+
         this.additionalCardsChoice.setAll(setsOfCards);
 
         this.chooseCardsHandler.set(cards -> {
