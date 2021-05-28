@@ -14,6 +14,8 @@ import java.util.Objects;
  * @author Julien Jordan (315429)
  */
 public class PublicGameState {
+    private final int MIN_CARDS_LEFT_COUNT = 5;
+
     private final int ticketsCount;
     private final PublicCardState cardState;
     private final PlayerId currentPlayerId;
@@ -35,7 +37,7 @@ public class PublicGameState {
      * @param lastPlayer      le dernier joueur
      * @throws IllegalArgumentException si la taille de la pioche est strictement négative
      * @throws IllegalArgumentException si playerState ne contient pas exactement deux paires clef/valeur
-     * @throws NullPointerException si l'un des autres arguments (lastPlayer excepté !) est nul
+     * @throws NullPointerException     si l'un des autres arguments (lastPlayer excepté !) est nul
      */
     public PublicGameState(
             int ticketsCount,
@@ -48,7 +50,7 @@ public class PublicGameState {
         Preconditions.checkArgument(playerState.size() == PlayerId.COUNT);
 
         this.ticketsCount = ticketsCount;
-        this.playerState = playerState;
+        this.playerState = Map.copyOf(playerState);
 
         this.cardState = Objects.requireNonNull(cardState);
         this.currentPlayerId = Objects.requireNonNull(currentPlayerId);
@@ -90,7 +92,7 @@ public class PublicGameState {
      * elles au moins 5 cartes
      */
     public boolean canDrawCards() {
-        return (this.cardState.deckSize() + this.cardState.discardsSize()) >= 5;
+        return (this.cardState.deckSize() + this.cardState.discardsSize()) >= MIN_CARDS_LEFT_COUNT;
     }
 
     /**

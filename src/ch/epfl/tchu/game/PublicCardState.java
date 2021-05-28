@@ -29,17 +29,6 @@ public class PublicCardState {
     }
 
     /**
-     * Retourne le nombre total de cartes qui ne sont pas en main des joueurs, à savoir le nombre qui sont visibles,
-     * celles de la pioche et celles de la défausse
-     *
-     * @return le nombre total de cartes qui ne sont pas en main des joueurs,  à savoir le nombre qui sont visibles,
-     * celles de la pioche et celles de la défausse
-     */
-    public int totalSize() {
-        return Constants.FACE_UP_CARDS_COUNT + this.deckSize + this.discardsSize;
-    }
-
-    /**
      * Retourne les cartes face visibles
      *
      * @return les cartes face visibles

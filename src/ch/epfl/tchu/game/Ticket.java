@@ -8,6 +8,8 @@ package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.Preconditions;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,9 +33,9 @@ public final class Ticket implements Comparable<Ticket> {
      */
     public Ticket(List<Trip> trips) {
         Preconditions.checkArgument(!trips.isEmpty());
-
-        this.trips = tryStoreTrips(trips);
-        this.text = computeText(trips);
+        List<Trip> tripsCopy = List.copyOf(trips);
+        this.trips = tryStoreTrips(tripsCopy);
+        this.text = computeText(tripsCopy);
     }
 
     /**
@@ -74,9 +76,9 @@ public final class Ticket implements Comparable<Ticket> {
                 .stream()
                 .allMatch(trip -> trip.from().name().equals(witness));
 
-        if (validator) return trips;
+        Preconditions.checkArgument(validator);
 
-        throw new IllegalArgumentException();
+        return trips;
     }
 
     /**

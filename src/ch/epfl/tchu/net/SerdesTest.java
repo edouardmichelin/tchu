@@ -163,7 +163,6 @@ public class SerdesTest {
         assertEquals(a.deckSize(), c.deckSize());
         assertEquals(a.discardsSize(), c.discardsSize());
         assertEquals(a.faceUpCard(3), c.faceUpCard(3));
-        assertEquals(a.totalSize(), c.totalSize());
         assertEquals(a.faceUpCards(), c.faceUpCards());
     }
 
