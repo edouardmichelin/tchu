@@ -19,6 +19,9 @@ import java.util.regex.Pattern;
 final class Helpers {
     private Helpers() {}
 
+    /**
+     * Repprésente un gestionnaire de messages envoyés sur le réseau
+     */
     public static class MessageHandler {
         private final BufferedReader reader;
         private final BufferedWriter writer;
@@ -33,6 +36,10 @@ final class Helpers {
             this.writer = Objects.requireNonNull(writer);
         }
 
+        /**
+         * Libère l'espace pris par le lecteur et l'écrivain
+         * @throws IOException
+         */
         public void dispose() throws IOException {
             Preconditions.checkArgument(this.reader != null);
             Preconditions.checkArgument(this.writer != null);
@@ -41,6 +48,10 @@ final class Helpers {
             this.writer.close();
         }
 
+        /**
+         * Retourne <i>true</i> ssi le lecteur est prêt à lire un message sur le réseau
+         * @return
+         */
         public boolean ready() {
             if (this.reader == null) return false;
             try {
@@ -54,6 +65,11 @@ final class Helpers {
             return String.format("%s %s\n", messageId.name(), message);
         }
 
+        /**
+         * Envois un message sur le réseau
+         * @param messageId id du message
+         * @param message contenu seérialisé du message
+         */
         public void post(MessageId messageId, String message) {
             Preconditions.checkArgument(this.writer != null);
 
@@ -65,6 +81,10 @@ final class Helpers {
             }
         }
 
+        /**
+         * Cherche un message sur le réseau et le récupère
+         * @return un <code>Payload</code> qui contient le message
+         */
         public Payload get() {
             Preconditions.checkArgument(this.reader != null);
 
@@ -77,10 +97,17 @@ final class Helpers {
     }
 
 
+    /**
+     * Représente le contenu d'un message qui transit sur le réseau
+     */
     public static class Payload {
         private final MessageId id;
         private final List<String> content;
 
+        /**
+         * Construit un message destiné à être envoyé sur le réseau
+         * @param message
+         */
         public Payload(String message) {
             String[] messageParts = message.split(Pattern.quote(" "), -1);
 
@@ -90,10 +117,18 @@ final class Helpers {
             this.content = List.of(messageParts).subList(1, messageParts.length);
         }
 
+        /**
+         * Retourne l'id du message
+         * @return l'id du message
+         */
         public MessageId id() {
             return this.id;
         }
 
+        /**
+         * Retourne le contenu sérialisé du message
+         * @return le contenu sérialisé du message
+         */
         public List<String> content() {
             return this.content;
         }
