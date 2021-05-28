@@ -3,10 +3,7 @@ package ch.epfl.tchu.game;
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Représente l'état d'une partie
@@ -15,6 +12,8 @@ import java.util.TreeMap;
  * @author Julien Jordan (315429)
  */
 public final class GameState extends PublicGameState {
+
+    private final int CAR_COUNT_LAST_TURN_CONDITION = 2;
 
     private final CardState cardState;
     private final Deck<Ticket> tickets;
@@ -31,7 +30,7 @@ public final class GameState extends PublicGameState {
 
         this.cardState = cardState;
         this.tickets = tickets;
-        this.playerState = playerState;
+        this.playerState = Map.copyOf(playerState);
     }
 
     /**
@@ -177,14 +176,16 @@ public final class GameState extends PublicGameState {
      */
     public GameState withInitiallyChosenTickets(PlayerId playerId, SortedBag<Ticket> chosenTickets) {
         Preconditions.checkArgument(!(this.playerState.get(playerId).ticketCount() > 0));
-        GameState newGameState = this;
-        newGameState.playerState.put(playerId, this.playerState.get(playerId).withAddedTickets(chosenTickets));
-        return newGameState;
+        Map<PlayerId, PlayerState> newPlayerStates = new HashMap<>(this.playerState);
+        newPlayerStates.put(playerId, this.playerState.get(playerId).withAddedTickets(chosenTickets));
+
+        return new GameState(this.tickets, this.cardState, this.currentPlayerId(), newPlayerStates, this.lastPlayer());
     }
 
     /**
      * Retourne un état identique au récepteur, mais dans lequel le joueur courant a tiré les billets drawnTickets du
-     * sommet de la pioche, et choisi de garder ceux contenus dans chosenTicket ; lève <i>IllegalArgumentException</i> si
+     * sommet de la pioche, et choisi de garder ceux contenus dans chosenTicket ; lève
+     * <i>IllegalArgumentException</i> si
      * l'ensemble des billets gardés n'est pas inclus dans celui des billets tirés
      *
      * @param drawnTickets  les tickets tirés
@@ -196,13 +197,12 @@ public final class GameState extends PublicGameState {
     public GameState withChosenAdditionalTickets(SortedBag<Ticket> drawnTickets, SortedBag<Ticket> chosenTickets) {
         Preconditions.checkArgument(drawnTickets.contains(chosenTickets));
 
-        GameState newGameState = new GameState(this.tickets.withoutTopCards(drawnTickets.size()), this.cardState,
-                this.currentPlayerId(), this.playerState, this.lastPlayer());
+        Map<PlayerId, PlayerState> newPlayerStates = new HashMap<>(this.playerState);
+        newPlayerStates.put(this.currentPlayerId(),
+                this.playerState.get(this.currentPlayerId()).withAddedTickets(chosenTickets));
 
-        newGameState.playerState.put(this.currentPlayerId(),
-                newGameState.playerState.get(this.currentPlayerId()).withAddedTickets(chosenTickets));
-
-        return newGameState;
+        return new GameState(this.tickets.withoutTopCards(drawnTickets.size()), this.cardState,
+                this.currentPlayerId(), newPlayerStates, this.lastPlayer());
     }
 
     /**
@@ -220,13 +220,13 @@ public final class GameState extends PublicGameState {
         Card pickedCard = this.cardState.faceUpCard(slot);
         CardState newCardState = this.cardState.withDrawnFaceUpCard(slot);
 
-        GameState newGameState = new GameState(this.tickets, newCardState, this.currentPlayerId(), this.playerState,
+        Map<PlayerId, PlayerState> newPlayerStates = new HashMap<>(this.playerState);
+        newPlayerStates.put(this.currentPlayerId(),
+                this.playerState.get(this.currentPlayerId()).withAddedCard(pickedCard));
+
+
+        return new GameState(this.tickets, newCardState, this.currentPlayerId(), newPlayerStates,
                 this.lastPlayer());
-
-        newGameState.playerState.put(this.currentPlayerId(),
-                newGameState.playerState.get(this.currentPlayerId()).withAddedCard(pickedCard));
-
-        return newGameState;
     }
 
     /**
@@ -240,14 +240,13 @@ public final class GameState extends PublicGameState {
     public GameState withBlindlyDrawnCard() {
         Preconditions.checkArgument(this.canDrawCards());
         Card drawnCard = this.cardState.topDeckCard();
-        GameState newGameState = new GameState(this.tickets, this.cardState.withoutTopDeckCard(),
-                this.currentPlayerId(),
-                this.playerState, this.lastPlayer());
 
-        newGameState.playerState.put(this.currentPlayerId(),
-                newGameState.playerState.get(this.currentPlayerId()).withAddedCard(drawnCard));
+        Map<PlayerId, PlayerState> newPlayerStates = new HashMap<>(this.playerState);
+        newPlayerStates.put(this.currentPlayerId(),
+                this.playerState.get(this.currentPlayerId()).withAddedCard(drawnCard));
 
-        return newGameState;
+        return new GameState(this.tickets, this.cardState.withoutTopDeckCard(), this.currentPlayerId(),
+                newPlayerStates, this.lastPlayer());
     }
 
     /**
@@ -260,13 +259,12 @@ public final class GameState extends PublicGameState {
      * donnée au moyen des cartes données
      */
     public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
-        GameState newGameState = new GameState(this.tickets, this.cardState.withMoreDiscardedCards(cards),
-                this.currentPlayerId(), this.playerState, this.lastPlayer());
+        Map<PlayerId, PlayerState> newPlayerStates = new HashMap<>(this.playerState);
+        newPlayerStates.put(this.currentPlayerId(),
+                this.playerState.get(this.currentPlayerId()).withClaimedRoute(route, cards));
 
-        newGameState.playerState.put(this.currentPlayerId(),
-                newGameState.playerState.get(this.currentPlayerId()).withClaimedRoute(route, cards));
-
-        return newGameState;
+        return new GameState(this.tickets, this.cardState.withMoreDiscardedCards(cards),
+                this.currentPlayerId(), newPlayerStates, this.lastPlayer());
     }
 
     /**
@@ -279,7 +277,8 @@ public final class GameState extends PublicGameState {
      * uniquement à la fin du tour d'un joueur
      */
     public boolean lastTurnBegins() {
-        boolean hasCurrentPlayerTwoCarsOrLess = this.playerState.get(this.currentPlayerId()).carCount() <= 2;
+        boolean hasCurrentPlayerTwoCarsOrLess =
+                this.playerState.get(this.currentPlayerId()).carCount() <= CAR_COUNT_LAST_TURN_CONDITION;
         boolean isLastPlayerUnknown = this.lastPlayer() == null;
 
         return isLastPlayerUnknown && hasCurrentPlayerTwoCarsOrLess;
