@@ -216,7 +216,6 @@ public final class GameState extends PublicGameState {
      * @throws IllegalArgumentException s'il n'est pas possible de tirer des cartes
      */
     public GameState withDrawnFaceUpCard(int slot) {
-        Preconditions.checkArgument(this.canDrawCards());
         Card pickedCard = this.cardState.faceUpCard(slot);
         CardState newCardState = this.cardState.withDrawnFaceUpCard(slot);
 
@@ -238,7 +237,6 @@ public final class GameState extends PublicGameState {
      * @throws IllegalArgumentException s'il n'est pas possible de tirer des cartes
      */
     public GameState withBlindlyDrawnCard() {
-        Preconditions.checkArgument(this.canDrawCards());
         Card drawnCard = this.cardState.topDeckCard();
 
         Map<PlayerId, PlayerState> newPlayerStates = new HashMap<>(this.playerState);

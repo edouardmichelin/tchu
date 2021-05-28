@@ -81,18 +81,7 @@ public final class PlayerState extends PublicPlayerState {
      * @return un état identique au récepteur, si ce n'est que le joueur possède en plus la carte donnée
      */
     public PlayerState withAddedCard(Card card) {
-        return withAddedCards(SortedBag.of(card));
-    }
-
-    /**
-     * Retourne un état identique au récepteur, si ce n'est que le joueur possède en plus les cartes données
-     *
-     * @param additionalCards l'ensemble de cartes à ajouter
-     * @return un état identique au récepteur, si ce n'est que le joueur possède en plus les cartes données
-     */
-    public PlayerState withAddedCards(SortedBag<Card> additionalCards) {
-        SortedBag<Card> union = this.cards.union(additionalCards);
-        return new PlayerState(this.tickets, union, this.routes());
+        return new PlayerState(this.tickets, this.cards.union(SortedBag.of(card)), this.routes());
     }
 
     /**
@@ -129,19 +118,16 @@ public final class PlayerState extends PublicPlayerState {
      *
      * @param additionalCardsCount le nombre de cartes additionnel à défausser pour s'emparer du tunnel
      * @param initialCards         les cartes initialement posées pour s'eparer du tunnel
-     * @param drawnCards           la pioche de 3 cartes qui définissent le nombre de cartes additionnelles à défausser
      * @return la liste de tous les ensembles de cartes que le joueur pourrait utiliser pour s'emparer d'un
      * tunnel, trié par ordre croissant du nombre de cartes locomotives,
      */
     public List<SortedBag<Card>> possibleAdditionalCards(
             int additionalCardsCount,
-            SortedBag<Card> initialCards,
-            SortedBag<Card> drawnCards
+            SortedBag<Card> initialCards
     ) {
         Preconditions.checkArgument(additionalCardsCount >= 1 && additionalCardsCount <= Constants.ADDITIONAL_TUNNEL_CARDS);
         Preconditions.checkArgument(!initialCards.isEmpty());
         Preconditions.checkArgument(initialCards.toSet().size() <= 2);
-        Preconditions.checkArgument(drawnCards.size() == Constants.ADDITIONAL_TUNNEL_CARDS);
 
         Card initialType = Card.LOCOMOTIVE;
         for (Card card : initialCards) {

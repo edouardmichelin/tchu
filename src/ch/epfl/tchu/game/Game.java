@@ -148,7 +148,7 @@ public final class Game {
                         if (additionalCardsCount >= 1) {
                             List<SortedBag<Card>> possibleAdditionalCards =
                                     currentPlayerState.possibleAdditionalCards(additionalCardsCount,
-                                            initialClaimCards, drawnCards);
+                                            initialClaimCards);
 
                             currentGameState = currentGameState.withMoreDiscardedCards(drawnCards);
 
