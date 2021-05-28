@@ -58,8 +58,6 @@ public final class RemotePlayerClient implements AutoCloseable {
             if (this.handler.ready()) {
                 Helpers.Payload message = this.handler.get();
 
-                System.out.println(message.id());
-
                 switch (message.id()) {
                     case CARDS:
                         SortedBag<Card> cards = this.player.initialClaimCards();

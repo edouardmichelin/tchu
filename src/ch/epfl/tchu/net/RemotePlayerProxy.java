@@ -80,11 +80,7 @@ public final class RemotePlayerProxy implements Player, AutoCloseable {
 
         Helpers.Payload message = this.handler.get();
 
-        System.out.println(message.id());
-
         Preconditions.checkArgument(message.id().equals(MessageId.CHOOSE_INITIAL_TICKETS));
-
-        var t = Serdes.BAG_TICKET.deserialize(message.content().get(0));
 
         return Serdes.BAG_TICKET.deserialize(message.content().get(0));
     }
