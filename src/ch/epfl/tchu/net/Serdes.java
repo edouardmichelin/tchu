@@ -175,7 +175,7 @@ public final class Serdes {
             }
     );
 
-    private static final Serde<List<PublicPlayerState>> LIST_PUBLICPLAYERSTATE = Serde.listOf(PUBLICPLAYERSTATE, "!");
+    private static final Serde<List<PublicPlayerState>> LIST_PUBLICPLAYERSTATE = Serde.listOf(PUBLICPLAYERSTATE, ":");
 
     /**
      * Serde gérant l'état publique de la partie
@@ -198,11 +198,15 @@ public final class Serdes {
                  */
                 String[] params = str.split(Pattern.quote(":"), -1);
 
-                Preconditions.checkArgument(params.length == 5);
+                int indexOffset = 3;
 
-                List<PublicPlayerState> playerStates = LIST_PUBLICPLAYERSTATE.deserialize(params[3]);
+                Preconditions.checkArgument(params.length == ((indexOffset + 1) + PlayerId.COUNT));
 
-                Preconditions.checkArgument(playerStates.size() == PlayerId.COUNT);
+                List<PublicPlayerState> playerStates = new ArrayList<>(PlayerId.COUNT);
+
+                for (PlayerId player : ALL_PLAYERID) {
+                    playerStates.add(PUBLICPLAYERSTATE.deserialize(params[indexOffset + player.ordinal()]));
+                }
 
                 return new PublicGameState(
                         INT.deserialize(params[0]),
@@ -212,7 +216,7 @@ public final class Serdes {
                                 .stream()
                                 .map(id -> new AbstractMap.SimpleEntry<>(id, playerStates.get(id.ordinal())))
                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
-                        PLAYERID.deserialize(params[4])
+                        PLAYERID.deserialize(params[indexOffset + PlayerId.COUNT])
                 );
             }
     );
