@@ -284,15 +284,6 @@ final class ObservableGameState {
         return this.currentGameState.canDrawCards();
     }
 
-    /**
-     * Retourne la liste des cartes fase visible
-     *
-     * @return la liste des cartes fase visible
-     */
-    public List<Card> faceUpCards() {
-        return this.currentGameState.cardState().faceUpCards();
-    }
-
     // endregion
 
     // region méthodes-de-PlayerState
