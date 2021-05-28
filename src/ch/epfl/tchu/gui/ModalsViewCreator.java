@@ -3,13 +3,12 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.Constants;
-import ch.epfl.tchu.gui.ActionHandlers.*;
-
 import ch.epfl.tchu.game.Ticket;
+import ch.epfl.tchu.gui.ActionHandlers.ChooseCardsHandler;
+import ch.epfl.tchu.gui.ActionHandlers.ChooseTicketsHandler;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;

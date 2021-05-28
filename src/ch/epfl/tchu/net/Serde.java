@@ -2,9 +2,7 @@ package ch.epfl.tchu.net;
 
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
-import ch.epfl.tchu.game.Color;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;

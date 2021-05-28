@@ -50,7 +50,7 @@ final class Helpers {
 
         /**
          * Retourne <i>true</i> ssi le lecteur est prêt à lire un message sur le réseau
-         * @return
+         * @return <code>true</code> ssi le lecteur est prêt à lire un message sur le réseau
          */
         public boolean ready() {
             if (this.reader == null) return false;

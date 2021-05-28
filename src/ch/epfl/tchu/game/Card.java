@@ -7,7 +7,6 @@
 
 package ch.epfl.tchu.game;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 

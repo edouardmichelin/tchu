@@ -3,7 +3,6 @@ package ch.epfl.tchu.game;
 import ch.epfl.tchu.Preconditions;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.stream.IntStream;
 
 /**

@@ -4,7 +4,6 @@ import ch.epfl.tchu.net.RemotePlayerClient;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-import java.rmi.Remote;
 import java.util.List;
 
 /**
