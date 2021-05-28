@@ -146,8 +146,6 @@ public class RemotePlayerProxy implements Player, AutoCloseable {
 
     @Override
     public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
-        this.handler.post(MessageId.CHOOSE_ADDITIONAL_CARDS, "");
-
         this.handler.post(MessageId.CHOOSE_ADDITIONAL_CARDS, Serdes.LIST_BAG_CARD.serialize(options));
 
         Helpers.Payload message = this.handler.get();
