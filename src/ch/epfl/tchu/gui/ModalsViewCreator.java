@@ -21,8 +21,6 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
-import static javafx.application.Platform.isFxApplicationThread;
-
 
 /**
  * Title
@@ -40,7 +38,6 @@ final class ModalsViewCreator {
             Stage owner,
             boolean isInitial
     ) {
-        assert isFxApplicationThread();
 
         int choiceCount =
                 (isInitial ? Constants.INITIAL_TICKETS_COUNT : Constants.IN_GAME_TICKETS_COUNT) - Constants.DISCARDABLE_TICKETS_COUNT;
@@ -79,7 +76,6 @@ final class ModalsViewCreator {
             Stage owner,
             boolean isAdditional
     ) {
-        assert isFxApplicationThread();
 
         Text intro = new Text(isAdditional ? StringsFr.CHOOSE_ADDITIONAL_CARDS : StringsFr.CHOOSE_CARDS);
 
