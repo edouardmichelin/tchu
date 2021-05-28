@@ -37,6 +37,8 @@ public class ClientMain extends Application {
                 port
         );
 
-        player.run();
+        Thread network = new Thread(player::run);
+
+        network.start();
     }
 }
