@@ -58,15 +58,20 @@ public class RemotePlayerClient implements AutoCloseable {
             if (this.handler.ready()) {
                 Helpers.Payload message = this.handler.get();
 
+                System.out.println(message.id());
+
                 switch (message.id()) {
                     case CARDS:
-                        this.player.initialClaimCards();
+                        SortedBag<Card> cards = this.player.initialClaimCards();
+                        this.handler.post(message.id(), Serdes.BAG_CARD.serialize(cards));
                         break;
                     case ROUTE:
-                        this.player.claimedRoute();
+                        Route route = this.player.claimedRoute();
+                        this.handler.post(message.id(), Serdes.ROUTE.serialize(route));
                         break;
                     case DRAW_SLOT:
-                        this.player.drawSlot();
+                        int slot = this.player.drawSlot();
+                        this.handler.post(message.id(), Serdes.INT.serialize(slot));
                         break;
                     case NEXT_TURN:
                         Player.TurnKind nextTurn = this.player.nextTurn();
