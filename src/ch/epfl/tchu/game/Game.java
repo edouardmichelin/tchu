@@ -71,7 +71,8 @@ public final class Game {
 
         //Change the state of the game based on the chooseInitialTickets call of all players
         for (Entry<PlayerId, Player> player : players.entrySet()) {
-            currentGameState.withInitiallyChosenTickets(player.getKey(), player.getValue().chooseInitialTickets());
+            var choice = player.getValue().chooseInitialTickets();
+            currentGameState = currentGameState.withInitiallyChosenTickets(player.getKey(), choice);
         }
 
         //Announce how many tickets players have kept

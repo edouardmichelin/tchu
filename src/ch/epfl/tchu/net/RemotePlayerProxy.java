@@ -76,15 +76,23 @@ public class RemotePlayerProxy implements Player, AutoCloseable {
 
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {
+        this.handler.post(MessageId.CHOOSE_INITIAL_TICKETS, "");
+
         Helpers.Payload message = this.handler.get();
 
+        System.out.println(message.id());
+
         Preconditions.checkArgument(message.id().equals(MessageId.CHOOSE_INITIAL_TICKETS));
+
+        var t = Serdes.BAG_TICKET.deserialize(message.content().get(0));
 
         return Serdes.BAG_TICKET.deserialize(message.content().get(0));
     }
 
     @Override
     public TurnKind nextTurn() {
+        this.handler.post(MessageId.NEXT_TURN, "");
+
         Helpers.Payload message = this.handler.get();
 
         Preconditions.checkArgument(message.id().equals(MessageId.NEXT_TURN));
@@ -105,6 +113,8 @@ public class RemotePlayerProxy implements Player, AutoCloseable {
 
     @Override
     public int drawSlot() {
+        this.handler.post(MessageId.DRAW_SLOT, "");
+
         Helpers.Payload message = this.handler.get();
 
         Preconditions.checkArgument(message.id().equals(MessageId.DRAW_SLOT));
@@ -114,6 +124,8 @@ public class RemotePlayerProxy implements Player, AutoCloseable {
 
     @Override
     public Route claimedRoute() {
+        this.handler.post(MessageId.ROUTE, "");
+
         Helpers.Payload message = this.handler.get();
 
         Preconditions.checkArgument(message.id().equals(MessageId.ROUTE));
@@ -123,6 +135,8 @@ public class RemotePlayerProxy implements Player, AutoCloseable {
 
     @Override
     public SortedBag<Card> initialClaimCards() {
+        this.handler.post(MessageId.CARDS, "");
+
         Helpers.Payload message = this.handler.get();
 
         Preconditions.checkArgument(message.id().equals(MessageId.CARDS));
@@ -132,6 +146,8 @@ public class RemotePlayerProxy implements Player, AutoCloseable {
 
     @Override
     public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
+        this.handler.post(MessageId.CHOOSE_ADDITIONAL_CARDS, "");
+
         this.handler.post(MessageId.CHOOSE_ADDITIONAL_CARDS, Serdes.LIST_BAG_CARD.serialize(options));
 
         Helpers.Payload message = this.handler.get();
