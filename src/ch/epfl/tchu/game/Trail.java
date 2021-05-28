@@ -52,7 +52,7 @@ public final class Trail {
 
         List<Trail> trails = new ArrayList<>(singleRouteTrails);
 
-        while (trails.size() > 0) {
+        while (!trails.isEmpty()) {
             List<Trail> nextTrails = new ArrayList<>();
 
             for (Trail trail : trails) {
@@ -93,12 +93,12 @@ public final class Trail {
                     currentTrail
                             .routes
                             .stream()
-                            .map(Trail::getRouteKey)
+                            .map(Route::id)
                             .anyMatch(
                                     id -> trail
                                             .routes
                                             .stream()
-                                            .map(Trail::getRouteKey)
+                                            .map(Route::id)
                                             .anyMatch(id::equals))
             ) return;
 
@@ -107,10 +107,6 @@ public final class Trail {
         });
 
         return result;
-    }
-
-    private static String getRouteKey(Route route) {
-        return route.id();
     }
 
     /**

@@ -40,17 +40,17 @@ public final class Game {
             SortedBag<Ticket> tickets,
             Random rng
     ) {
-        Preconditions.checkArgument(players.size() == NUMBER_OF_PLAYERS && playerNames.size() == NUMBER_OF_PLAYERS);
+        Preconditions.checkArgument(players.size() == NUMBER_OF_PLAYERS);
+        Preconditions.checkArgument(playerNames.size() == NUMBER_OF_PLAYERS);
 
         // region init
         // Initialize the state of the game (playerstates are being created already there too)
         GameState currentGameState = GameState.initial(tickets, rng);
-        // update(players, currentGameState);
 
         // Initialize player infos
         Map<PlayerId, Info> playerInfos = new HashMap<>();
-        for (PlayerId id : playerNames.keySet()) {
-            playerInfos.put(id, new Info(playerNames.get(id)));
+        for (Entry<PlayerId, String> entry : playerNames.entrySet()) {
+            playerInfos.put(entry.getKey(), new Info(entry.getValue()));
         }
 
         // first call for initPlayers to inform players of their identity
@@ -60,19 +60,18 @@ public final class Game {
         announce(players, playerInfos.get(currentGameState.currentPlayerId()).willPlayFirst());
 
         // Show the players their initial ticket choice
-        for (PlayerId id : players.keySet()) {
+        for (Entry<PlayerId, Player> player : players.entrySet()) {
             SortedBag<Ticket> ticketChoice = currentGameState.topTickets(Constants.INITIAL_TICKETS_COUNT);
 
             currentGameState = currentGameState.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);
-            players.get(id)
-                    .setInitialTicketChoice(ticketChoice);
+            player.getValue().setInitialTicketChoice(ticketChoice);
         }
 
         update(players, currentGameState);
 
         //Change the state of the game based on the chooseInitialTickets call of all players
-        for (PlayerId id : players.keySet()) {
-            currentGameState.withInitiallyChosenTickets(id, players.get(id).chooseInitialTickets());
+        for (Entry<PlayerId, Player> player : players.entrySet()) {
+            currentGameState.withInitiallyChosenTickets(player.getKey(), player.getValue().chooseInitialTickets());
         }
 
         //Announce how many tickets players have kept
@@ -118,7 +117,7 @@ public final class Game {
                             announce(players, currentPlayerInfo.drewBlindCard());
                         }
                         currentGameState = currentGameState.withCardsDeckRecreatedIfNeeded(rng);
-                        update(players, currentGameState);
+                        if (i == 0) update(players, currentGameState);
                     }
                     break;
 
@@ -149,11 +148,9 @@ public final class Game {
                         if (additionalCardsCount >= 1) {
                             List<SortedBag<Card>> possibleAdditionalCards =
                                     currentPlayerState.possibleAdditionalCards(additionalCardsCount,
-                                            initialClaimCards, drawnCards);
+                                            initialClaimCards);
 
                             currentGameState = currentGameState.withMoreDiscardedCards(drawnCards);
-
-                            update(players, currentGameState);
 
                             if (possibleAdditionalCards.isEmpty()) {
                                 announce(players, currentPlayerInfo.didNotClaimRoute(claimedRoute));
@@ -170,11 +167,8 @@ public final class Game {
                     }
 
                     SortedBag<Card> claimCards = initialClaimCards.union(additionalChosenCards);
-
                     announce(players, currentPlayerInfo.claimedRoute(claimedRoute, claimCards));
-
                     currentGameState = currentGameState.withClaimedRoute(claimedRoute, claimCards);
-                    update(players, currentGameState);
 
                     break;
                 case DRAW_TICKETS:
@@ -185,11 +179,10 @@ public final class Game {
 
                     currentGameState = currentGameState.withChosenAdditionalTickets(ticketChoice, chosenTickets);
                     announce(players, currentPlayerInfo.keptTickets(chosenTickets.size()));
-                    update(players, currentGameState);
 
                     break;
                 default:
-                    throw new Error("Oh bah non");
+                    throw new Error();
             }
 
             // When the last turn begins
@@ -222,14 +215,14 @@ public final class Game {
         Set<Entry<PlayerId, Trail>> playerLongestTrailsSet = playersLongestTrails.entrySet();
 
         // Filter to the longest trail
-        Optional<Entry<PlayerId, Trail>> maxLength = playerLongestTrailsSet
+        int maxLength = playerLongestTrailsSet
                 .stream()
-                .max(Comparator.comparingInt(entry -> entry.getValue().length()));
+                .max(Comparator.comparingInt(entry -> entry.getValue().length())).get().getValue().length();
 
 
         Map<PlayerId, Trail> playersForBonus = playerLongestTrailsSet
                 .stream()
-                .filter(entry -> entry.getValue().length() == (maxLength.get().getValue().length()))
+                .filter(entry -> entry.getValue().length() == (maxLength))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
         // Add bonus to the right scores and announce bonus earning player(s)

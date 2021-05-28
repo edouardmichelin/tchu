@@ -41,8 +41,7 @@ public enum Card {
     /**
      * Liste uniquement les cartes wagons (celles qui ont des couleurs)
      */
-    public final static List<Card> CARS = Arrays
-            .stream(Card.values())
+    public final static List<Card> CARS = ALL.stream()
             .filter(card -> card.color != null)
             .collect(Collectors.toUnmodifiableList());
 
@@ -54,7 +53,7 @@ public enum Card {
      * aucune carte n'est trouvée pour la couleur donnée.
      */
     public static Card of(Color color) {
-        return Arrays.stream(Card.values())
+        return ALL.stream()
                 .filter(card -> card.color.equals(color))
                 .findFirst()
                 .orElse(null);

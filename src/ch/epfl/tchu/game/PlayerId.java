@@ -18,10 +18,15 @@ public enum PlayerId {
     public final static List<PlayerId> ALL = List.of(PlayerId.values());
 
     /**
-     * Donne le nombre de joueurs
+     * Retourne le nombre de joueurs
      */
     public final static int COUNT = ALL.size();
 
+    /**
+     * Retourne l'identité du joueur qui suit celui auquel on l'applique
+     *
+     * @return l'identité du joueur suivant
+     */
     public PlayerId next() {
         return ALL.get((this.ordinal() + 1) % COUNT);
     }

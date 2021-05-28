@@ -2,6 +2,7 @@ package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
+import ch.epfl.tchu.game.Color;
 import ch.epfl.tchu.game.Constants;
 import ch.epfl.tchu.game.Ticket;
 import ch.epfl.tchu.gui.ActionHandlers.DrawCardHandler;
@@ -9,6 +10,7 @@ import ch.epfl.tchu.gui.ActionHandlers.DrawTicketsHandler;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -93,10 +95,10 @@ final class DecksViewCreator {
         decksPane.getChildren().add(drawTicketsButton);
 
 
-        for (int index : Constants.FACE_UP_CARD_SLOTS) {
+        for (int slot : Constants.FACE_UP_CARD_SLOTS) {
 
-            StackPane cardView = createCardView(gameState.faceUpCards().get(index));
-            cardView.setOnMouseClicked(event -> drawCard.get().onDrawCard(index));
+            StackPane cardView = createCardView(gameState.faceUpCard(slot));
+            cardView.setOnMouseClicked(event -> drawCard.get().onDrawCard(slot));
             cardView.disableProperty().bind(drawCard.isNull());
 
             decksPane.getChildren().add(cardView);
@@ -125,7 +127,6 @@ final class DecksViewCreator {
     private static StackPane createCardView(Card card, ReadOnlyIntegerProperty count, boolean isFaceUpCard) {
         String color = card.color() == null ? "NEUTRAL" : card.color().toString();
 
-
         Rectangle cardBorder = new Rectangle(60, 90);
         cardBorder.getStyleClass().add("outside");
 
@@ -147,7 +148,12 @@ final class DecksViewCreator {
         return mainCardPane;
     }
 
-    private static StackPane createCardView(Card card) {
-        return createCardView(card, new SimpleIntegerProperty(), true);
+    private static StackPane createCardView(ReadOnlyObjectProperty<Card> card) {
+        StackPane mainCardPane = createCardView(card.isNull().get() ? Card.LOCOMOTIVE : card.get(), new SimpleIntegerProperty(), true);
+        card.addListener((p, o, n) -> {
+            mainCardPane.getStyleClass().setAll(n.color() == null ? "NEUTRAL" : n.toString(), "card");
+        });
+
+        return mainCardPane;
     }
 }

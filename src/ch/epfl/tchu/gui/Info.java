@@ -33,29 +33,7 @@ public final class Info {
      * @return le nom (français) de la carte donnée, au singulier ssi la valeur absolue du second argument vaut 1
      */
     public static String cardName(Card card, int count) {
-        StringBuilder name = new StringBuilder();
-        switch (card) {
-            case BLACK:
-                return name.append(StringsFr.BLACK_CARD).append(StringsFr.plural(count)).toString();
-            case VIOLET:
-                return name.append(StringsFr.VIOLET_CARD).append(StringsFr.plural(count)).toString();
-            case BLUE:
-                return name.append(StringsFr.BLUE_CARD).append(StringsFr.plural(count)).toString();
-            case GREEN:
-                return name.append(StringsFr.GREEN_CARD).append(StringsFr.plural(count)).toString();
-            case YELLOW:
-                return name.append(StringsFr.YELLOW_CARD).append(StringsFr.plural(count)).toString();
-            case ORANGE:
-                return name.append(StringsFr.ORANGE_CARD).append(StringsFr.plural(count)).toString();
-            case RED:
-                return name.append(StringsFr.RED_CARD).append(StringsFr.plural(count)).toString();
-            case WHITE:
-                return name.append(StringsFr.WHITE_CARD).append(StringsFr.plural(count)).toString();
-            case LOCOMOTIVE:
-                return name.append(StringsFr.LOCOMOTIVE_CARD).append(StringsFr.plural(count)).toString();
-            default:
-                throw new Error();
-        }
+        return getCardName(card).append(StringsFr.plural(count)).toString();
     }
 
     /**
@@ -253,5 +231,31 @@ public final class Info {
             addedCardTypes++;
         }
         return cardsInfo.toString();
+    }
+
+    private static StringBuilder getCardName(Card card) {
+        StringBuilder name = new StringBuilder();
+        switch (card) {
+            case BLACK:
+                return name.append(StringsFr.BLACK_CARD);
+            case VIOLET:
+                return name.append(StringsFr.VIOLET_CARD);
+            case BLUE:
+                return name.append(StringsFr.BLUE_CARD);
+            case GREEN:
+                return name.append(StringsFr.GREEN_CARD);
+            case YELLOW:
+                return name.append(StringsFr.YELLOW_CARD);
+            case ORANGE:
+                return name.append(StringsFr.ORANGE_CARD);
+            case RED:
+                return name.append(StringsFr.RED_CARD);
+            case WHITE:
+                return name.append(StringsFr.WHITE_CARD);
+            case LOCOMOTIVE:
+                return name.append(StringsFr.LOCOMOTIVE_CARD);
+            default:
+                throw new Error();
+        }
     }
 }

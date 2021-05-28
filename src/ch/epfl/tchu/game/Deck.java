@@ -1,5 +1,6 @@
 package ch.epfl.tchu.game;
 
+import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 
 import java.util.Collections;
@@ -62,7 +63,7 @@ public final class Deck<C extends Comparable<C>> {
      * @throws IllegalArgumentException si le tas est vide
      */
     public C topCard() {
-        if (this.isEmpty()) throw new IllegalArgumentException();
+        Preconditions.checkArgument(!this.isEmpty());
 
         return cards.get(0);
     }
@@ -76,7 +77,7 @@ public final class Deck<C extends Comparable<C>> {
      * @throws IllegalArgumentException si le tas est vide
      */
     public Deck<C> withoutTopCard() {
-        return new Deck<>(this.cards.subList(1, this.cards.size()));
+        return this.withoutTopCards(1);
     }
 
     /**
@@ -106,7 +107,7 @@ public final class Deck<C extends Comparable<C>> {
      *                                  taille du tas (incluse)
      */
     public Deck<C> withoutTopCards(int count) {
-        Objects.checkIndex(0, this.cards.size() + 1);
+        Preconditions.checkArgument(count >= 0 && count <= this.size());
 
         return new Deck<>(this.cards.subList(count, this.cards.size()));
     }
