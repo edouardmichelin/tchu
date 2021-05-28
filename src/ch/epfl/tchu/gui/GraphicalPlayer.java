@@ -84,8 +84,6 @@ final class GraphicalPlayer {
         this.modalStage.initModality(Modality.WINDOW_MODAL);
         this.modalStage.setOnCloseRequest(Event::consume);
 
-        // dumpTree(handView);
-
         primaryStage.show();
     }
 
@@ -254,22 +252,5 @@ final class GraphicalPlayer {
         this.drawCardHandler.set(null);
         this.drawTicketsHandler.set(null);
         this.claimRouteHandler.set(null);
-    }
-
-    private static void dumpTree(Node root) {
-        dumpTree(0, root);
-    }
-
-    private static void dumpTree(int indent, Node root) {
-        System.out.printf("%s%s (id: %s, classes: [%s])%n",
-                " ".repeat(indent),
-                root.getTypeSelector(),
-                root.getId(),
-                String.join(", ", root.getStyleClass()));
-        if (root instanceof Parent) {
-            Parent parent = ((Parent) root);
-            for (Node child : parent.getChildrenUnmodifiable())
-                dumpTree(indent + 2, child);
-        }
     }
 }

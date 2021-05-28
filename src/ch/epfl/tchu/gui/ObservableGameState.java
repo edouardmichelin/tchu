@@ -129,7 +129,7 @@ final class ObservableGameState {
         for (PlayerId player : PlayerId.ALL) {
             var iterationPlayerState = gameState.playerState(player);
             for (Route playerRoute : iterationPlayerState.routes()) {
-                this.routes.get(playerRoute.id()).set(playerId);
+                this.routes.get(playerRoute.id()).set(player);
             }
 
             var pb = this.playersBelongings.get(player);
@@ -144,21 +144,30 @@ final class ObservableGameState {
 
         this.playerTickets.setAll(playerState.tickets().toList());
 
-        for (Card card : Card.ALL) {
+        for (Card card : Card.ALL)
             this.playerHand.get(card).set(playerState.cards().countOf(card));
-        }
 
-        if (gameState.currentPlayerId().equals(this.playerId)) {
-            for (Route route : ALL_ROUTES) {
-                if (playerState.canClaimRoute(route)) {
-                    this.claimableRoutes.get(route.id()).set(true);
-                }
-            }
-        } else {
-            for (Route route : ALL_ROUTES) {
-                this.claimableRoutes.get(route.id()).set(true);
-            }
-        }
+        // compliqué à lire pour les non-initiés
+        // une route est considérée comme prenable par le joueur courant si
+        // 1. Il a les moyens de l'acheter ET
+        // 2. Personne ne la possède encore ET
+        // 3.1 S'il y a plus de 2 joueurs : il ne possède pas sa voisine
+        // 3.2 sinon : personne ne possède sa voisine
+        if (gameState.currentPlayerId().equals(this.playerId))
+            for (Route route : ALL_ROUTES)
+                this.claimableRoutes
+                        .get(route.id())
+                        .set(
+                                playerState.canClaimRoute(route) &&
+                                        this.routes.get(route.id()).isNull().get() &&
+                                        (
+                                                PlayerId.COUNT > 2 ?
+                                                        this.getRouteNeighbor(route).isNotEqualTo(this.playerId).get() :
+                                                        this.getRouteNeighbor(route).isNull().get())
+                        );
+        else
+            for (Route route : ALL_ROUTES)
+                this.claimableRoutes.get(route.id()).set(this.routes.get(route.id()).isNull().not().get());
 
     }
 
@@ -225,6 +234,17 @@ final class ObservableGameState {
     }
 
     // endregion
+
+    private ObjectProperty<PlayerId> getRouteNeighbor(Route route) {
+        ObjectProperty<PlayerId> prop;
+
+        if (route.id().endsWith("_1"))
+            prop = this.routes.get(route.id().replace("_1", "_2"));
+        else
+            prop = this.routes.get(route.id().replace("_2", "_1"));
+
+        return prop == null ? new SimpleObjectProperty<>() : prop;
+    }
 
     public interface ReadOnlyPlayerBelongingsProperty {
         ReadOnlyIntegerProperty ownedTickets();
