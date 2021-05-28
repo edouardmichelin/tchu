@@ -26,32 +26,77 @@ public final class Serdes {
     private final static List<Route> ALL_ROUTE = ChMap.routes();
     private final static List<Ticket> ALL_TICKET = ChMap.tickets();
 
+    /**
+     * Serde gérant les Integer
+     */
     public final static Serde<Integer> INT = Serde.of(Object::toString, Integer::parseInt);
 
+    /**
+     * Serde gérant les Strings
+     */
     public final static Serde<String> STRING = Serde.of(
             str -> BASE64_ENCODER.encodeToString(str.getBytes(StandardCharsets.UTF_8)),
             b64 -> new String(BASE64_DECODER.decode(b64), StandardCharsets.UTF_8)
     );
 
+    /**
+     * Serde gérant les PlayerId
+     */
     public final static Serde<PlayerId> PLAYERID = Serde.oneOf(ALL_PLAYERID);
 
+    /**
+     * Serde gérant les types de tours
+     */
     public final static Serde<Player.TurnKind> TURNKIND = Serde.oneOf(ALL_TURNKIND);
 
+    /**
+     * Serde gérant les cartes
+     */
     public final static Serde<Card> CARD = Serde.oneOf(ALL_CARD);
 
+    /**
+     * Serde gérant les routes
+     */
     public final static Serde<Route> ROUTE = Serde.oneOf(ALL_ROUTE);
 
+    /**
+     * Serde gérant les tickets
+     */
     public final static Serde<Ticket> TICKET = Serde.oneOf(ALL_TICKET);
 
+    /**
+     * Serde gérant les listes de String
+     */
     public final static Serde<List<String>> LIST_STRING = Serde.listOf(STRING, ",");
+
+    /**
+     * Serde gérant les listes de cartes
+     */
     public final static Serde<List<Card>> LIST_CARD = Serde.listOf(CARD, ",");
+
+    /**
+     * Serde gérant les listes de routes
+     */
     public final static Serde<List<Route>> LIST_ROUTE = Serde.listOf(ROUTE, ",");
 
+    /**
+     * Serde gérant les ensembles triés de cartes
+     */
     public final static Serde<SortedBag<Card>> BAG_CARD = Serde.bagOf(CARD, ",");
+
+    /**
+     * Serde gérant les ensembles triés de tickets
+     */
     public final static Serde<SortedBag<Ticket>> BAG_TICKET = Serde.bagOf(TICKET, ",");
 
+    /**
+     * Serde gérant les multiensembles triés de cartes
+     */
     public final static Serde<List<SortedBag<Card>>> LIST_BAG_CARD = Serde.listOf(BAG_CARD, ";");
 
+    /**
+     * Serde gérant l'état public des cartes du jeu
+     */
     public final static Serde<PublicCardState> PUBLICCARDSTATE = Serde.of(
             publicCardState -> String.join(";", List.of(
                     LIST_CARD.serialize(publicCardState.faceUpCards()),
@@ -76,6 +121,9 @@ public final class Serdes {
             }
     );
 
+    /**
+     * Serde gérant l'état publique d'un joueur
+     */
     public final static Serde<PublicPlayerState> PUBLICPLAYERSTATE = Serde.of(
             publicPlayerState -> String.join(";", List.of(
                     INT.serialize(publicPlayerState.ticketCount()),
@@ -100,6 +148,9 @@ public final class Serdes {
             }
     );
 
+    /**
+     * Serde gérant l'état complet d'un joueur
+     */
     public final static Serde<PlayerState> PLAYERSTATE = Serde.of(
             playerState -> String.join(";", List.of(
                     BAG_TICKET.serialize(playerState.tickets()),
@@ -126,6 +177,9 @@ public final class Serdes {
 
     private static final Serde<List<PublicPlayerState>> LIST_PUBLICPLAYERSTATE = Serde.listOf(PUBLICPLAYERSTATE, "!");
 
+    /**
+     * Serde gérant l'état publique de la partie
+     */
     public final static Serde<PublicGameState> PUBLICGAMESTATE = Serde.of(
             publicGameState -> String.join(":", List.of(
                     INT.serialize(publicGameState.ticketsCount()),

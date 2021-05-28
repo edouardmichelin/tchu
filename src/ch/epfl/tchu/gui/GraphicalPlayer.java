@@ -53,6 +53,13 @@ final class GraphicalPlayer {
     private final ObservableList<SortedBag<Card>> initialCardsChoice = FXCollections.observableArrayList();
     private final ObservableList<SortedBag<Card>> additionalCardsChoice = FXCollections.observableArrayList();
 
+
+    /**
+     * Créé l'interface graphique d'un joueur de tCHu
+     *
+     * @param playerId    Le joueur concerné par l'interface
+     * @param playerNames Le nom des joueurs de la partie
+     */
     public GraphicalPlayer(PlayerId playerId, Map<PlayerId, String> playerNames) {
         assert isFxApplicationThread();
 
@@ -87,6 +94,12 @@ final class GraphicalPlayer {
         primaryStage.show();
     }
 
+    /**
+     * Permet de rafraîchir l'état observable du joueur
+     *
+     * @param gameState   l'état observable de la partie
+     * @param playerState l'état complet du joueur
+     */
     public void setState(PublicGameState gameState, PlayerState playerState) {
         this.gameState.setState(gameState, playerState);
     }

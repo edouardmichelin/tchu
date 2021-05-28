@@ -20,22 +20,26 @@ import java.util.Random;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
 /**
- * Title
+ * Contient le programme principal du serveur tCHu
  *
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
 public class ServerMain extends Application {
-    private final static String[] DEFAULT_NAMES = new String[] { "Ada", "Charles", "Alan" };
+    private final static String[] DEFAULT_NAMES = new String[]{"Ada", "Charles", "Alan"};
 
     /**
      * Lance l'application sur le file JavaFX
+     *
      * @param args arguments
      */
-    public static void main(String[] args) { launch(args); }
+    public static void main(String[] args) {
+        launch(args);
+    }
 
     /**
      * Démarre le serveur
+     *
      * @param primaryStage <code>Stage</code> principal
      */
     @Override

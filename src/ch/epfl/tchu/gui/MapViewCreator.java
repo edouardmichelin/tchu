@@ -25,8 +25,17 @@ import java.util.List;
  * @author Julien Jordan (315429)
  */
 final class MapViewCreator {
-    private MapViewCreator() {}
+    private MapViewCreator() {
+    }
 
+    /**
+     * Permet de créer la vue de la carte du jeu, partie centrale de la fenêtre
+     *
+     * @param gameState         l'état observable du jeu
+     * @param claimRouteHandler gestionnaire d'action pour s'emparer des routes
+     * @param cardChooser       selectionneur de carte
+     * @return la vue de la carte du jeu
+     */
     public static Node createMapView(
             ObservableGameState gameState,
             ObjectProperty<ClaimRouteHandler> claimRouteHandler,

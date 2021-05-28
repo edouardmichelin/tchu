@@ -32,6 +32,15 @@ final class ModalsViewCreator {
     private ModalsViewCreator() {
     }
 
+    /**
+     * Créé la vue de la fenêtre modale de sélection des tickets
+     *
+     * @param ticketsChoice        les tickets à choisirs
+     * @param chooseTicketsHandler Gestionnaire de sélection des tickets
+     * @param owner                le node racine (la fenêtre) contenant cette vue
+     * @param isInitial            si le choix des tickets est celui initial ou non
+     * @return retourne la vue du choix de tickets
+     */
     public static Scene createTicketsChoiceView(
             ObservableList<Ticket> ticketsChoice,
             ObjectProperty<ChooseTicketsHandler> chooseTicketsHandler,
@@ -62,6 +71,14 @@ final class ModalsViewCreator {
         return scene;
     }
 
+    /**
+     * Créé la vue de la fenêtre modale de sélection des tickets pour la sélection usuelle et non initiale
+     *
+     * @param ticketsChoice        les tickets à choisirs
+     * @param chooseTicketsHandler Gestionnaire de sélection des tickets
+     * @param owner                le node racine (la fenêtre) contenant cette vue
+     * @return retourne la vue du choix de tickets
+     */
     public static Scene createTicketsChoiceView(
             ObservableList<Ticket> ticketsChoice,
             ObjectProperty<ChooseTicketsHandler> chooseTicketsHandler,
@@ -70,6 +87,15 @@ final class ModalsViewCreator {
         return createTicketsChoiceView(ticketsChoice, chooseTicketsHandler, owner, false);
     }
 
+    /**
+     * Créé la vue de la fenêtre de sélection des cartes à jouer pour s'emparer d'une route
+     *
+     * @param cardsChoice        le choix des ensembles de cartes à jouer
+     * @param chooseCardsHandler gestionnaire de sélection des cartes
+     * @param owner              le node racine (la fenêtre) contenant cette vue
+     * @param isAdditional       si la sélection concerne les cartes du couts additionel ou non
+     * @return retourne la vue du choix des cartes à jouer
+     */
     public static Scene createCardsChoiceView(
             ObservableList<SortedBag<Card>> cardsChoice,
             ObjectProperty<ChooseCardsHandler> chooseCardsHandler,
@@ -98,6 +124,15 @@ final class ModalsViewCreator {
         return scene;
     }
 
+    /**
+     * Créé la vue de la fenêtre de sélection des cartes à jouer pour s'emparer d'une route, ici uniquement pour le
+     * coût initial de la route
+     *
+     * @param cardsChoice        le choix des ensembles de cartes à jouer
+     * @param chooseCardsHandler gestionnaire de sélection des cartes
+     * @param owner              le node racine (la fenêtre) contenant cette vue
+     * @return retourne la vue du choix des cartes à jouer
+     */
     public static Scene createCardsChoiceView(
             ObservableList<SortedBag<Card>> cardsChoice,
             ObjectProperty<ChooseCardsHandler> chooseCardsHandler,

@@ -215,18 +215,24 @@ public final class Info {
                 StringsFr.plural(loserPoints));
     }
 
+    /**
+     * Construit le message décrivant le contenu d'un multi-ensemble de cartes
+     *
+     * @param cards le multi-ensemble de cartes
+     * @return le message descriptif
+     */
     public static String getCardsInfo(SortedBag<Card> cards) {
         StringBuilder cardsInfo = new StringBuilder();
 
         int setSize = cards.toSet().size();
         int addedCardTypes = 0;
         for (Card card : cards.toSet()) {
-                if (addedCardTypes > 0)
-                    cardsInfo.append(addedCardTypes + 1 == setSize ? StringsFr.AND_SEPARATOR : ", ");
+            if (addedCardTypes > 0)
+                cardsInfo.append(addedCardTypes + 1 == setSize ? StringsFr.AND_SEPARATOR : ", ");
 
-                int count = cards.countOf(card);
+            int count = cards.countOf(card);
 
-                cardsInfo.append(count).append(" ").append(cardName(card, count));
+            cardsInfo.append(count).append(" ").append(cardName(card, count));
 
             addedCardTypes++;
         }

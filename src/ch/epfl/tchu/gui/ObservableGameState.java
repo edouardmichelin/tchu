@@ -32,6 +32,11 @@ final class ObservableGameState {
     private PublicGameState currentGameState;
     private PlayerState currentPlayerState;
 
+    /**
+     * Créé l'état observable d'une partie de tCHu
+     *
+     * @param playerId l'identité du joueur auquelle correspond la vue
+     */
     public ObservableGameState(PlayerId playerId) {
         this.playerId = playerId;
 
@@ -117,6 +122,12 @@ final class ObservableGameState {
 
     // endregion
 
+    /**
+     * Mets à jour la totalité des propriétés de l'état observable du jeu
+     *
+     * @param gameState   état observable du jeu
+     * @param playerState état complet du joueur
+     */
     public void setState(PublicGameState gameState, PlayerState playerState) {
         this.currentGameState = gameState;
         this.currentPlayerState = playerState;
@@ -173,34 +184,80 @@ final class ObservableGameState {
 
     // region getters
 
+    /**
+     * Retourne la propriété en lecture seule pour la carte à l'emplacement spécifié
+     *
+     * @param slot emplacement de la pioche
+     * @return la propriété en lecture seule d'une carte face visible
+     */
     public ReadOnlyObjectProperty<Card> faceUpCard(int slot) {
         return faceUpCards.get(slot);
     }
 
-    public ReadOnlyObjectProperty<PlayerId> routes(String id) {
+    /**
+     * Retourne la propriété en lecture seule du joueur propriétaire d'une route donnée
+     *
+     * @param id l'identifiant de la route
+     * @return la propriété du joueur propriétaire
+     */
+    public ReadOnlyObjectProperty<PlayerId> routesOwner(String id) {
         return routes.get(id);
     }
 
+    /**
+     * Retourne la propriété en lecture seule du pourcentage restant de tickets dans la pioche
+     *
+     * @return pourcentage restant de tickets
+     */
     public ReadOnlyIntegerProperty ticketsPercentage() {
         return this.ticketsPercentage;
     }
 
+    /**
+     * Retourne la propriété en lecture seule du pourcentage restant de cartes dans la pioche
+     *
+     * @return pourcentage restant de cartes
+     */
     public ReadOnlyIntegerProperty cardsPercentage() {
         return this.cardsPercentage;
     }
 
+    /**
+     * Retourne la propriété en lecture seule contenant l'ensemble des éléments de jeu que le joueur possède
+     *
+     * @param player le joueur dont on souhaite récupérer les possessions
+     * @return les possessions du joueur
+     */
     public ReadOnlyPlayerBelongingsProperty playerBelongings(PlayerId player) {
         return this.playersBelongings.get(player);
     }
 
+    /**
+     * Créé une liste observable des tickets dans la main du joueur
+     *
+     * @return une liste observable des tickets dans la main du joueur
+     */
     public ObservableList<Ticket> playerTickets() {
         return FXCollections.unmodifiableObservableList(this.playerTickets);
     }
 
+    /**
+     * Retourne une propriété en lecture seule du nombre d'une certaine carte que le joueur a en main
+     *
+     * @param card la carte dont on cherche la multiplicité dans la main du joueur
+     * @return le nombre de la carte donnée en main du joueur
+     */
     public ReadOnlyIntegerProperty numberOfCard(Card card) {
         return this.playerHand.get(card);
     }
 
+    /**
+     * Retourne une propriété en lecture seule qui est vrai si le joueur peut s'emparer de la route donnée, faux
+     * autrement
+     *
+     * @param id identifiant de la route
+     * @return vrai si le joueur peut s'emparer de la route donnée, faux autrement
+     */
     public ReadOnlyBooleanProperty canClaimRoute(String id) {
         return this.claimableRoutes.get(id);
     }
@@ -209,14 +266,29 @@ final class ObservableGameState {
 
     // region méthodes-de-PublicGameState
 
+    /**
+     * Retourne vrai si le joueur peut tirer des tickets, faux autrement
+     *
+     * @return vrai si le joueur peut tirer des tickets, faux autrement
+     */
     public boolean canDrawTickets() {
         return this.currentGameState.canDrawTickets();
     }
 
+    /**
+     * Retourne vrai si le joueur peut piocher des cartes, faux autrement
+     *
+     * @return vrai si le joueur peut piocher des cartes, faux autrement
+     */
     public boolean canDrawCards() {
         return this.currentGameState.canDrawCards();
     }
 
+    /**
+     * Retourne la liste des cartes fase visible
+     *
+     * @return la liste des cartes fase visible
+     */
     public List<Card> faceUpCards() {
         return this.currentGameState.cardState().faceUpCards();
     }
@@ -225,10 +297,21 @@ final class ObservableGameState {
 
     // region méthodes-de-PlayerState
 
+    /**
+     * Retourne la liste des cartes possibles à jouer pour le coût initial d'une route
+     *
+     * @param route la route dont on souhaite s'emparer
+     * @return Le multi-ensembles contenant les possibilités de cartes à jouer
+     */
     public List<SortedBag<Card>> possibleClaimCards(Route route) {
         return this.currentPlayerState.possibleClaimCards(route);
     }
 
+    /**
+     * Retourne les cartes en main du joueur
+     *
+     * @return les cartes en main du joueur
+     */
     public SortedBag<Card> cards() {
         return this.currentPlayerState.cards();
     }
@@ -246,6 +329,9 @@ final class ObservableGameState {
         return prop == null ? new SimpleObjectProperty<>() : prop;
     }
 
+    /**
+     * Interface permettant le retour en lecture seule de quelques propriétés
+     */
     public interface ReadOnlyPlayerBelongingsProperty {
         ReadOnlyIntegerProperty ownedTickets();
 
@@ -256,12 +342,23 @@ final class ObservableGameState {
         ReadOnlyIntegerProperty claimPoints();
     }
 
+    /**
+     * L'ensemble des possessions du joueur
+     */
     public static class PlayerBelongingsProperty implements ReadOnlyPlayerBelongingsProperty {
         private final IntegerProperty ownedTickets;
         private final IntegerProperty ownedCards;
         private final IntegerProperty ownedCars;
         private final IntegerProperty claimPoints;
 
+        /**
+         * Permet de créer un ensemble de possessions
+         *
+         * @param ownedTickets les tickets en main du joueur
+         * @param ownedCards   les cartes en main du joueur
+         * @param ownedCars    les wagons restants du joueur
+         * @param claimPoints  les points de constructions du joueur
+         */
         public PlayerBelongingsProperty(
                 IntegerProperty ownedTickets,
                 IntegerProperty ownedCards,
@@ -274,21 +371,41 @@ final class ObservableGameState {
             this.claimPoints = claimPoints;
         }
 
+        /**
+         * Retourne la propriété des tickets en possession du joueur
+         *
+         * @return la propriété des tickets en possession du joueur
+         */
         @Override
         public IntegerProperty ownedTickets() {
             return this.ownedTickets;
         }
 
+        /**
+         * Retourne la propriété des cartes en possession du joueur
+         *
+         * @return la propriété des cartes en possession du joueur
+         */
         @Override
         public IntegerProperty ownedCards() {
             return this.ownedCards;
         }
 
+        /**
+         * Retourne la propriété des wagons restants du joueur
+         *
+         * @return la propriété des wagons restants du joueur
+         */
         @Override
         public IntegerProperty ownedCars() {
             return this.ownedCars;
         }
 
+        /**
+         * Retourne la propriété des points de constructions du joueur
+         *
+         * @return la propriété des points de constructions du joueur
+         */
         @Override
         public IntegerProperty claimPoints() {
             return this.claimPoints;

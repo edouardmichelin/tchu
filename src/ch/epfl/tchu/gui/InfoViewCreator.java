@@ -19,7 +19,8 @@ import java.util.Map;
  * @author Julien Jordan (315429)
  */
 final class InfoViewCreator {
-    private InfoViewCreator() {}
+    private InfoViewCreator() {
+    }
 
     /**
      * Permet de créer la vue contenant les informations se trouvant à gauche de la fenêtre du jeu. Notamment les
@@ -46,12 +47,9 @@ final class InfoViewCreator {
             Circle circle = new Circle(5);
             circle.getStyleClass().add("filled");
 
-            //%s :
-            //– %s billets,
-            //– %s cartes,
-            //– %s wagons,
-            //– %s points.
-            var playerBelongings = gameState.playerBelongings(nextPlayer);
+            ObservableGameState.ReadOnlyPlayerBelongingsProperty playerBelongings =
+                    gameState.playerBelongings(nextPlayer);
+
             Text playerInfos = new Text(StringsFr.PLAYER_STATS);
             playerInfos.textProperty().bind(Bindings.format(StringsFr.PLAYER_STATS, playerNames.get(nextPlayer),
                     playerBelongings.ownedTickets(), playerBelongings.ownedCards(), playerBelongings.ownedCars(),

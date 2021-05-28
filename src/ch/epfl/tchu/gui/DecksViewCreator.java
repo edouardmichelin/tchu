@@ -25,7 +25,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 
-
 /**
  * Vue des decks, cartes et tickets
  *
@@ -33,7 +32,8 @@ import javafx.scene.text.Text;
  * @author Julien Jordan (315429)
  */
 final class DecksViewCreator {
-    private DecksViewCreator() {}
+    private DecksViewCreator() {
+    }
 
     /**
      * Permet de créer la vue de la main du joueur en fonction de l'état de jeu observable passé en argument. C'est à
@@ -149,7 +149,8 @@ final class DecksViewCreator {
     }
 
     private static StackPane createCardView(ReadOnlyObjectProperty<Card> card) {
-        StackPane mainCardPane = createCardView(card.isNull().get() ? Card.LOCOMOTIVE : card.get(), new SimpleIntegerProperty(), true);
+        StackPane mainCardPane = createCardView(card.isNull().get() ? Card.LOCOMOTIVE : card.get(),
+                new SimpleIntegerProperty(), true);
         card.addListener((p, o, n) -> {
             mainCardPane.getStyleClass().setAll(n.color() == null ? "NEUTRAL" : n.toString(), "card");
         });
