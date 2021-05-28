@@ -182,6 +182,13 @@ public final class GameState extends PublicGameState {
         return new GameState(this.tickets, this.cardState, this.currentPlayerId(), newPlayerStates, this.lastPlayer());
     }
 
+    public GameState withInitiallyChosenTickets(PlayerId playerId, SortedBag<Ticket> chosenTickets) {
+        Preconditions.checkArgument(!(this.playerState.get(playerId).ticketCount() > 0));
+        GameState newGameState = this;
+        newGameState.playerState.put(playerId, this.playerState.get(playerId).withAddedTickets(chosenTickets));
+        return newGameState;
+    }
+
     /**
      * Retourne un état identique au récepteur, mais dans lequel le joueur courant a tiré les billets drawnTickets du
      * sommet de la pioche, et choisi de garder ceux contenus dans chosenTicket ; lève
