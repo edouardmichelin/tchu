@@ -25,7 +25,7 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-public class ServerMain extends Application {
+public final class ServerMain extends Application {
     private final static String[] DEFAULT_NAMES = new String[]{"Ada", "Charles", "Alan"};
 
     /**

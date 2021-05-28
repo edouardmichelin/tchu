@@ -13,7 +13,7 @@ import java.util.List;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-public class ClientMain extends Application {
+public final class ClientMain extends Application {
     /**
      * Lance l'application sur le file JavaFX
      * @param args arguments

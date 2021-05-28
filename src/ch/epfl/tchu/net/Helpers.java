@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-class Helpers {
+final class Helpers {
     private Helpers() {}
 
     public static class MessageHandler {

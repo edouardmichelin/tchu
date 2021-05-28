@@ -16,7 +16,7 @@ import static javafx.application.Platform.runLater;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-public class GraphicalPlayerAdapter implements Player {
+public final class GraphicalPlayerAdapter implements Player {
     private GraphicalPlayer graphicalPlayer;
 
     private final BlockingQueue<SortedBag<Ticket>> ticketsChoice = new ArrayBlockingQueue<>(1);

@@ -18,7 +18,7 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-public class RemotePlayerProxy implements Player, AutoCloseable {
+public final class RemotePlayerProxy implements Player, AutoCloseable {
     private final Helpers.MessageHandler handler;
 
     private RemotePlayerProxy() {
