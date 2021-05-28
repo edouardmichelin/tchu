@@ -32,7 +32,6 @@ public class GraphicalPlayerAdapter implements Player {
 
     @Override
     public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
-        //this.graphicalPlayer = this.createGraphicalPlayer(ownId, playerNames);
         runLater(() -> this.graphicalPlayer = new GraphicalPlayer(ownId, playerNames));
     }
 
@@ -44,7 +43,6 @@ public class GraphicalPlayerAdapter implements Player {
     @Override
     public void updateState(PublicGameState newState, PlayerState ownState) {
         runLater(() -> graphicalPlayer.setState(newState, ownState));
-
     }
 
     @Override
@@ -128,18 +126,6 @@ public class GraphicalPlayerAdapter implements Player {
         try {
             runLater(() -> this.graphicalPlayer.chooseAdditionalCards(options, this.cardsChoice::add));
             return this.cardsChoice.take();
-        } catch (InterruptedException e) {
-            throw new Error(e);
-        }
-    }
-
-    private GraphicalPlayer createGraphicalPlayer(PlayerId ownId, Map<PlayerId, String> playerNames) {
-        BlockingQueue<GraphicalPlayer> gp = new ArrayBlockingQueue<>(1);
-
-        try {
-            runLater(() -> gp.add(new GraphicalPlayer(ownId, playerNames)));
-            var res = gp.take();
-            return res;
         } catch (InterruptedException e) {
             throw new Error(e);
         }

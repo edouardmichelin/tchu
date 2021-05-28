@@ -42,32 +42,30 @@ public class ServerMain extends Application {
     public void start(Stage primaryStage) throws IOException {
         List<String> args = getParameters().getRaw();
 
-        Map<PlayerId, String> playerNames = new HashMap<>();
+        Map<PlayerId, String> names = new HashMap<>();
         Map<PlayerId, Player> players = new HashMap<>();
 
-        try (
-                ServerSocket s0 = new ServerSocket(5108);
-                Socket socket = s0.accept()
-        ) {
-            Player me = new GraphicalPlayerAdapter();
+        ServerSocket s0 = new ServerSocket(5108);
+        Socket socket = s0.accept();
 
-            players.put(PlayerId.PLAYER_1, me);
+        Player me = new GraphicalPlayerAdapter();
 
-            for (PlayerId player : PlayerId.ALL) {
-                int ordinal = player.ordinal();
-                playerNames.put(player, args.size() > ordinal ? args.get(ordinal) : DEFAULT_NAMES[ordinal]);
+        players.put(PlayerId.PLAYER_1, me);
 
-                if (ordinal == 0) continue;
+        for (PlayerId player : PlayerId.ALL) {
+            int ordinal = player.ordinal();
+            names.put(player, args.size() > ordinal ? args.get(ordinal) : DEFAULT_NAMES[ordinal]);
 
-                players.put(player, new RemotePlayerProxy(socket));
-            }
+            if (ordinal == 0) continue;
 
-            Random random = new Random();
-
-            Thread game = new Thread(() -> Game.play(players, playerNames, SortedBag.of(ChMap.tickets()), random));
-
-            game.start();
+            players.put(player, new RemotePlayerProxy(socket));
         }
+
+        Random random = new Random();
+
+        Thread game = new Thread(() -> Game.play(players, names, SortedBag.of(ChMap.tickets()), random));
+
+        game.start();
 
     }
 }

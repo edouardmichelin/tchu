@@ -51,7 +51,6 @@ final class MapViewCreator {
         ObservableList<Node> children = node.getChildren();
 
         for (Route route : ChMap.routes()) {
-            PlayerId owner;
             Group group = new Group();
             ObservableList<Node> groupChildren = group.getChildren();
             ObservableList<String> classes = group.getStyleClass();
@@ -64,11 +63,14 @@ final class MapViewCreator {
             else
                 classes.add(route.color().name());
             if (route.level().equals(Route.Level.UNDERGROUND)) classes.add("UNDERGROUND");
-            if ((owner = gameState.routes(id).get()) != null) classes.add(owner.name());
+
+            gameState.routes(id).addListener((p, o, n) -> {
+                if (n != null)
+                    classes.add(n.name());
+            });
 
             group.disableProperty().bind(
-                    claimRouteHandler
-                    .isNull()
+                    claimRouteHandler.isNull()
                             .or(gameState.canClaimRoute(id).not())
                             .or(gameState.routes(id).isNull().not())
             );

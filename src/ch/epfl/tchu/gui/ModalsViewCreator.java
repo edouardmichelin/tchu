@@ -85,7 +85,7 @@ final class ModalsViewCreator {
 
         TextFlow introBox = new TextFlow(intro);
 
-        ListView<SortedBag<Card>> choiceList = createListView(cardsChoice);
+        ListView<SortedBag<Card>> choiceList = new ListView<>(cardsChoice);
         choiceList.setCellFactory(v -> new TextFieldListCell<>(new CardBagStringConverter()));
 
         Button confirmButton = createConfirmButton(choiceList, isAdditional ? 0 : 1);
@@ -95,7 +95,7 @@ final class ModalsViewCreator {
             chooseCardsHandler.get().onChooseCards(choiceList.getSelectionModel().getSelectedItem());
         });
 
-        Scene scene = new Scene(new VBox(introBox, createListView(cardsChoice), confirmButton));
+        Scene scene = new Scene(new VBox(introBox, choiceList, confirmButton));
 
         scene.getStylesheets().add("chooser.css");
 
