@@ -22,7 +22,7 @@ import javafx.util.StringConverter;
 
 
 /**
- * Title
+ * Représente les fenêtres modales
  *
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
