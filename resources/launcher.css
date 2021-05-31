@@ -1,0 +1,32 @@
+#launcher {
+    -fx-background-color: #2b2b2b;
+    -fx-padding: 20;
+    -fx-vgap: 20;
+}
+
+
+
+.menu-button .border {
+    -fx-fill: white;
+    -fx-arc-height: 5;
+    -fx-arc-width: 5;
+}
+.menu-button .text {
+    -fx-font-size: 24;
+    -fx-fill: white;
+    -fx-stroke: white;
+}
+
+.menu-button .background {
+    -fx-fill: lightpink;
+}
+.menu-button .image {
+
+}
+.menu-button #client-button {
+    -fx-fill: url("train-menu.png");
+}
+
+.menu-button #host-button {
+
+}
