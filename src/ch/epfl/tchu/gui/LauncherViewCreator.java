@@ -1,6 +1,8 @@
 package ch.epfl.tchu.gui;
 
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -36,18 +38,25 @@ final class LauncherViewCreator {
         Text label = new Text(buttonLabel);
         label.getStyleClass().add("text");
 
-        Rectangle border = new Rectangle(500, 250);
+        Rectangle border = new Rectangle(400, 250);
         border.getStyleClass().add("border");
 
-        Rectangle background = new Rectangle(494, 244);
+        Rectangle background = new Rectangle(394, 244);
         background.getStyleClass().add("background");
 
-        Rectangle icon = new Rectangle(494, 244);
+        Rectangle icon = new Rectangle(180, 180);
         icon.getStyleClass().add("image");
         icon.setId(styleId);
 
-        StackPane button = new StackPane(border, icon, background, label);
+        StackPane interior = new StackPane(icon, label);
+        interior.getStyleClass().add("interior");
+
+        StackPane button = new StackPane(border, background, interior);
         button.getStyleClass().add("menu-button");
+
+        StackPane.setAlignment(label, Pos.BOTTOM_CENTER);
+        StackPane.setAlignment(icon, Pos.TOP_CENTER);
+
         return button;
     }
 }

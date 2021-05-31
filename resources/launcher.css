@@ -3,8 +3,17 @@
     -fx-padding: 20;
     -fx-vgap: 20;
 }
+.menu-button:hover .background {
+    -fx-fill: linear-gradient(to bottom, #13a37c, #0af5b5);
+}
 
+.menu-button:hover .text {
+    -fx-fill: white;
+}
 
+.menu-button .interior{
+    -fx-padding: 15;
+}
 
 .menu-button .border {
     -fx-fill: white;
@@ -15,18 +24,18 @@
     -fx-font-size: 24;
     -fx-fill: white;
     -fx-stroke: white;
+    -fx-effect: dropshadow(gaussian, black, 5, 0, 1, 1);
 }
 
 .menu-button .background {
-    -fx-fill: lightpink;
+    -fx-fill: #13a37c;
 }
 .menu-button .image {
-
 }
 .menu-button #client-button {
     -fx-fill: url("train-menu.png");
 }
 
 .menu-button #host-button {
-
+    -fx-fill: url("server.png")
 }
