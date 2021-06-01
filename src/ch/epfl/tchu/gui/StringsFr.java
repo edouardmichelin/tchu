@@ -79,10 +79,11 @@ public final class StringsFr {
     public static final String AND_SEPARATOR = " et ";
     public static final String EN_DASH_SEPARATOR = " – ";
 
-    // Chaines rajoutées à l'étape 12
+    // Chaines ajoutées à l'étape 12
     // Label des boutons
     public static final String PLAY_AS_CLIENT = "Rejoindre un serveur";
     public static final String HOST_GAME = "Héberger une partie";
+
     /**
      * Retourne une chaîne marquant le pluriel, ou la chaîne vide.
      * @param value la valeur déterminant la chaîne retournée

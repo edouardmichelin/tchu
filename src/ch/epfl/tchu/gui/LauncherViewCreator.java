@@ -4,6 +4,8 @@ import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
@@ -32,6 +34,16 @@ final class LauncherViewCreator {
         GridPane.setHalignment(hostServerButton, HPos.CENTER);
 
         return launcherBox;
+    }
+
+    public static GridPane createPlayerPrompt() {
+        Label label = new Label("Adresse du serveur :");
+        TextField addressField = new TextField();
+
+        GridPane promptBox = new GridPane();
+        promptBox.addRow(0, label, addressField);
+
+        return promptBox;
     }
 
     private static StackPane createMenuButton(String buttonLabel, String styleId) {
