@@ -1,0 +1,7 @@
+BorderPane.dark-mode {
+    -fx-background-color: #2e2f33;
+}
+
+BorderPane.dark-mode Text {
+    -fx-fill: white;
+}

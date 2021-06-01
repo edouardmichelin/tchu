@@ -11,6 +11,10 @@ import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -81,10 +85,28 @@ class GraphicalPlayer {
         this.additionalCardsChoiceModal = ModalsViewCreator
                 .createCardsChoiceView(this.additionalCardsChoice, this.chooseCardsHandler, modalStage, true);
 
-        BorderPane root = new BorderPane(mapView, null, cardsView, handView, infoView);
+        Menu menuView = new Menu("View");
+        RadioMenuItem menuItem = new RadioMenuItem("Mode sombre");
+
+        menuView.getItems().add(menuItem);
+
+        MenuBar menuBar = new MenuBar();
+        menuBar.getMenus().add(menuView);
+
+        BorderPane root = new BorderPane(mapView, menuBar, cardsView, handView, infoView);
+
+        root.getStylesheets().add("main.css");
+        ObservableList<String> rootClasses = root.getStyleClass();
 
         primaryStage.setScene(new Scene(root));
         primaryStage.setTitle(String.format("tCHu — %s", playerNames.get(playerId)));
+
+        menuItem.setOnAction(e -> {
+            if (rootClasses.contains("dark-mode"))
+                rootClasses.remove("dark-mode");
+            else
+                rootClasses.add("dark-mode");
+        });
 
         this.modalStage.initOwner(primaryStage);
         this.modalStage.initModality(Modality.WINDOW_MODAL);
