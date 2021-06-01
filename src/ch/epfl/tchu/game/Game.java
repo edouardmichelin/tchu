@@ -25,10 +25,31 @@ public final class Game {
      * billets disponibles pour cette partie sont ceux de <i>tickets</i>, et le générateur pseudo aléatoire
      * <i>rng</i> est utilisé pour créer l'état initial du jeu et pour mélanger les cartes de la défausse pour en
      * faire une nouvelle pioche quand cela est nécessaire ; lève <i>IllegalArgumentException</i> si l'une des deux
-     * tables associatives
-     * a une taille différente de <i>2</i>
+     * tables associatives a une taille différente de <i>2</i>
      *
      * @param players     les joueurs qui vont jouer la partie
+     * @param playerNames les noms des joueurs de <code>players</code>
+     * @param tickets     les billets disponibles pour la partie
+     * @param rng         le générateur pseudo aléatoire
+     */
+    public static void play(
+            Map<PlayerId, Player> players,
+            Map<PlayerId, String> playerNames,
+            SortedBag<Ticket> tickets,
+            Random rng
+    ) {
+        play(players, Map.of(), playerNames, tickets, rng);
+    }
+
+    /**
+     * Fait jouer une partie de tCHu aux joueurs donnés, dont les noms figurent dans la table <i>playerNames</i> ; les
+     * billets disponibles pour cette partie sont ceux de <i>tickets</i>, et le générateur pseudo aléatoire
+     * <i>rng</i> est utilisé pour créer l'état initial du jeu et pour mélanger les cartes de la défausse pour en
+     * faire une nouvelle pioche quand cela est nécessaire ; lève <i>IllegalArgumentException</i> si l'une des deux
+     * tables associatives a une taille différente de <i>2</i>. La partie est observable par des spectateurs.
+     *
+     * @param players     les joueurs qui vont jouer la partie
+     * @param spectators  les spectateurs qui vont observer la partie
      * @param playerNames les noms des joueurs de <code>players</code>
      * @param tickets     les billets disponibles pour la partie
      * @param rng         le générateur pseudo aléatoire
@@ -36,6 +57,7 @@ public final class Game {
      */
     public static void play(
             Map<PlayerId, Player> players,
+            Map<PlayerId, Player> spectators,
             Map<PlayerId, String> playerNames,
             SortedBag<Ticket> tickets,
             Random rng
@@ -55,9 +77,11 @@ public final class Game {
 
         // first call for initPlayers to inform players of their identity
         players.forEach((k, v) -> v.initPlayers(k, playerNames));
+        spectators.forEach((k, v) -> v.initPlayers(k, playerNames));
 
         // Announce the first player to play
         announce(players, playerInfos.get(currentGameState.currentPlayerId()).willPlayFirst());
+        announce(spectators, playerInfos.get(currentGameState.currentPlayerId()).willPlayFirst());
 
         // Show the players their initial ticket choice
         for (Entry<PlayerId, Player> player : players.entrySet()) {
@@ -68,6 +92,7 @@ public final class Game {
         }
 
         update(players, currentGameState);
+        update(spectators, currentGameState);
 
         //Change the state of the game based on the chooseInitialTickets call of all players
         for (Entry<PlayerId, Player> player : players.entrySet()) {
@@ -77,7 +102,10 @@ public final class Game {
 
         //Announce how many tickets players have kept
         final GameState tmpGameState = currentGameState;
-        playerInfos.forEach((k, v) -> announce(players, v.keptTickets(tmpGameState.playerState(k).ticketCount())));
+        playerInfos.forEach((k, v) -> {
+            announce(players, v.keptTickets(tmpGameState.playerState(k).ticketCount()));
+            announce(spectators, v.keptTickets(tmpGameState.playerState(k).ticketCount()));
+        });
 
         // endregion
 
@@ -100,7 +128,9 @@ public final class Game {
                 finalTurnsAmount++;
 
             update(players, currentGameState);
+            update(spectators, currentGameState);
             announce(players, currentPlayerInfo.canPlay());
+            announce(spectators, currentPlayerInfo.canPlay());
 
             // The player plays here
             switch (currentPlayer.nextTurn()) {
@@ -113,12 +143,17 @@ public final class Game {
                             Card card = currentGameState.cardState().faceUpCard(slotDrawn);
                             currentGameState = currentGameState.withDrawnFaceUpCard(slotDrawn);
                             announce(players, currentPlayerInfo.drewVisibleCard(card));
+                            announce(spectators, currentPlayerInfo.drewVisibleCard(card));
                         } else if (slotDrawn == Constants.DECK_SLOT) {
                             currentGameState = currentGameState.withBlindlyDrawnCard();
                             announce(players, currentPlayerInfo.drewBlindCard());
+                            announce(spectators, currentPlayerInfo.drewBlindCard());
                         }
                         currentGameState = currentGameState.withCardsDeckRecreatedIfNeeded(rng);
-                        if (i == 0) update(players, currentGameState);
+                        if (i == 0) {
+                            update(players, currentGameState);
+                            update(spectators, currentGameState);
+                        }
                     }
                     break;
 
@@ -129,6 +164,7 @@ public final class Game {
 
                     if (claimedRoute.level().equals(Route.Level.UNDERGROUND)) {
                         announce(players, currentPlayerInfo.attemptsTunnelClaim(claimedRoute, initialClaimCards));
+                        announce(spectators, currentPlayerInfo.attemptsTunnelClaim(claimedRoute, initialClaimCards));
 
                         var builder = new SortedBag.Builder<Card>();
 
@@ -145,6 +181,7 @@ public final class Game {
                                 .additionalClaimCardsCount(initialClaimCards, drawnCards);
 
                         announce(players, currentPlayerInfo.drewAdditionalCards(drawnCards, additionalCardsCount));
+                        announce(spectators, currentPlayerInfo.drewAdditionalCards(drawnCards, additionalCardsCount));
 
                         if (additionalCardsCount >= 1) {
                             List<SortedBag<Card>> possibleAdditionalCards =
@@ -155,12 +192,14 @@ public final class Game {
 
                             if (possibleAdditionalCards.isEmpty()) {
                                 announce(players, currentPlayerInfo.didNotClaimRoute(claimedRoute));
+                                announce(spectators, currentPlayerInfo.didNotClaimRoute(claimedRoute));
                                 break;
                             } else {
                                 additionalChosenCards = currentPlayer.chooseAdditionalCards(possibleAdditionalCards);
 
                                 if (additionalChosenCards.isEmpty()) {
                                     announce(players, currentPlayerInfo.didNotClaimRoute(claimedRoute));
+                                    announce(spectators, currentPlayerInfo.didNotClaimRoute(claimedRoute));
                                     break;
                                 }
                             }
@@ -169,17 +208,20 @@ public final class Game {
 
                     SortedBag<Card> claimCards = initialClaimCards.union(additionalChosenCards);
                     announce(players, currentPlayerInfo.claimedRoute(claimedRoute, claimCards));
+                    announce(spectators, currentPlayerInfo.claimedRoute(claimedRoute, claimCards));
                     currentGameState = currentGameState.withClaimedRoute(claimedRoute, claimCards);
 
                     break;
                 case DRAW_TICKETS:
                     announce(players, currentPlayerInfo.drewTickets(Constants.IN_GAME_TICKETS_COUNT));
+                    announce(spectators, currentPlayerInfo.drewTickets(Constants.IN_GAME_TICKETS_COUNT));
 
                     SortedBag<Ticket> ticketChoice = currentGameState.topTickets(Constants.IN_GAME_TICKETS_COUNT);
                     SortedBag<Ticket> chosenTickets = currentPlayer.chooseTickets(ticketChoice);
 
                     currentGameState = currentGameState.withChosenAdditionalTickets(ticketChoice, chosenTickets);
                     announce(players, currentPlayerInfo.keptTickets(chosenTickets.size()));
+                    announce(spectators, currentPlayerInfo.keptTickets(chosenTickets.size()));
 
                     break;
                 default:
@@ -190,6 +232,7 @@ public final class Game {
             if (currentGameState.lastTurnBegins() && !hasLastTurnBegun) {
                 hasLastTurnBegun = true;
                 announce(players, currentPlayerInfo.lastTurnBegins(currentPlayerState.carCount()));
+                announce(spectators, currentPlayerInfo.lastTurnBegins(currentPlayerState.carCount()));
             }
 
             currentGameState = currentGameState.withCardsDeckRecreatedIfNeeded(rng);
@@ -202,6 +245,7 @@ public final class Game {
 
         final GameState gameOverState = currentGameState;
         update(players, gameOverState);
+        update(spectators, gameOverState);
 
         // Map of scores without bonus
         Map<PlayerId, Integer> playerScores = new HashMap<>();
@@ -229,6 +273,7 @@ public final class Game {
         // Add bonus to the right scores and announce bonus earning player(s)
         playersForBonus.forEach((k, v) -> {
             announce(players, playerInfos.get(k).getsLongestTrailBonus(v));
+            announce(spectators, playerInfos.get(k).getsLongestTrailBonus(v));
             playerScores.put(k, playerScores.get(k) + Constants.LONGEST_TRAIL_BONUS_POINTS);
         });
 
@@ -257,6 +302,7 @@ public final class Game {
                     .collect(Collectors.toList());
 
             announce(players, Info.draw(winners, bestScore.getValue()));
+            announce(spectators, Info.draw(winners, bestScore.getValue()));
         } else {
             int loserPoints = playerScores
                     .entrySet()
@@ -268,6 +314,7 @@ public final class Game {
             int winnerPoints = bestScore.getValue();
 
             announce(players, playerInfos.get(bestScore.getKey()).won(winnerPoints, loserPoints));
+            announce(spectators, playerInfos.get(bestScore.getKey()).won(winnerPoints, loserPoints));
         }
         // endregion
     }

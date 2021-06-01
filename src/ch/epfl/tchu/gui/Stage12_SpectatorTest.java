@@ -14,7 +14,7 @@ import java.util.Random;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-public final class Stage12Test extends Application {
+public final class Stage12_SpectatorTest extends Application {
     public static void main(String[] args) { launch(args); }
 
     @Override
@@ -25,7 +25,7 @@ public final class Stage12Test extends Application {
                 Map.of(
                         PlayerId.PLAYER_1, "Ada",
                         PlayerId.PLAYER_2, "Charles",
-                        PlayerId.PLAYER_3, "Mathis"
+                        PlayerId.PLAYER_3, "Bob"
                 );
         Map<PlayerId, Player> players =
                 Map.of(
@@ -33,8 +33,13 @@ public final class Stage12Test extends Application {
                         PlayerId.PLAYER_2, new GraphicalPlayerAdapter(),
                         PlayerId.PLAYER_3, new GraphicalPlayerAdapter()
                 );
+        Map<PlayerId, Player> spectators =
+                Map.of(
+                        PlayerId.SPECTATOR_1, new GraphicalSpectatorAdapter()
+                        );
+
         Random rng = new Random();
-        new Thread(() -> Game.play(players, names, tickets, rng))
+        new Thread(() -> Game.play(players, spectators, names, tickets, rng))
                 .start();
     }
 }
