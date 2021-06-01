@@ -1,11 +1,15 @@
 package ch.epfl.tchu.gui;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.css.Selector;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -20,8 +24,14 @@ import javafx.scene.text.Text;
  * @author Julien Jordan (315429)
  */
 final class LauncherViewCreator {
-    private LauncherViewCreator(){}
+    private LauncherViewCreator() {
+    }
 
+    /**
+     * Permet de créer la vue du Launcher du jeu
+     *
+     * @return la vue du Launcher
+     */
     public static GridPane createLauncherView() {
         StackPane playAsClientButton = createMenuButton(StringsFr.PLAY_AS_CLIENT, "client-button");
         StackPane hostServerButton = createMenuButton(StringsFr.HOST_GAME, "host-button");
@@ -38,6 +48,11 @@ final class LauncherViewCreator {
         return launcherBox;
     }
 
+    /**
+     * Permet de créer la vue de la fenêtre modale demandant les informations de connexion au joueur
+     *
+     * @return vue de la fenêtre modale quand l'on choisi de se connecter à un serveur
+     */
     public static Scene createPlayerPrompt() {
         Label label = new Label("Adresse du serveur :");
         label.getStyleClass().add("label");
@@ -59,6 +74,41 @@ final class LauncherViewCreator {
         return scene;
     }
 
+    public static Scene createHostPrompt() {
+        Label label = new Label("Choisir le nombre de joueurs");
+        label.getStyleClass().add("label");
+
+        ObservableList<String> options =
+                FXCollections.observableArrayList(
+                        "2",
+                        "3",
+                        "4"
+                );
+
+        ComboBox<String> dropDown = new ComboBox<>(options);
+
+        Button confirmButton = new Button(StringsFr.CONFIRM);
+
+        GridPane promptBox = new GridPane();
+        promptBox.getStyleClass().add("prompt");
+        promptBox.addRow(0, label, dropDown);
+        promptBox.add(confirmButton, 0, 2, 2, 1);
+
+        GridPane.setHalignment(confirmButton, HPos.CENTER);
+
+        Scene scene = new Scene(promptBox);
+        scene.getStylesheets().add("launcher-modal.css");
+
+        return scene;
+    }
+
+    /**
+     * Permet de créer les boutons principaux du Launcher
+     *
+     * @param buttonLabel Le texte du bouton
+     * @param styleId     l'identifiant de style du bouton
+     * @return Un bouton stylisé
+     */
     private static StackPane createMenuButton(String buttonLabel, String styleId) {
         Text label = new Text(buttonLabel);
         label.getStyleClass().add("text");
