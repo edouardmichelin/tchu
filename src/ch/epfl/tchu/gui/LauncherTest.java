@@ -17,9 +17,14 @@ public final class LauncherTest extends Application{
     @Override
     public void start(Stage primaryStage) {
         final Stage modalStage = new Stage(StageStyle.UTILITY);
-        final Stage clientPromptStage = LauncherViewCreator.createPlayerPrompt();
+        final Scene clientPrompScene = LauncherViewCreator.createPlayerPrompt();
 
         primaryStage.setScene(new Scene(LauncherViewCreator.createLauncherView()));
+        primaryStage.setTitle("Launcher - tCHu");
         primaryStage.show();
+
+        modalStage.setScene(clientPrompScene);
+        modalStage.setTitle("Se connecter à un serveur");
+        modalStage.show();
     }
 }

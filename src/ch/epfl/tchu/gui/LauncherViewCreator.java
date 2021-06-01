@@ -4,6 +4,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -37,17 +38,25 @@ final class LauncherViewCreator {
         return launcherBox;
     }
 
-    public static GridPane createPlayerPrompt() {
+    public static Scene createPlayerPrompt() {
         Label label = new Label("Adresse du serveur :");
+        label.getStyleClass().add("label");
+
         TextField addressField = new TextField();
+
         Button confirmButton = new Button(StringsFr.CONFIRM);
 
         GridPane promptBox = new GridPane();
-        promptBox.getStylesheets().add("launcher-modal.css");
+        promptBox.getStyleClass().add("prompt");
         promptBox.addRow(0, label, addressField);
         promptBox.add(confirmButton, 0, 2, 2, 1);
 
-        return promptBox;
+        GridPane.setHalignment(confirmButton, HPos.CENTER);
+
+        Scene scene = new Scene(promptBox);
+        scene.getStylesheets().add("launcher-modal.css");
+
+        return scene;
     }
 
     private static StackPane createMenuButton(String buttonLabel, String styleId) {
