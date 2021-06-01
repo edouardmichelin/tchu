@@ -1,19 +1,20 @@
 package ch.epfl.tchu.gui;
 
-import ch.epfl.tchu.Preconditions;
-import ch.epfl.tchu.SortedBag;
-import ch.epfl.tchu.game.*;
+import ch.epfl.tchu.game.PlayerId;
+import ch.epfl.tchu.game.PlayerState;
+import ch.epfl.tchu.game.PublicGameState;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.util.List;
 import java.util.Map;
 
 import static ch.epfl.tchu.gui.ActionHandlers.*;
@@ -47,13 +48,20 @@ public class GraphicalSpectator {
 
         this.gameState = new ObservableGameState(playerId);
 
-        Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, (ign, ored) -> {});
+        Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, (ign, ored) -> {
+        });
         Node cardsView = DecksViewCreator.createCardsView(gameState, drawTicketsHandler, drawCardHandler);
         Node infoView = InfoViewCreator.createInfoView(playerId, playerNames, gameState, this.infos);
 
-        BorderPane root = new BorderPane(mapView, null, cardsView, null, infoView);
+        Menu menuView = new Menu("View");
 
-        primaryStage.setScene(new Scene(root));
+        BorderPane root = new BorderPane(mapView, new MenuBar(menuView), cardsView, null, infoView);
+
+        var rootScene = new Scene(root);
+
+        menuView.getItems().add(MenuBarViewCreator.createDarkModeMenuItemView(rootScene));
+
+        primaryStage.setScene(rootScene);
         primaryStage.setTitle("tCHu — mode spectateur");
 
         primaryStage.show();

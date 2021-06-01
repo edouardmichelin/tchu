@@ -86,27 +86,22 @@ class GraphicalPlayer {
                 .createCardsChoiceView(this.additionalCardsChoice, this.chooseCardsHandler, modalStage, true);
 
         Menu menuView = new Menu("View");
-        RadioMenuItem menuItem = new RadioMenuItem("Mode sombre");
 
-        menuView.getItems().add(menuItem);
+        BorderPane root = new BorderPane(mapView, new MenuBar(menuView), cardsView, handView, infoView);
 
-        MenuBar menuBar = new MenuBar();
-        menuBar.getMenus().add(menuView);
+        var rootScene = new Scene(root);
 
-        BorderPane root = new BorderPane(mapView, menuBar, cardsView, handView, infoView);
+        menuView.getItems().add(MenuBarViewCreator.createDarkModeMenuItemView(
+                rootScene,
+                initialTicketsChoiceModal,
+                ticketsChoiceModal,
+                initialCardsChoiceModal,
+                additionalCardsChoiceModal
+        ));
 
-        root.getStylesheets().add("main.css");
-        ObservableList<String> rootClasses = root.getStyleClass();
-
-        primaryStage.setScene(new Scene(root));
+        primaryStage.setScene(rootScene);
         primaryStage.setTitle(String.format("tCHu — %s", playerNames.get(playerId)));
 
-        menuItem.setOnAction(e -> {
-            if (rootClasses.contains("dark-mode"))
-                rootClasses.remove("dark-mode");
-            else
-                rootClasses.add("dark-mode");
-        });
 
         this.modalStage.initOwner(primaryStage);
         this.modalStage.initModality(Modality.WINDOW_MODAL);

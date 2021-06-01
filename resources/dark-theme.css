@@ -1,7 +1,7 @@
-BorderPane.dark-mode {
+BorderPane, ListView, Region, VBox {
     -fx-background-color: #2e2f33;
 }
 
-BorderPane.dark-mode Text {
+Text {
     -fx-fill: white;
 }
