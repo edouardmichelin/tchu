@@ -3,6 +3,7 @@ package ch.epfl.tchu.gui;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
  * Test pour le launcher
@@ -15,6 +16,9 @@ public final class LauncherTest extends Application{
 
     @Override
     public void start(Stage primaryStage) {
+        final Stage modalStage = new Stage(StageStyle.UTILITY);
+        final Stage clientPromptStage = LauncherViewCreator.createPlayerPrompt();
+
         primaryStage.setScene(new Scene(LauncherViewCreator.createLauncherView()));
         primaryStage.show();
     }

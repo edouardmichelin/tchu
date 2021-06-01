@@ -83,6 +83,7 @@ public final class StringsFr {
     // Label des boutons
     public static final String PLAY_AS_CLIENT = "Rejoindre un serveur";
     public static final String HOST_GAME = "Héberger une partie";
+    public static final String CONFIRM = "Confirmer";
 
     /**
      * Retourne une chaîne marquant le pluriel, ou la chaîne vide.

@@ -4,6 +4,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -39,9 +40,12 @@ final class LauncherViewCreator {
     public static GridPane createPlayerPrompt() {
         Label label = new Label("Adresse du serveur :");
         TextField addressField = new TextField();
+        Button confirmButton = new Button(StringsFr.CONFIRM);
 
         GridPane promptBox = new GridPane();
+        promptBox.getStylesheets().add("launcher-modal.css");
         promptBox.addRow(0, label, addressField);
+        promptBox.add(confirmButton, 0, 2, 2, 1);
 
         return promptBox;
     }
