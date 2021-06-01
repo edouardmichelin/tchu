@@ -28,7 +28,7 @@ import static javafx.application.Platform.isFxApplicationThread;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-final class GraphicalPlayer {
+class GraphicalPlayer {
     private final int MAX_DISPLAYED_INFORMATIONS = 5;
 
     private final ObservableGameState gameState;
