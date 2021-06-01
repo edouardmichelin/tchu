@@ -10,12 +10,20 @@ import java.util.List;
  */
 public enum PlayerId {
     PLAYER_1,
-    PLAYER_2;
+    PLAYER_2,
+    PLAYER_3,
+    SPECTATOR_1,
+    SPECTATOR_2;
+
+    /**
+     * Liste tous les IDs des spectateurs
+     */
+    public final static List<PlayerId> SPECTATORS = List.of(SPECTATOR_1, SPECTATOR_2);
 
     /**
      * Liste tous les IDs des joueurs
      */
-    public final static List<PlayerId> ALL = List.of(PlayerId.values());
+    public final static List<PlayerId> ALL = List.of(PLAYER_1, PLAYER_2, PLAYER_3);
 
     /**
      * Retourne le nombre de joueurs

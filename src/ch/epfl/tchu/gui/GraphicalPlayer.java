@@ -11,6 +11,10 @@ import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -28,7 +32,7 @@ import static javafx.application.Platform.isFxApplicationThread;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-final class GraphicalPlayer {
+class GraphicalPlayer {
     private final int MAX_DISPLAYED_INFORMATIONS = 5;
 
     private final ObservableGameState gameState;
@@ -81,10 +85,23 @@ final class GraphicalPlayer {
         this.additionalCardsChoiceModal = ModalsViewCreator
                 .createCardsChoiceView(this.additionalCardsChoice, this.chooseCardsHandler, modalStage, true);
 
-        BorderPane root = new BorderPane(mapView, null, cardsView, handView, infoView);
+        Menu menuView = new Menu("View");
 
-        primaryStage.setScene(new Scene(root));
+        BorderPane root = new BorderPane(mapView, new MenuBar(menuView), cardsView, handView, infoView);
+
+        var rootScene = new Scene(root);
+
+        menuView.getItems().add(MenuBarViewCreator.createDarkModeMenuItemView(
+                rootScene,
+                initialTicketsChoiceModal,
+                ticketsChoiceModal,
+                initialCardsChoiceModal,
+                additionalCardsChoiceModal
+        ));
+
+        primaryStage.setScene(rootScene);
         primaryStage.setTitle(String.format("tCHu — %s", playerNames.get(playerId)));
+
 
         this.modalStage.initOwner(primaryStage);
         this.modalStage.initModality(Modality.WINDOW_MODAL);
