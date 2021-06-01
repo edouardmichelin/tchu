@@ -13,9 +13,8 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioMenuItem;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.media.AudioClip;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -32,7 +31,7 @@ import static javafx.application.Platform.isFxApplicationThread;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-class GraphicalPlayer {
+final class GraphicalPlayer {
     private final int MAX_DISPLAYED_INFORMATIONS = 5;
 
     private final ObservableGameState gameState;
@@ -55,6 +54,17 @@ class GraphicalPlayer {
     private final ObservableList<Ticket> ticketsChoice = FXCollections.observableArrayList();
     private final ObservableList<SortedBag<Card>> initialCardsChoice = FXCollections.observableArrayList();
     private final ObservableList<SortedBag<Card>> additionalCardsChoice = FXCollections.observableArrayList();
+
+    private final AudioClip AUDIO_ALERT =
+            new AudioClip(this.getClass().getResource("/sounds/alert.wav").toExternalForm());
+    private final AudioClip AUDIO_DRAW =
+            new AudioClip(this.getClass().getResource("/sounds/draw.wav").toExternalForm());
+    private final AudioClip AUDIO_ROUTE_CLAIMED = new AudioClip(this.getClass().getResource("/sounds/route-building" +
+            ".mp3").toExternalForm());
+    private final AudioClip AUDIO_WINNER =
+            new AudioClip(this.getClass().getResource("/sounds/victory.wav").toExternalForm());
+    private final AudioClip AUDIO_LOSER =
+            new AudioClip(this.getClass().getResource("/sounds/game-over.wav").toExternalForm());
 
 
     /**
@@ -158,12 +168,16 @@ class GraphicalPlayer {
     ) {
         assert isFxApplicationThread();
 
+        AUDIO_ALERT.play();
+
         this.drawTicketsHandler.set(gameState.canDrawTickets() ? () -> {
+            AUDIO_DRAW.play();
             drawTicketsHandler.onDrawTickets();
             resetHandlers();
         } : null);
 
         this.drawCardHandler.set(gameState.canDrawCards() ? slot -> {
+            AUDIO_DRAW.play();
             drawCardHandler.onDrawCard(slot);
             resetHandlers();
         } : null);
@@ -220,6 +234,7 @@ class GraphicalPlayer {
         assert isFxApplicationThread();
 
         this.drawCardHandler.set(slot -> {
+            AUDIO_DRAW.play();
             drawCardHandler.onDrawCard(slot);
             resetHandlers();
         });
@@ -275,6 +290,28 @@ class GraphicalPlayer {
             this.additionalCardsChoice.clear();
             chooseCardsHandler.onChooseCards(cards);
         });
+    }
+
+    /**
+     * Ne fait rien d'autre que jouer le son de capture de route
+     * @param route la route capturée
+     */
+    public void successfullyClaimedRoute(Route route) {
+        AUDIO_ROUTE_CLAIMED.play();
+    }
+
+    /**
+     * Ne fait rien d'autre que jouer le son de la victoire
+     */
+    public void won() {
+        AUDIO_WINNER.play();
+    }
+
+    /**
+     * Ne fait rien d'autre que jouer le son de la défaite
+     */
+    public void lost() {
+        AUDIO_LOSER.play();
     }
 
     private void resetHandlers() {
