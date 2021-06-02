@@ -3,6 +3,7 @@
     -fx-padding: 20;
     -fx-vgap: 20;
     -fx-hgap: 20;
+    -fx-alignment: center;
 }
 
 .prompt .label {

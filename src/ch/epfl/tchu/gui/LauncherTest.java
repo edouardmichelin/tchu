@@ -2,8 +2,11 @@ package ch.epfl.tchu.gui;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Test pour le launcher
@@ -16,22 +19,19 @@ public final class LauncherTest extends Application{
 
     @Override
     public void start(Stage primaryStage) {
-        final Stage modalClient = new Stage(StageStyle.UTILITY);
-        final Stage modalHost = new Stage(StageStyle.UTILITY);
 
-        final Scene clientPrompScene = LauncherViewCreator.createPlayerPrompt();
-        final Scene hostPromptScene = LauncherViewCreator.createHostPrompt();
+        GridPane launcherBox = LauncherViewCreator.createLauncherView(primaryStage);
 
-        primaryStage.setScene(new Scene(LauncherViewCreator.createLauncherView()));
-        primaryStage.setTitle("Launcher - tCHu");
+        Scene scene = new Scene(launcherBox);
+        scene.getStylesheets().add("launcher.css");
+
+        primaryStage.initStyle(StageStyle.UNDECORATED);
+        primaryStage.setResizable(false);
+        primaryStage.setScene(scene);
+        primaryStage.setHeight(604);
+        primaryStage.setWidth(604);
+
+
         primaryStage.show();
-
-        modalClient.setScene(clientPrompScene);
-        modalClient.setTitle("Se connecter à un serveur");
-        modalClient.show();
-
-        modalHost.setScene(hostPromptScene);
-        modalHost.setTitle("Héberger une partie");
-        modalHost.show();
     }
 }

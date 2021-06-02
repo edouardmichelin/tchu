@@ -83,7 +83,13 @@ public final class StringsFr {
     // Label des boutons
     public static final String PLAY_AS_CLIENT = "Rejoindre un serveur";
     public static final String HOST_GAME = "Héberger une partie";
+    public static final String SPECTATE_GAME = "Observer une partie";
+    public static final String EXIT_GAME = "Quitter le launcher";
+    public static final String CHOOSE_PLAYER_NUMBER = "Choisir le nombre de joueurs";
+    public static final String CHOOSE_SPECTATOR_NUMBER = "Choisir le nombre de spéctateurs";
+    public static final String JOIN_PROMPT_LABEL = "Adresse du serveur";
     public static final String CONFIRM = "Confirmer";
+    public static final String BACK = "Retour";
 
     /**
      * Retourne une chaîne marquant le pluriel, ou la chaîne vide.

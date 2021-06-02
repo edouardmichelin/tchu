@@ -1,7 +1,11 @@
 #launcher {
     -fx-background-color: #2b2b2b;
-    -fx-padding: 20;
+    -fx-padding: 40;
     -fx-vgap: 20;
+    -fx-hgap: 20;
+    -fx-border-color: white;
+    -fx-border-width: 2;
+    -fx-border-style: solid;
 }
 .menu-button:hover .background {
     -fx-fill: linear-gradient(to bottom, #13a37c, #0af5b5);
@@ -30,12 +34,34 @@
 .menu-button .background {
     -fx-fill: #13a37c;
 }
-.menu-button .image {
-}
 .menu-button #client-button {
     -fx-fill: url("train-menu.png");
 }
 
 .menu-button #host-button {
     -fx-fill: url("server.png");
+}
+
+.menu-button #spec-button{
+    -fx-fill: url("eye.png");
+}
+
+.menu-button #exit-button{
+    -fx-fill: url("exit.png");
+}
+
+.prompt {
+    -fx-background-color: #2b2b2b;
+    -fx-padding: 20;
+    -fx-vgap: 20;
+    -fx-hgap: 20;
+}
+
+.prompt .label {
+    -fx-fill: white;
+    -fx-stroke: white;
+}
+
+.prompt .bigger {
+    -fx-font-size: 24;
 }
