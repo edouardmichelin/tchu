@@ -3,9 +3,7 @@ package ch.epfl.tchu.game;
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -174,21 +172,12 @@ public final class PlayerState extends PublicPlayerState {
      * @return le nombre de points — éventuellement négatif — obtenus par le joueur grâce à ses billets
      */
     public int ticketPoints() {
-        int maxId = 0;
-        for (Route route : this.routes()) {
-            if (route.station1().id() > maxId || route.station2().id() > maxId) {
-                if (route.station2().id() > route.station1().id()) {
-                    maxId = route.station2().id();
-                } else {
-                    maxId = route.station1().id();
-                }
-            }
-        }
+        StationPartition.Builder spb = new StationPartition.Builder(computeMaxId());
 
-        StationPartition.Builder spb = new StationPartition.Builder(maxId + 1);
         for (Route route : this.routes()) {
             spb.connect(route.station1(), route.station2());
         }
+
         StationPartition stationPartition = spb.build();
 
         int netPoints = 0;
@@ -200,11 +189,44 @@ public final class PlayerState extends PublicPlayerState {
     }
 
     /**
+     * Retourne le nombre de points — éventuellement négatif — obtenus par le joueur grâce à ses billets
+     *
+     * @return un dictionnaire clé-valeur avec le ticket et le nombre de points — éventuellement négatif — obtenus
+     */
+    public Map<Ticket, Integer> ticketsWithPoints() {
+        Map<Ticket, Integer> map = new HashMap<>();
+
+        StationPartition.Builder spb = new StationPartition.Builder(computeMaxId());
+
+        for (Route route : this.routes()) {
+            spb.connect(route.station1(), route.station2());
+        }
+
+        StationPartition stationPartition = spb.build();
+
+        for (Ticket ticket : this.tickets) {
+            map.put(ticket, ticket.points(stationPartition));
+        }
+
+        return map;
+    }
+
+    /**
      * Retourne la totalité des points obtenus par le joueur à la fin de la partie
      *
      * @return retourne la totalité des points obtenus par le joueur à la fin de la partie
      */
     public int finalPoints() {
         return this.ticketPoints() + this.claimPoints();
+    }
+
+    private int computeMaxId() {
+        int maxId = 0;
+
+        for (Route route : this.routes())
+            if (route.station1().id() > maxId || route.station2().id() > maxId)
+                maxId = Math.max(route.station2().id(), route.station1().id());
+
+        return maxId + 1;
     }
 }

@@ -155,7 +155,8 @@ public final class Game {
                     SortedBag<Card> additionalChosenCards = SortedBag.of();
 
                     if (claimedRoute.level().equals(Route.Level.UNDERGROUND)) {
-                        announce(players, spectators, currentPlayerInfo.attemptsTunnelClaim(claimedRoute, initialClaimCards));
+                        announce(players, spectators, currentPlayerInfo.attemptsTunnelClaim(claimedRoute,
+                                initialClaimCards));
 
                         var builder = new SortedBag.Builder<Card>();
 
@@ -171,7 +172,8 @@ public final class Game {
                         int additionalCardsCount = claimedRoute
                                 .additionalClaimCardsCount(initialClaimCards, drawnCards);
 
-                        announce(players, spectators, currentPlayerInfo.drewAdditionalCards(drawnCards, additionalCardsCount));
+                        announce(players, spectators, currentPlayerInfo.drewAdditionalCards(drawnCards,
+                                additionalCardsCount));
 
                         if (additionalCardsCount >= 1) {
                             List<SortedBag<Card>> possibleAdditionalCards =
@@ -238,8 +240,7 @@ public final class Game {
         // Map of the longest length from player routes
         Map<PlayerId, Trail> playersLongestTrails = new HashMap<>();
 
-        players
-                .forEach((k, v) -> playersLongestTrails.put(k, Trail.longest(gameOverState.playerState(k).routes())));
+        players.forEach((k, v) -> playersLongestTrails.put(k, Trail.longest(gameOverState.playerState(k).routes())));
 
         Set<Entry<PlayerId, Trail>> playerLongestTrailsSet = playersLongestTrails.entrySet();
 
