@@ -21,12 +21,12 @@ import static ch.epfl.tchu.gui.ActionHandlers.*;
 import static javafx.application.Platform.isFxApplicationThread;
 
 /**
- * Title
+ * Représente l'interface graphique d'un spectateur
  *
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-public class GraphicalSpectator {
+final class GraphicalSpectator {
     private final int MAX_DISPLAYED_INFORMATIONS = 10;
 
     private final ObservableGameState gameState;

@@ -2,9 +2,11 @@ package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
+import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +28,7 @@ final class ObservableGameState {
     private final List<ObjectProperty<Card>> faceUpCards;
     private final Map<String, ObjectProperty<PlayerId>> routes;
     private final Map<PlayerId, PlayerBelongingsProperty> playersBelongings;
-    private final ObservableList<Ticket> playerTickets;
+    private final ObservableList<Map.Entry<Ticket, Integer>> playerTickets = FXCollections.observableArrayList();
     private final Map<Card, IntegerProperty> playerHand;
     private final Map<String, BooleanProperty> claimableRoutes;
     private PublicGameState currentGameState;
@@ -45,7 +47,6 @@ final class ObservableGameState {
 
         this.playersBelongings = initializePlayersBelongings();
 
-        this.playerTickets = FXCollections.observableArrayList();
         this.playerHand = initializePlayerHand();
         this.claimableRoutes = initializeClaimableRoutes();
 
@@ -153,7 +154,7 @@ final class ObservableGameState {
         this.ticketsPercentage.set((gameState.ticketsCount() * 100 / TICKETS_COUNT));
         this.cardsPercentage.set((gameState.cardState().deckSize() * 100 / Constants.TOTAL_CARDS_COUNT));
 
-        this.playerTickets.setAll(playerState.tickets().toList());
+        this.playerTickets.setAll(playerState.ticketsWithPoints().entrySet());
 
         for (Card card : Card.ALL)
             this.playerHand.get(card).set(playerState.cards().countOf(card));
@@ -237,7 +238,7 @@ final class ObservableGameState {
      *
      * @return une liste observable des tickets dans la main du joueur
      */
-    public ObservableList<Ticket> playerTickets() {
+    public ObservableList<Map.Entry<Ticket, Integer>> playerTickets() {
         return FXCollections.unmodifiableObservableList(this.playerTickets);
     }
 

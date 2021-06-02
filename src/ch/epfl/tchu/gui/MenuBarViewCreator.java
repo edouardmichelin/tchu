@@ -2,8 +2,6 @@ package ch.epfl.tchu.gui;
 
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.RadioMenuItem;
 
 import java.util.Arrays;

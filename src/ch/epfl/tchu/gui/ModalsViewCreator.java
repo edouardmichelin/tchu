@@ -15,10 +15,14 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.AudioClip;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+
+import java.net.URISyntaxException;
+import java.util.Objects;
 
 
 /**
@@ -28,6 +32,9 @@ import javafx.util.StringConverter;
  * @author Julien Jordan (315429)
  */
 final class ModalsViewCreator {
+
+    private static final AudioClip AUDIO_CLICK = new AudioClip(getURI("/sounds/draw.wav"));
+
     private ModalsViewCreator() {
     }
 
@@ -59,6 +66,7 @@ final class ModalsViewCreator {
 
         Button confirmButton = createConfirmButton(choiceList, choiceCount);
         confirmButton.setOnAction(event -> {
+            AUDIO_CLICK.play();
             owner.hide();
             chooseTicketsHandler.get().onChooseTickets(SortedBag.of(choiceList.getSelectionModel().getSelectedItems()));
         });
@@ -112,6 +120,7 @@ final class ModalsViewCreator {
         Button confirmButton = createConfirmButton(choiceList, isAdditional ? 0 : 1);
 
         confirmButton.setOnAction(event -> {
+            AUDIO_CLICK.play();
             owner.hide();
             chooseCardsHandler.get().onChooseCards(choiceList.getSelectionModel().getSelectedItem());
         });
@@ -168,6 +177,14 @@ final class ModalsViewCreator {
         @Override
         public SortedBag<Card> fromString(String string) {
             throw new UnsupportedOperationException();
+        }
+    }
+
+    private static String getURI(String uri) {
+        try {
+            return Objects.requireNonNull(ModalsViewCreator.class.getResource(uri)).toURI().toString();
+        } catch (URISyntaxException e) {
+            throw new Error(e);
         }
     }
 }

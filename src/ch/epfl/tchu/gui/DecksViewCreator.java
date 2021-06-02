@@ -11,16 +11,26 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.util.Callback;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -43,11 +53,28 @@ final class DecksViewCreator {
      */
     public static Node createHandView(ObservableGameState gameState) {
 
-        SortedBag<Card> hand = gameState.cards();
+        ListView<Map.Entry<Ticket, Integer>> ticketsView = new ListView<>(gameState.playerTickets());
 
-        ObservableList<Ticket> playerTickets = gameState.playerTickets();
-        ListView<Ticket> ticketsView = new ListView<>(playerTickets);
         ticketsView.setId("tickets");
+
+        ticketsView.setCellFactory(new Callback<>() {
+            @Override
+            public ListCell<Map.Entry<Ticket, Integer>> call(ListView<Map.Entry<Ticket, Integer>> param) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Map.Entry<Ticket, Integer> item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item != null) {
+                            this.setText(item.getKey().toString());
+                            if (item.getValue() > 0)
+                                this.setTextFill(Color.LIGHTGREEN);
+                            else
+                                this.setTextFill(Color.LIGHTCORAL);
+                        }
+                    }
+                };
+            }
+        });
 
         HBox handCardsView = new HBox();
         handCardsView.setId("hand-pane");

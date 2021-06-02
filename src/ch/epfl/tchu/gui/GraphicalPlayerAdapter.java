@@ -17,12 +17,12 @@ import static javafx.application.Platform.runLater;
  * @author Julien Jordan (315429)
  */
 public final class GraphicalPlayerAdapter implements Player {
-    private GraphicalPlayer graphicalPlayer;
-
     private final BlockingQueue<SortedBag<Ticket>> ticketsChoice = new ArrayBlockingQueue<>(1);
     private final BlockingQueue<SortedBag<Card>> cardsChoice = new ArrayBlockingQueue<>(1);
     private final BlockingQueue<Integer> slotChoice = new ArrayBlockingQueue<>(1);
     private final BlockingQueue<Route> routeChoice = new ArrayBlockingQueue<>(1);
+
+    private GraphicalPlayer graphicalPlayer;
 
     /**
      * Créé une instance de <i>GraphicalPlayerAdapter</i>
@@ -197,11 +197,27 @@ public final class GraphicalPlayerAdapter implements Player {
      */
     @Override
     public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
+        runLater(() -> this.graphicalPlayer.chooseAdditionalCards(options, this.cardsChoice::add));
+
         try {
-            runLater(() -> this.graphicalPlayer.chooseAdditionalCards(options, this.cardsChoice::add));
             return this.cardsChoice.take();
         } catch (InterruptedException e) {
             throw new Error(e);
         }
+    }
+
+    @Override
+    public void successfullyClaimedRoute(Route route) {
+        runLater(() -> graphicalPlayer.successfullyClaimedRoute(route));
+    }
+
+    @Override
+    public void won() {
+        runLater(graphicalPlayer::won);
+    }
+
+    @Override
+    public void lost() {
+        runLater(graphicalPlayer::lost);
     }
 }
