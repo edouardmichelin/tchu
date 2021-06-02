@@ -21,6 +21,9 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
+import java.net.URISyntaxException;
+import java.util.Objects;
+
 
 /**
  * Représente les fenêtres modales
@@ -30,8 +33,7 @@ import javafx.util.StringConverter;
  */
 final class ModalsViewCreator {
 
-    private static final AudioClip AUDIO_CLICK =
-            new AudioClip(ModalsViewCreator.class.getResource("/sounds/draw.wav").toExternalForm());
+    private static final AudioClip AUDIO_CLICK = new AudioClip(getURI("/sounds/draw.wav"));
 
     private ModalsViewCreator() {
     }
@@ -175,6 +177,14 @@ final class ModalsViewCreator {
         @Override
         public SortedBag<Card> fromString(String string) {
             throw new UnsupportedOperationException();
+        }
+    }
+
+    private static String getURI(String uri) {
+        try {
+            return Objects.requireNonNull(ModalsViewCreator.class.getResource(uri)).toURI().toString();
+        } catch (URISyntaxException e) {
+            throw new Error(e);
         }
     }
 }

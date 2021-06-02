@@ -20,8 +20,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static javafx.application.Platform.isFxApplicationThread;
 
@@ -55,16 +58,11 @@ final class GraphicalPlayer {
     private final ObservableList<SortedBag<Card>> initialCardsChoice = FXCollections.observableArrayList();
     private final ObservableList<SortedBag<Card>> additionalCardsChoice = FXCollections.observableArrayList();
 
-    private final AudioClip AUDIO_ALERT =
-            new AudioClip(this.getClass().getResource("/sounds/alert.wav").toExternalForm());
-    private final AudioClip AUDIO_DRAW =
-            new AudioClip(this.getClass().getResource("/sounds/draw.wav").toExternalForm());
-    private final AudioClip AUDIO_ROUTE_CLAIMED = new AudioClip(this.getClass().getResource("/sounds/route-building" +
-            ".mp3").toExternalForm());
-    private final AudioClip AUDIO_WINNER =
-            new AudioClip(this.getClass().getResource("/sounds/victory.wav").toExternalForm());
-    private final AudioClip AUDIO_LOSER =
-            new AudioClip(this.getClass().getResource("/sounds/game-over.wav").toExternalForm());
+    private final AudioClip AUDIO_ALERT = new AudioClip(getURI("/sounds/alert.wav"));
+    private final AudioClip AUDIO_DRAW = new AudioClip(getURI("/sounds/draw.wav"));
+    private final AudioClip AUDIO_ROUTE_CLAIMED = new AudioClip(getURI("/sounds/route-building.mp3"));
+    private final AudioClip AUDIO_WINNER = new AudioClip(getURI("/sounds/victory.wav"));
+    private final AudioClip AUDIO_LOSER = new AudioClip(getURI("/sounds/game-over.wav"));
 
 
     /**
@@ -318,5 +316,13 @@ final class GraphicalPlayer {
         this.drawCardHandler.set(null);
         this.drawTicketsHandler.set(null);
         this.claimRouteHandler.set(null);
+    }
+
+    private String getURI(String uri) {
+         try {
+             return Objects.requireNonNull(this.getClass().getResource(uri)).toURI().toString();
+         } catch (URISyntaxException e) {
+             throw new Error(e);
+         }
     }
 }
