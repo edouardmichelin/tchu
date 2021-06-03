@@ -8,11 +8,8 @@
     -fx-border-style: solid;
 }
 .menu-button:hover .background {
-    -fx-fill: linear-gradient(to bottom, #13a37c, #0af5b5);
-}
-
-.menu-button:hover .text {
-    -fx-fill: white;
+    /*-fx-fill: linear-gradient(to bottom, #13a37c, #0af5b5);*/
+    -fx-fill: linear-gradient(to bottom, #0f6ebf, #1490ff);
 }
 
 .menu-button .interior{
@@ -32,7 +29,8 @@
 }
 
 .menu-button .background {
-    -fx-fill: #13a37c;
+    /*-fx-fill: #13a37c;*/
+    -fx-fill: #0f6ebf;
 }
 .menu-button #client-button {
     -fx-fill: url("train-menu.png");
@@ -48,20 +46,4 @@
 
 .menu-button #exit-button{
     -fx-fill: url("exit.png");
-}
-
-.prompt {
-    -fx-background-color: #2b2b2b;
-    -fx-padding: 20;
-    -fx-vgap: 20;
-    -fx-hgap: 20;
-}
-
-.prompt .label {
-    -fx-fill: white;
-    -fx-stroke: white;
-}
-
-.prompt .bigger {
-    -fx-font-size: 24;
 }

@@ -7,5 +7,7 @@
 }
 
 .prompt .label {
-    -fx-text-fill: white;
+    -fx-fill: white;
+    -fx-stroke: white;
+    -fx-font-size: 24;
 }
