@@ -33,7 +33,7 @@ public final class Stage9Test extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        ObservableGameState gameState = new ObservableGameState(PlayerId.PLAYER_1, 2);
+        ObservableGameState gameState = new ObservableGameState(PlayerId.PLAYER_1);
 
         setState(gameState);
 

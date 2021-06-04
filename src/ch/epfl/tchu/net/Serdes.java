@@ -181,12 +181,17 @@ public final class Serdes {
      * Serde gérant l'état publique de la partie
      */
     public final static Serde<PublicGameState> PUBLICGAMESTATE = Serde.of(
-            publicGameState -> String.join(":", List.of(
-                    INT.serialize(publicGameState.ticketsCount()),
-                    PUBLICCARDSTATE.serialize(publicGameState.cardState()),
-                    PLAYERID.serialize(publicGameState.currentPlayerId()),
-                    LIST_PUBLICPLAYERSTATE.serialize(ALL_PLAYERID.stream().map(publicGameState::playerState).collect(Collectors.toList())),
-                    PLAYERID.serialize(publicGameState.lastPlayer())
+                publicGameState -> String.join(":", List.of(
+                        INT.serialize(publicGameState.ticketsCount()),
+                        PUBLICCARDSTATE.serialize(publicGameState.cardState()),
+                        PLAYERID.serialize(publicGameState.currentPlayerId()),
+                        LIST_PUBLICPLAYERSTATE.serialize(
+                                ALL_PLAYERID
+                                        .stream()
+                                        .map(publicGameState::playerState)
+                                        .filter(Objects::nonNull)
+                                        .collect(Collectors.toList())),
+                        PLAYERID.serialize(publicGameState.lastPlayer())
             )),
             str -> {
                 /*
@@ -200,11 +205,11 @@ public final class Serdes {
 
                 int indexOffset = 3;
 
-                Preconditions.checkArgument(params.length == ((indexOffset + 1) + PlayerId.COUNT));
+                Preconditions.checkArgument(params.length == ((indexOffset + 1) + Globals.NUMBER_OF_PLAYERS));
 
-                List<PublicPlayerState> playerStates = new ArrayList<>(PlayerId.COUNT);
-                int numberOfPlayer = params.length - indexOffset - 1;
-                for (int id = 0; id < numberOfPlayer; id++) {
+                List<PublicPlayerState> playerStates = new ArrayList<>(Globals.NUMBER_OF_PLAYERS);
+
+                for (int id = 0; id < Globals.NUMBER_OF_PLAYERS; id++) {
                     playerStates.add(PUBLICPLAYERSTATE.deserialize(params[indexOffset + id]));
                 }
 
@@ -215,12 +220,12 @@ public final class Serdes {
                         ALL_PLAYERID
                                 .stream()
                                 .map(id -> {
-                                    if (id.ordinal() >= numberOfPlayer) return null;
+                                    if (id.ordinal() >= Globals.NUMBER_OF_PLAYERS) return null;
                                     return new AbstractMap.SimpleEntry<>(id, playerStates.get(id.ordinal()));
                                 })
                                 .filter(Objects::nonNull)
                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
-                        PLAYERID.deserialize(params[indexOffset + PlayerId.COUNT])
+                        PLAYERID.deserialize(params[indexOffset + Globals.NUMBER_OF_PLAYERS])
                 );
             }
     );

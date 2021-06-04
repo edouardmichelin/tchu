@@ -77,7 +77,7 @@ final class GraphicalPlayer {
         Stage primaryStage = new Stage();
         this.modalStage = new Stage(StageStyle.UTILITY);
 
-        this.gameState = new ObservableGameState(playerId, playerNames.size());
+        this.gameState = new ObservableGameState(playerId);
 
         Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, this::chooseClaimCards);
         Node cardsView = DecksViewCreator.createCardsView(gameState, drawTicketsHandler, drawCardHandler);

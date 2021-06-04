@@ -111,6 +111,8 @@ public class PublicGameState {
      * @return la partie publique de l'état du joueur d'identité donnée
      */
     public PublicPlayerState playerState(PlayerId playerId) {
+        if (playerId.ordinal() >= Globals.NUMBER_OF_PLAYERS) return null;
+
         return this.playerState.get(playerId);
     }
 

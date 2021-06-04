@@ -1,5 +1,6 @@
 package ch.epfl.tchu.gui;
 
+import ch.epfl.tchu.game.Globals;
 import ch.epfl.tchu.game.PlayerId;
 import ch.epfl.tchu.game.PlayerState;
 import ch.epfl.tchu.game.PublicGameState;
@@ -46,7 +47,7 @@ final class GraphicalSpectator {
 
         Stage primaryStage = new Stage();
 
-        this.gameState = new ObservableGameState(playerId, playerNames.size());
+        this.gameState = new ObservableGameState(playerId);
 
         Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, (ign, ored) -> {
         });

@@ -71,6 +71,9 @@ public class Launcher extends Application {
                 spectators.put(ALL_SPECTATORS.get(id), new RemotePlayerProxy(socket));
             }
 
+            Globals.NUMBER_OF_PLAYERS = numberOfPlayers;
+            Globals.NUMBER_OF_SPECTATORS = numberOfSpectators;
+
             Random random = new Random();
 
             Thread game = new Thread(

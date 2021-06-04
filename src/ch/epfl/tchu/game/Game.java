@@ -60,12 +60,12 @@ public final class Game {
             SortedBag<Ticket> tickets,
             Random rng
     ) {
-        int NUMBER_OF_PLAYERS = players.size();
-        Preconditions.checkArgument(playerNames.size() == NUMBER_OF_PLAYERS);
+        Preconditions.checkArgument(players.size() == Globals.NUMBER_OF_PLAYERS);
+        Preconditions.checkArgument(playerNames.size() == Globals.NUMBER_OF_PLAYERS);
 
         // region init
         // Initialize the state of the game (playerstates are being created already there too)
-        GameState currentGameState = GameState.initial(tickets, NUMBER_OF_PLAYERS, rng);
+        GameState currentGameState = GameState.initial(tickets, rng);
 
         // Initialize player infos
         Map<PlayerId, Info> playerInfos = new HashMap<>();
