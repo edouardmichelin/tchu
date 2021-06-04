@@ -203,9 +203,9 @@ public final class Serdes {
                 Preconditions.checkArgument(params.length == ((indexOffset + 1) + PlayerId.COUNT));
 
                 List<PublicPlayerState> playerStates = new ArrayList<>(PlayerId.COUNT);
-
-                for (PlayerId player : ALL_PLAYERID) {
-                    playerStates.add(PUBLICPLAYERSTATE.deserialize(params[indexOffset + player.ordinal()]));
+                int numberOfPlayer = params.length - indexOffset - 1;
+                for (int id = 0; id < numberOfPlayer; id++) {
+                    playerStates.add(PUBLICPLAYERSTATE.deserialize(params[indexOffset + id]));
                 }
 
                 return new PublicGameState(
@@ -214,7 +214,11 @@ public final class Serdes {
                         PLAYERID.deserialize(params[2]),
                         ALL_PLAYERID
                                 .stream()
-                                .map(id -> new AbstractMap.SimpleEntry<>(id, playerStates.get(id.ordinal())))
+                                .map(id -> {
+                                    if (id.ordinal() >= numberOfPlayer) return null;
+                                    return new AbstractMap.SimpleEntry<>(id, playerStates.get(id.ordinal()));
+                                })
+                                .filter(Objects::nonNull)
                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
                         PLAYERID.deserialize(params[indexOffset + PlayerId.COUNT])
                 );
