@@ -47,7 +47,7 @@ public class PublicGameState {
             PlayerId lastPlayer
     ) {
         Preconditions.checkArgument(ticketsCount >= 0);
-        Preconditions.checkArgument(playerState.size() == PlayerId.COUNT);
+        // Preconditions.checkArgument(playerState.size() == PlayerId.COUNT);
 
         this.ticketsCount = ticketsCount;
         this.playerState = Map.copyOf(playerState);
