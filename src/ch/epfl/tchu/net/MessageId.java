@@ -20,5 +20,5 @@ public enum MessageId {
     CHOOSE_ADDITIONAL_CARDS,
     LOST,
     WON,
-    CLAIMED;
+    CLAIMED
 }
