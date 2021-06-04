@@ -119,6 +119,15 @@ public final class RemotePlayerClient implements AutoCloseable {
                                 player.chooseAdditionalCards(additionalCardsOptions);
                         this.handler.post(message.id(), Serdes.BAG_CARD.serialize(chosenAdditionalCards));
                         break;
+                    case LOST:
+                        player.lost();
+                        break;
+                    case WON:
+                        player.won();
+                        break;
+                    case CLAIMED:
+                        player.successfullyClaimedRoute(null);
+                        break;
                     default:
                         throw new IllegalArgumentException();
                 }

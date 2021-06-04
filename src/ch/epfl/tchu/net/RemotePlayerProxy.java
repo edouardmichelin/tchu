@@ -126,6 +126,11 @@ public final class RemotePlayerProxy implements Player, AutoCloseable, Runnable 
     }
 
     @Override
+    public void successfullyClaimedRoute(Route route) {
+        this.handler.post(MessageId.CLAIMED, "");
+    }
+
+    @Override
     public SortedBag<Card> initialClaimCards() {
         this.handler.post(MessageId.CARDS, "");
 
@@ -147,6 +152,15 @@ public final class RemotePlayerProxy implements Player, AutoCloseable, Runnable 
         return Serdes.BAG_CARD.deserialize(message.content().get(0));
     }
 
+    @Override
+    public void lost(){
+        this.handler.post(MessageId.LOST, "");
+    }
+
+    @Override
+    public void won(){
+        this.handler.post(MessageId.WON, "");
+    }
 
     @Override
     public void close() throws Exception {
