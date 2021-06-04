@@ -221,7 +221,8 @@ public final class Game {
             }
 
             currentGameState = currentGameState.withCardsDeckRecreatedIfNeeded(rng);
-            currentGameState = currentGameState.forNextTurn();
+            while (!playerNames.containsKey(currentGameState.currentPlayerId()))
+                currentGameState = currentGameState.forNextTurn();
         } while (finalTurnsAmount < players.size());
 
         // endregion
