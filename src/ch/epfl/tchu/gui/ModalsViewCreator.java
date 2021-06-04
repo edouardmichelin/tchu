@@ -63,6 +63,7 @@ final class ModalsViewCreator {
         TextFlow introBox = new TextFlow(intro);
 
         ListView<Ticket> choiceList = createListView(ticketsChoice);
+        choiceList.getStyleClass().add("modal-list");
 
         Button confirmButton = createConfirmButton(choiceList, choiceCount);
         confirmButton.setOnAction(event -> {
@@ -116,6 +117,7 @@ final class ModalsViewCreator {
 
         ListView<SortedBag<Card>> choiceList = new ListView<>(cardsChoice);
         choiceList.setCellFactory(v -> new TextFieldListCell<>(new CardBagStringConverter()));
+        choiceList.getStyleClass().add("modal-list");
 
         Button confirmButton = createConfirmButton(choiceList, isAdditional ? 0 : 1);
 
