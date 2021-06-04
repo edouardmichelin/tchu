@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
  * @author Julien Jordan (315429)
  */
 public final class Game {
-    private static final int NUMBER_OF_PLAYERS = PlayerId.COUNT;
-
     private Game() {
     }
 
@@ -62,7 +60,7 @@ public final class Game {
             SortedBag<Ticket> tickets,
             Random rng
     ) {
-        Preconditions.checkArgument(players.size() == NUMBER_OF_PLAYERS);
+        int NUMBER_OF_PLAYERS = players.size();
         Preconditions.checkArgument(playerNames.size() == NUMBER_OF_PLAYERS);
 
         // region init
