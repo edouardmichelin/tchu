@@ -4,6 +4,8 @@
     -fx-vgap: 20;
     -fx-hgap: 20;
     -fx-alignment: center;
+    -fx-border-width: 2;
+    -fx-border-color: white;
 }
 
 .prompt .label {
