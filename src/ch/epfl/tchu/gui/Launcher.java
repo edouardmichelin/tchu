@@ -13,10 +13,7 @@ import javafx.stage.StageStyle;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Launcher de tCHu
@@ -61,14 +58,20 @@ public class Launcher extends Application {
             players.put(PlayerId.PLAYER_1, me);
             playerNames.put(PlayerId.PLAYER_1, names.get(0));
 
+            List<Thread> connections = new ArrayList<>();
+
             for (int id = 1; id < numberOfPlayers; id++) {
                 PlayerId playerId = ALL_PLAYERS.get(id);
-                players.put(playerId, new RemotePlayerProxy(socket));
                 playerNames.put(playerId, names.get(id));
+                RemotePlayerProxy player = new RemotePlayerProxy(socket);
+                players.put(playerId, player);
+                connections.add(new Thread(player));
             }
 
             for (int id = 0; id < numberOfSpectators; id++) {
-                spectators.put(ALL_SPECTATORS.get(id), new RemotePlayerProxy(socket));
+                RemotePlayerProxy spectator = new RemotePlayerProxy(socket);
+                spectators.put(ALL_SPECTATORS.get(id), spectator);
+                connections.add(new Thread(spectator));
             }
 
             Globals.NUMBER_OF_PLAYERS = numberOfPlayers;
@@ -79,6 +82,8 @@ public class Launcher extends Application {
             Thread game = new Thread(
                     () -> Game.play(players, spectators, playerNames, SortedBag.of(ChMap.tickets()), random)
             );
+
+            connections.forEach(Thread::start);
 
             game.start();
         };
