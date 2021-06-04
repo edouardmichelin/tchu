@@ -65,7 +65,7 @@ public final class Game {
 
         // region init
         // Initialize the state of the game (playerstates are being created already there too)
-        GameState currentGameState = GameState.initial(tickets, rng);
+        GameState currentGameState = GameState.initial(tickets, NUMBER_OF_PLAYERS, rng);
 
         // Initialize player infos
         Map<PlayerId, Info> playerInfos = new HashMap<>();

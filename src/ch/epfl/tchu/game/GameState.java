@@ -33,6 +33,10 @@ public final class GameState extends PublicGameState {
         this.playerState = Map.copyOf(playerState);
     }
 
+    public static GameState initial(SortedBag<Ticket> tickets, Random rng) {
+        return GameState.initial(tickets, 2, rng);
+    }
+
     /**
      * Retourne l'état initial d'une partie de tCHu dans laquelle la pioche des billets contient les billets donnés
      * et la pioche des cartes contient les cartes de Constants.ALL_CARDS, sans les 8 (2×4) du dessus, distribuées
@@ -46,7 +50,7 @@ public final class GameState extends PublicGameState {
      * joueurs ; ces pioches sont mélangées au moyen du générateur aléatoire donné, qui est aussi utilisé pour
      * choisir au hasard l'identité du premier joueur
      */
-    public static GameState initial(SortedBag<Ticket> tickets, Random rng) {
+    public static GameState initial(SortedBag<Ticket> tickets, int numberOfPlayers, Random rng) {
         Deck<Ticket> ticketsDeck = Deck.of(tickets, rng);
 
         Deck<Card> cardsDeck = Deck.of(Constants.ALL_CARDS, rng);
@@ -57,8 +61,8 @@ public final class GameState extends PublicGameState {
 
         Map<PlayerId, PlayerState> playerState = new TreeMap<>();
 
-        for (PlayerId playerId : playerIds) {
-            playerState.put(playerId, PlayerState.initial(cardsDeck.topCards(Constants.INITIAL_CARDS_COUNT)));
+        for (int id = 0; id < numberOfPlayers; id++) {
+            playerState.put(playerIds.get(id), PlayerState.initial(cardsDeck.topCards(Constants.INITIAL_CARDS_COUNT)));
             cardsDeck = cardsDeck.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
         }
 
