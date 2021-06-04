@@ -75,7 +75,7 @@ public final class Game {
 
         // first call for initPlayers to inform players of their identity
         players.forEach((k, v) -> v.initPlayers(k, playerNames));
-        spectators.forEach((k, v) -> v.initPlayers(k, playerNames));
+        spectators.forEach((k, v) -> v.initPlayers(PlayerId.PLAYER_1, playerNames));
 
         // Announce the first player to play
         announce(players, spectators, playerInfos.get(currentGameState.currentPlayerId()).willPlayFirst());
