@@ -80,8 +80,10 @@ public final class RemotePlayerClient implements AutoCloseable {
                         List<String> playerNames = Serdes.LIST_STRING.deserialize(message.content().get(1));
                         Map<PlayerId, String> playerNamesMap = new HashMap<>();
 
-                        for (PlayerId playerId : PlayerId.ALL) {
-                            playerNamesMap.put(playerId, playerNames.get(playerId.ordinal()));
+                        List<PlayerId> ALL_PLAYERS = PlayerId.ALL;
+
+                        for (int id = 0; id < playerNames.size(); id++) {
+                            playerNamesMap.put(ALL_PLAYERS.get(id), playerNames.get(id));
                         }
 
                         player.initPlayers(ownId, playerNamesMap);
