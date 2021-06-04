@@ -1,8 +1,11 @@
 package ch.epfl.tchu.gui;
 
+import ch.epfl.tchu.game.PlayerType;
+import ch.epfl.tchu.net.MyIpAddress;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -11,12 +14,19 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Représente la vue du launcher
@@ -25,6 +35,8 @@ import javafx.stage.Stage;
  * @author Julien Jordan (315429)
  */
 final class LauncherViewCreator {
+    private static Scene LAUNCHER_VIEW;
+
     private LauncherViewCreator() {
     }
 
@@ -33,20 +45,24 @@ final class LauncherViewCreator {
      *
      * @return la vue du Launcher
      */
-    public static GridPane createLauncherView(Stage owner) {
+    public static Scene createLauncherView(
+            Stage owner,
+            Launcher.CreateServerHandler onCreateServer,
+            Launcher.JoinServerHandler onJoinServer
+    ) {
         StackPane playAsClientButton = createMenuButton(StringsFr.PLAY_AS_CLIENT, "client-button");
         playAsClientButton.setOnMouseClicked(event -> {
-            createPlayerPrompt(owner);
-        });
-
-        StackPane hostServerButton = createMenuButton(StringsFr.HOST_GAME, "host-button");
-        hostServerButton.setOnMouseClicked(event -> {
-            createHostPrompt(owner);
+            createPlayerPrompt(owner, onJoinServer);
         });
 
         StackPane spectatorButton = createMenuButton(StringsFr.SPECTATE_GAME, "spec-button");
         spectatorButton.setOnMouseClicked(event -> {
-            createSpectatorPrompt(owner);
+            createSpectatorPrompt(owner, onJoinServer);
+        });
+
+        StackPane hostServerButton = createMenuButton(StringsFr.HOST_GAME, "host-button");
+        hostServerButton.setOnMouseClicked(event -> {
+            createHostPrompt(owner, onCreateServer);
         });
 
 
@@ -68,18 +84,33 @@ final class LauncherViewCreator {
 
         activateMouseDrag(launcherBox, owner);
 
-        return launcherBox;
+        LAUNCHER_VIEW = new Scene(launcherBox);
+
+        return LAUNCHER_VIEW;
     }
 
-    private static void createPlayerPrompt(Stage owner) {
+    private static void createPlayerPrompt(Stage owner, Launcher.JoinServerHandler onJoinServer) {
         TextField addressField = new TextField();
         Button confirmButton = new Button(StringsFr.CONFIRM);
-        confirmButton.disableProperty().bind(addressField.textProperty().isEmpty());
+        StringProperty textProperty = addressField.textProperty();
+        confirmButton.disableProperty().bind(textProperty.isEmpty());
+
+        confirmButton.setOnAction(e -> onJoinServer.onJoinServer(textProperty.get(), PlayerType.PLAYER));
 
         createConnectPrompt(owner, confirmButton, addressField);
     }
 
-    private static void createHostPrompt(Stage owner) {
+    private static void createHostPrompt(Stage owner, Launcher.CreateServerHandler onCreateServer) {
+
+        Text ipsLavel = new Text("Vous devriez être joignable à ces adresses");
+        ipsLavel.getStyleClass().add("label");
+        TextFlow ips = new TextFlow();
+        ips.getChildren().setAll(MyIpAddress.show().stream().map(text -> {
+            Text res = new Text(text);
+            res.setFill(Color.WHITE);
+            return res;
+        }).collect(Collectors.toList()));
+        ips.getStyleClass().add("ips");
 
         Text playerLabel = new Text(StringsFr.CHOOSE_PLAYER_NUMBER);
         playerLabel.getStyleClass().add("label");
@@ -144,14 +175,17 @@ final class LauncherViewCreator {
 
         GridPane promptBox = new GridPane();
         promptBox.getStyleClass().add("prompt");
-        promptBox.addRow(0, playerLabel, playerDropDown);
-        promptBox.addRow(1, spectatorLabel, spectatorDropDown);
-        promptBox.addRow(2, playerOne, playerOneTextField);
-        promptBox.addRow(3, playerTwo, playerTwoTextField);
-        promptBox.addRow(4, playerThree, playerThreeTextField);
+        promptBox.add(ipsLavel, 0, 0, 2, 1);
+        promptBox.add(ips, 0, 1, 2, 1);
+        promptBox.add(new Separator(), 0, 2, 2, 1);
+        promptBox.addRow(3, playerLabel, playerDropDown);
+        promptBox.addRow(4, spectatorLabel, spectatorDropDown);
+        promptBox.addRow(5, playerOne, playerOneTextField);
+        promptBox.addRow(6, playerTwo, playerTwoTextField);
+        promptBox.addRow(7, playerThree, playerThreeTextField);
 
-        promptBox.add(backButton, 0, 5);
-        promptBox.add(confirmButton, 1, 5);
+        promptBox.add(backButton, 0, 8);
+        promptBox.add(confirmButton, 1, 8);
 
         GridPane.setHalignment(confirmButton, HPos.RIGHT);
         GridPane.setHalignment(backButton, HPos.LEFT);
@@ -159,15 +193,34 @@ final class LauncherViewCreator {
         Scene scene = new Scene(promptBox);
         scene.getStylesheets().add("launcher-prompt.css");
 
+        confirmButton.setOnAction(e -> {
+            List<String> names = List.of(
+                    playerOneTextField.textProperty().get(),
+                    playerTwoTextField.textProperty().get(),
+                    playerThreeTextField.textProperty().get());
+
+            int numberOfPlayers = Integer.parseInt(playerDropDown.getSelectionModel().getSelectedItem());
+            int numberOfSpectators = Integer.parseInt(spectatorDropDown.getSelectionModel().getSelectedItem());
+
+            try {
+                onCreateServer.onCreateServer(names, numberOfPlayers, numberOfSpectators);
+            } catch (IOException error) {
+                throw new Error(error);
+            }
+        });
+
         activateMouseDrag(promptBox, owner);
 
         owner.setScene(scene);
     }
 
-    private static void createSpectatorPrompt(Stage owner) {
+    private static void createSpectatorPrompt(Stage owner, Launcher.JoinServerHandler onJoinServer) {
         TextField addressField = new TextField();
         Button confirmButton = new Button(StringsFr.CONFIRM);
-        confirmButton.disableProperty().bind(addressField.textProperty().isEmpty());
+        StringProperty textProperty = addressField.textProperty();
+        confirmButton.disableProperty().bind(textProperty.isEmpty());
+
+        confirmButton.setOnAction(e -> onJoinServer.onJoinServer(textProperty.get(), PlayerType.SPECTATOR));
 
         createConnectPrompt(owner, confirmButton, addressField);
     }
@@ -234,7 +287,8 @@ final class LauncherViewCreator {
     private static Button createBackButton(Stage owner) {
         Button backButton = new Button(StringsFr.BACK);
         backButton.setOnAction(event -> {
-            owner.setScene(new Scene(createLauncherView(owner)));
+            // owner.setScene(new Scene(createLauncherView(owner, onCreateServer, onJoinServer)));
+            owner.setScene(LAUNCHER_VIEW);
         });
         return backButton;
     }

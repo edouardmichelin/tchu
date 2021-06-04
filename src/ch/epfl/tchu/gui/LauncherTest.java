@@ -6,8 +6,6 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 /**
  * Test pour le launcher
  *
@@ -20,9 +18,8 @@ public final class LauncherTest extends Application{
     @Override
     public void start(Stage primaryStage) {
 
-        GridPane launcherBox = LauncherViewCreator.createLauncherView(primaryStage);
+        Scene scene = LauncherViewCreator.createLauncherView(primaryStage, null, null);
 
-        Scene scene = new Scene(launcherBox);
         scene.getStylesheets().add("launcher.css");
 
         primaryStage.initStyle(StageStyle.UNDECORATED);
