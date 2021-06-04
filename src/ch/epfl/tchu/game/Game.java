@@ -123,6 +123,13 @@ public final class Game {
                 finalTurnsAmount++;
 
             update(players, spectators, currentGameState);
+
+            // When the last turn begins
+            if (currentGameState.lastTurnBegins() && !hasLastTurnBegun) {
+                hasLastTurnBegun = true;
+                announce(players, spectators, currentPlayerInfo.lastTurnBegins(currentPlayerState.carCount()));
+            }
+
             announce(players, spectators, currentPlayerInfo.canPlay());
 
             // The player plays here
@@ -212,12 +219,6 @@ public final class Game {
                     break;
                 default:
                     throw new Error();
-            }
-
-            // When the last turn begins
-            if (currentGameState.lastTurnBegins() && !hasLastTurnBegun) {
-                hasLastTurnBegun = true;
-                announce(players, spectators, currentPlayerInfo.lastTurnBegins(currentPlayerState.carCount()));
             }
 
             currentGameState = currentGameState.withCardsDeckRecreatedIfNeeded(rng);
