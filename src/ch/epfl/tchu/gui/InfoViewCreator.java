@@ -1,5 +1,6 @@
 package ch.epfl.tchu.gui;
 
+import ch.epfl.tchu.game.Globals;
 import ch.epfl.tchu.game.PlayerId;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
@@ -43,7 +44,7 @@ final class InfoViewCreator {
         playerStats.setId("player-stats");
 
         PlayerId nextPlayer = playerId;
-        for (int i = 0; i < PlayerId.COUNT; i++) {
+        for (int i = 0; i < Globals.NUMBER_OF_PLAYERS; i++) {
             Circle circle = new Circle(5);
             circle.getStyleClass().add("filled");
 
