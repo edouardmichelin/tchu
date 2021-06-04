@@ -290,12 +290,8 @@ public final class GameState extends PublicGameState {
      * @return un état identique au récépteur <code>this</code>
      */
     public GameState forNextTurn() {
-        PlayerId nextPlayer = this.currentPlayerId().next();
-        while (this.currentPlayerId().ordinal() >= Globals.NUMBER_OF_PLAYERS)
-            nextPlayer = nextPlayer.next();
-
         PlayerId lastPlayer = this.lastTurnBegins() ? this.currentPlayerId() : this.lastPlayer();
-        return new GameState(this.tickets, this.cardState, nextPlayer, this.playerState, lastPlayer);
+        return new GameState(this.tickets, this.cardState, this.currentPlayerId().next(), this.playerState, lastPlayer);
     }
 
 

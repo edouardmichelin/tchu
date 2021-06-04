@@ -36,6 +36,6 @@ public enum PlayerId {
      * @return l'identité du joueur suivant
      */
     public PlayerId next() {
-        return ALL.get((this.ordinal() + 1) % COUNT);
+        return ALL.get((this.ordinal() + 1) % Globals.NUMBER_OF_PLAYERS);
     }
 }
