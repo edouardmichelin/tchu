@@ -1,0 +1,49 @@
+#launcher {
+    -fx-background-color: #2b2b2b;
+    -fx-padding: 40;
+    -fx-vgap: 20;
+    -fx-hgap: 20;
+    -fx-border-color: white;
+    -fx-border-width: 2;
+    -fx-border-style: solid;
+}
+.menu-button:hover .background {
+    /*-fx-fill: linear-gradient(to bottom, #13a37c, #0af5b5);*/
+    -fx-fill: linear-gradient(to bottom, #0f6ebf, #1490ff);
+}
+
+.menu-button .interior{
+    -fx-padding: 15;
+}
+
+.menu-button .border {
+    -fx-fill: white;
+    -fx-arc-height: 5;
+    -fx-arc-width: 5;
+}
+.menu-button .text {
+    -fx-font-size: 24;
+    -fx-fill: white;
+    -fx-stroke: white;
+    -fx-effect: dropshadow(gaussian, black, 5, 0, 1, 1);
+}
+
+.menu-button .background {
+    /*-fx-fill: #13a37c;*/
+    -fx-fill: #0f6ebf;
+}
+.menu-button #client-button {
+    -fx-fill: url("train-menu.png");
+}
+
+.menu-button #host-button {
+    -fx-fill: url("server.png");
+}
+
+.menu-button #spec-button{
+    -fx-fill: url("eye.png");
+}
+
+.menu-button #exit-button{
+    -fx-fill: url("exit.png");
+}

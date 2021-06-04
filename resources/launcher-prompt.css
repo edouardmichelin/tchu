@@ -1,0 +1,13 @@
+.prompt {
+    -fx-background-color: #2b2b2b;
+    -fx-padding: 20;
+    -fx-vgap: 20;
+    -fx-hgap: 20;
+    -fx-alignment: center;
+}
+
+.prompt .label {
+    -fx-fill: white;
+    -fx-stroke: white;
+    -fx-font-size: 24;
+}
