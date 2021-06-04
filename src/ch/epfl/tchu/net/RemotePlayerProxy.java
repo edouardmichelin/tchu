@@ -18,11 +18,13 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-public final class RemotePlayerProxy implements Player, AutoCloseable {
-    private final Helpers.MessageHandler handler;
+public final class RemotePlayerProxy implements Player, AutoCloseable, Runnable {
+    private Helpers.MessageHandler handler;
+    private final Socket socket;
 
     private RemotePlayerProxy() {
         this.handler = null;
+        this.socket = null;
     }
 
     /**
@@ -30,13 +32,7 @@ public final class RemotePlayerProxy implements Player, AutoCloseable {
      * @param socket le socket
      */
     public RemotePlayerProxy(Socket socket) {
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), US_ASCII));
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), US_ASCII));
-            this.handler = new Helpers.MessageHandler(reader, writer);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        this.socket = socket;
     }
 
     @Override
@@ -155,5 +151,17 @@ public final class RemotePlayerProxy implements Player, AutoCloseable {
     @Override
     public void close() throws Exception {
         this.handler.dispose();
+    }
+
+    @Override
+    public void run() {
+        try {
+            assert socket != null;
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), US_ASCII));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), US_ASCII));
+            this.handler = new Helpers.MessageHandler(reader, writer);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

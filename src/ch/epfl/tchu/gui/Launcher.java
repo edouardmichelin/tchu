@@ -13,10 +13,7 @@ import javafx.stage.StageStyle;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Launcher de tCHu
@@ -33,11 +30,14 @@ public class Launcher extends Application {
     public void start(Stage primaryStage) {
 
         JoinServerHandler onJoinServer = (hostName, playerType) -> {
-            RemotePlayerClient player = new RemotePlayerClient(
-                    playerType.equals(PlayerType.PLAYER) ?
-                            new GraphicalPlayerAdapter() : new GraphicalSpectatorAdapter(),
+            RemotePlayerClient player = playerType.equals(PlayerType.PLAYER) ? new RemotePlayerClient(
+                    new GraphicalPlayerAdapter(),
                     hostName,
                     5108
+            ) : new RemotePlayerClient(
+                    new GraphicalSpectatorAdapter(),
+                    hostName,
+                    5109
             );
 
             Thread network = new Thread(player::run);
@@ -54,21 +54,29 @@ public class Launcher extends Application {
             var ALL_SPECTATORS = PlayerId.SPECTATORS;
 
             ServerSocket s0 = new ServerSocket(5108);
-            Socket socket = s0.accept();
+            ServerSocket s1 = new ServerSocket(5109);
 
             Player me = new GraphicalPlayerAdapter();
 
             players.put(PlayerId.PLAYER_1, me);
             playerNames.put(PlayerId.PLAYER_1, names.get(0));
 
+            List<Thread> connections = new ArrayList<>();
+
             for (int id = 1; id < numberOfPlayers; id++) {
                 PlayerId playerId = ALL_PLAYERS.get(id);
-                players.put(playerId, new RemotePlayerProxy(socket));
                 playerNames.put(playerId, names.get(id));
+                Socket playerSocket = s0.accept();
+                RemotePlayerProxy player = new RemotePlayerProxy(playerSocket);
+                players.put(playerId, player);
+                connections.add(new Thread(player));
             }
 
             for (int id = 0; id < numberOfSpectators; id++) {
-                spectators.put(ALL_SPECTATORS.get(id), new RemotePlayerProxy(socket));
+                Socket spectatorSocket = s1.accept();
+                RemotePlayerProxy spectator = new RemotePlayerProxy(spectatorSocket);
+                spectators.put(ALL_SPECTATORS.get(id), spectator);
+                connections.add(new Thread(spectator));
             }
 
             Globals.NUMBER_OF_PLAYERS = numberOfPlayers;
@@ -79,6 +87,8 @@ public class Launcher extends Application {
             Thread game = new Thread(
                     () -> Game.play(players, spectators, playerNames, SortedBag.of(ChMap.tickets()), random)
             );
+
+            connections.forEach(Thread::start);
 
             game.start();
         };
