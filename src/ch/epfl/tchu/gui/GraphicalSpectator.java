@@ -46,7 +46,7 @@ final class GraphicalSpectator {
 
         Stage primaryStage = new Stage();
 
-        this.gameState = new ObservableGameState(playerId);
+        this.gameState = new ObservableGameState(playerId, playerNames.size());
 
         Node mapView = MapViewCreator.createMapView(gameState, claimRouteHandler, (ign, ored) -> {
         });

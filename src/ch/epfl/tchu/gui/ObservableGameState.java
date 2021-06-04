@@ -2,11 +2,9 @@ package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
-import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,14 +31,18 @@ final class ObservableGameState {
     private final Map<String, BooleanProperty> claimableRoutes;
     private PublicGameState currentGameState;
     private PlayerState currentPlayerState;
+    private int numberOfPlayers;
 
     /**
      * Créé l'état observable d'une partie de tCHu
      *
      * @param playerId l'identité du joueur auquelle correspond la vue
+     * @param numberOfPlayers nombre de joueur dans la partie
      */
-    public ObservableGameState(PlayerId playerId) {
+    public ObservableGameState(PlayerId playerId, int numberOfPlayers) {
         this.playerId = playerId;
+
+        this.numberOfPlayers = numberOfPlayers;
 
         this.faceUpCards = initializeFaceUpCards();
         this.routes = initializeRoutes();
@@ -74,9 +76,10 @@ final class ObservableGameState {
         return r;
     }
 
-    private static Map<PlayerId, PlayerBelongingsProperty> initializePlayersBelongings() {
+    private Map<PlayerId, PlayerBelongingsProperty> initializePlayersBelongings() {
         Map<PlayerId, PlayerBelongingsProperty> r = new HashMap<>();
         for (PlayerId player : PlayerId.ALL) {
+            if (player.ordinal() >= this.numberOfPlayers) continue;
             r.put(player, new PlayerBelongingsProperty(
                     new SimpleIntegerProperty(Constants.INITIAL_TICKETS_COUNT),
                     new SimpleIntegerProperty(0),
@@ -106,10 +109,11 @@ final class ObservableGameState {
         return r;
     }
 
-    private static PublicGameState initializeGameState(PlayerId playerId) {
+    private PublicGameState initializeGameState(PlayerId playerId) {
         Map<PlayerId, PublicPlayerState> playerState = new HashMap<>();
 
         for (PlayerId player : PlayerId.ALL) {
+            if (player.ordinal() >= this.numberOfPlayers) continue;
             playerState.put(player, new PublicPlayerState(0, 0, List.of()));
         }
 
@@ -139,6 +143,7 @@ final class ObservableGameState {
         }
 
         for (PlayerId player : PlayerId.ALL) {
+            if (player.ordinal() >= this.numberOfPlayers) continue;
             var iterationPlayerState = gameState.playerState(player);
             for (Route playerRoute : iterationPlayerState.routes()) {
                 this.routes.get(playerRoute.id()).set(player);
@@ -173,7 +178,7 @@ final class ObservableGameState {
                                 playerState.canClaimRoute(route) &&
                                         this.routes.get(route.id()).isNull().get() &&
                                         (
-                                                PlayerId.COUNT > 2 ?
+                                                this.numberOfPlayers > 2 ?
                                                         this.getRouteNeighbor(route).isNotEqualTo(this.playerId).get() :
                                                         this.getRouteNeighbor(route).isNull().get())
                         );
