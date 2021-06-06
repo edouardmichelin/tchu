@@ -47,8 +47,8 @@ final class LauncherViewCreator {
      */
     public static Scene createLauncherView(
             Stage owner,
-            Launcher.CreateServerHandler onCreateServer,
-            Launcher.JoinServerHandler onJoinServer
+            GameLauncher.CreateServerHandler onCreateServer,
+            GameLauncher.JoinServerHandler onJoinServer
     ) {
         StackPane playAsClientButton = createMenuButton(StringsFr.PLAY_AS_CLIENT, "client-button");
         playAsClientButton.setOnMouseClicked(event -> {
@@ -89,7 +89,7 @@ final class LauncherViewCreator {
         return LAUNCHER_VIEW;
     }
 
-    private static void createPlayerPrompt(Stage owner, Launcher.JoinServerHandler onJoinServer) {
+    private static void createPlayerPrompt(Stage owner, GameLauncher.JoinServerHandler onJoinServer) {
         TextField addressField = new TextField();
         Button confirmButton = new Button(StringsFr.CONFIRM);
         StringProperty textProperty = addressField.textProperty();
@@ -100,7 +100,7 @@ final class LauncherViewCreator {
         createConnectPrompt(owner, confirmButton, addressField);
     }
 
-    private static void createHostPrompt(Stage owner, Launcher.CreateServerHandler onCreateServer) {
+    private static void createHostPrompt(Stage owner, GameLauncher.CreateServerHandler onCreateServer) {
 
         Text ipsLavel = new Text("Vous devriez être joignable à ces adresses");
         ipsLavel.getStyleClass().add("label");
@@ -214,7 +214,7 @@ final class LauncherViewCreator {
         owner.setScene(scene);
     }
 
-    private static void createSpectatorPrompt(Stage owner, Launcher.JoinServerHandler onJoinServer) {
+    private static void createSpectatorPrompt(Stage owner, GameLauncher.JoinServerHandler onJoinServer) {
         TextField addressField = new TextField();
         Button confirmButton = new Button(StringsFr.CONFIRM);
         StringProperty textProperty = addressField.textProperty();
