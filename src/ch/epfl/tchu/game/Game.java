@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
  * @author Julien Jordan (315429)
  */
 public final class Game {
-    private static final int NUMBER_OF_PLAYERS = PlayerId.COUNT;
-
     private Game() {
     }
 
@@ -25,14 +23,12 @@ public final class Game {
      * billets disponibles pour cette partie sont ceux de <i>tickets</i>, et le générateur pseudo aléatoire
      * <i>rng</i> est utilisé pour créer l'état initial du jeu et pour mélanger les cartes de la défausse pour en
      * faire une nouvelle pioche quand cela est nécessaire ; lève <i>IllegalArgumentException</i> si l'une des deux
-     * tables associatives
-     * a une taille différente de <i>2</i>
+     * tables associatives a une taille différente de <i>2</i>
      *
      * @param players     les joueurs qui vont jouer la partie
      * @param playerNames les noms des joueurs de <code>players</code>
      * @param tickets     les billets disponibles pour la partie
      * @param rng         le générateur pseudo aléatoire
-     * @throws IllegalArgumentException si l'une des deux tables associatives a une taille différente de <code>2</code>
      */
     public static void play(
             Map<PlayerId, Player> players,
@@ -40,44 +36,71 @@ public final class Game {
             SortedBag<Ticket> tickets,
             Random rng
     ) {
-        Preconditions.checkArgument(players.size() == NUMBER_OF_PLAYERS && playerNames.size() == NUMBER_OF_PLAYERS);
+        play(players, Map.of(), playerNames, tickets, rng);
+    }
+
+    /**
+     * Fait jouer une partie de tCHu aux joueurs donnés, dont les noms figurent dans la table <i>playerNames</i> ; les
+     * billets disponibles pour cette partie sont ceux de <i>tickets</i>, et le générateur pseudo aléatoire
+     * <i>rng</i> est utilisé pour créer l'état initial du jeu et pour mélanger les cartes de la défausse pour en
+     * faire une nouvelle pioche quand cela est nécessaire ; lève <i>IllegalArgumentException</i> si l'une des deux
+     * tables associatives a une taille différente de <i>2</i>. La partie est observable par des spectateurs.
+     *
+     * @param players     les joueurs qui vont jouer la partie
+     * @param spectators  les spectateurs qui vont observer la partie
+     * @param playerNames les noms des joueurs de <code>players</code>
+     * @param tickets     les billets disponibles pour la partie
+     * @param rng         le générateur pseudo aléatoire
+     * @throws IllegalArgumentException si l'une des deux tables associatives a une taille différente de <code>2</code>
+     */
+    public static void play(
+            Map<PlayerId, Player> players,
+            Map<PlayerId, Player> spectators,
+            Map<PlayerId, String> playerNames,
+            SortedBag<Ticket> tickets,
+            Random rng
+    ) {
+        Preconditions.checkArgument(players.size() == Globals.NUMBER_OF_PLAYERS);
+        Preconditions.checkArgument(playerNames.size() == Globals.NUMBER_OF_PLAYERS);
 
         // region init
         // Initialize the state of the game (playerstates are being created already there too)
         GameState currentGameState = GameState.initial(tickets, rng);
-        update(players, currentGameState);
 
         // Initialize player infos
         Map<PlayerId, Info> playerInfos = new HashMap<>();
-        for (PlayerId id : playerNames.keySet()) {
-            playerInfos.put(id, new Info(playerNames.get(id)));
+        for (Entry<PlayerId, String> entry : playerNames.entrySet()) {
+            playerInfos.put(entry.getKey(), new Info(entry.getValue()));
         }
 
         // first call for initPlayers to inform players of their identity
         players.forEach((k, v) -> v.initPlayers(k, playerNames));
+        spectators.forEach((k, v) -> v.initPlayers(PlayerId.PLAYER_1, playerNames));
 
         // Announce the first player to play
-        announce(players, playerInfos.get(currentGameState.currentPlayerId()).willPlayFirst());
+        announce(players, spectators, playerInfos.get(currentGameState.currentPlayerId()).willPlayFirst());
 
         // Show the players their initial ticket choice
-        for (PlayerId id : players.keySet()) {
+        for (Entry<PlayerId, Player> player : players.entrySet()) {
             SortedBag<Ticket> ticketChoice = currentGameState.topTickets(Constants.INITIAL_TICKETS_COUNT);
 
             currentGameState = currentGameState.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);
-            players.get(id)
-                    .setInitialTicketChoice(ticketChoice);
+            player.getValue().setInitialTicketChoice(ticketChoice);
         }
 
-        update(players, currentGameState);
+        update(players, spectators, currentGameState);
 
         //Change the state of the game based on the chooseInitialTickets call of all players
-        for (PlayerId id : players.keySet()) {
-            currentGameState.withInitiallyChosenTickets(id, players.get(id).chooseInitialTickets());
+        for (Entry<PlayerId, Player> player : players.entrySet()) {
+            var choice = player.getValue().chooseInitialTickets();
+            currentGameState = currentGameState.withInitiallyChosenTickets(player.getKey(), choice);
         }
 
         //Announce how many tickets players have kept
         final GameState tmpGameState = currentGameState;
-        playerInfos.forEach((k, v) -> announce(players, v.keptTickets(tmpGameState.playerState(k).ticketCount())));
+        playerInfos.forEach((k, v) -> {
+            announce(players, spectators, v.keptTickets(tmpGameState.playerState(k).ticketCount()));
+        });
 
         // endregion
 
@@ -99,8 +122,8 @@ public final class Game {
             if (hasLastTurnBegun)
                 finalTurnsAmount++;
 
-            update(players, currentGameState);
-            announce(players, currentPlayerInfo.canPlay());
+            update(players, spectators, currentGameState);
+            announce(players, spectators, currentPlayerInfo.canPlay());
 
             // The player plays here
             switch (currentPlayer.nextTurn()) {
@@ -112,13 +135,15 @@ public final class Game {
                         if (Constants.FACE_UP_CARD_SLOTS.contains(slotDrawn)) {
                             Card card = currentGameState.cardState().faceUpCard(slotDrawn);
                             currentGameState = currentGameState.withDrawnFaceUpCard(slotDrawn);
-                            announce(players, currentPlayerInfo.drewVisibleCard(card));
+                            announce(players, spectators, currentPlayerInfo.drewVisibleCard(card));
                         } else if (slotDrawn == Constants.DECK_SLOT) {
                             currentGameState = currentGameState.withBlindlyDrawnCard();
-                            announce(players, currentPlayerInfo.drewBlindCard());
+                            announce(players, spectators, currentPlayerInfo.drewBlindCard());
                         }
                         currentGameState = currentGameState.withCardsDeckRecreatedIfNeeded(rng);
-                        update(players, currentGameState);
+                        if (i == 0) {
+                            update(players, spectators, currentGameState);
+                        }
                     }
                     break;
 
@@ -128,7 +153,8 @@ public final class Game {
                     SortedBag<Card> additionalChosenCards = SortedBag.of();
 
                     if (claimedRoute.level().equals(Route.Level.UNDERGROUND)) {
-                        announce(players, currentPlayerInfo.attemptsTunnelClaim(claimedRoute, initialClaimCards));
+                        announce(players, spectators, currentPlayerInfo.attemptsTunnelClaim(claimedRoute,
+                                initialClaimCards));
 
                         var builder = new SortedBag.Builder<Card>();
 
@@ -144,25 +170,24 @@ public final class Game {
                         int additionalCardsCount = claimedRoute
                                 .additionalClaimCardsCount(initialClaimCards, drawnCards);
 
-                        announce(players, currentPlayerInfo.drewAdditionalCards(drawnCards, additionalCardsCount));
+                        announce(players, spectators, currentPlayerInfo.drewAdditionalCards(drawnCards,
+                                additionalCardsCount));
 
                         if (additionalCardsCount >= 1) {
                             List<SortedBag<Card>> possibleAdditionalCards =
                                     currentPlayerState.possibleAdditionalCards(additionalCardsCount,
-                                            initialClaimCards, drawnCards);
+                                            initialClaimCards);
 
                             currentGameState = currentGameState.withMoreDiscardedCards(drawnCards);
 
-                            update(players, currentGameState);
-
                             if (possibleAdditionalCards.isEmpty()) {
-                                announce(players, currentPlayerInfo.didNotClaimRoute(claimedRoute));
+                                announce(players, spectators, currentPlayerInfo.didNotClaimRoute(claimedRoute));
                                 break;
                             } else {
                                 additionalChosenCards = currentPlayer.chooseAdditionalCards(possibleAdditionalCards);
 
                                 if (additionalChosenCards.isEmpty()) {
-                                    announce(players, currentPlayerInfo.didNotClaimRoute(claimedRoute));
+                                    announce(players, spectators, currentPlayerInfo.didNotClaimRoute(claimedRoute));
                                     break;
                                 }
                             }
@@ -170,32 +195,30 @@ public final class Game {
                     }
 
                     SortedBag<Card> claimCards = initialClaimCards.union(additionalChosenCards);
-
-                    announce(players, currentPlayerInfo.claimedRoute(claimedRoute, claimCards));
-
+                    announce(players, spectators, currentPlayerInfo.claimedRoute(claimedRoute, claimCards));
                     currentGameState = currentGameState.withClaimedRoute(claimedRoute, claimCards);
-                    update(players, currentGameState);
+                    currentPlayer.successfullyClaimedRoute(claimedRoute);
 
                     break;
                 case DRAW_TICKETS:
-                    announce(players, currentPlayerInfo.drewTickets(Constants.IN_GAME_TICKETS_COUNT));
+                    announce(players, spectators, currentPlayerInfo.drewTickets(Constants.IN_GAME_TICKETS_COUNT));
 
                     SortedBag<Ticket> ticketChoice = currentGameState.topTickets(Constants.IN_GAME_TICKETS_COUNT);
                     SortedBag<Ticket> chosenTickets = currentPlayer.chooseTickets(ticketChoice);
 
                     currentGameState = currentGameState.withChosenAdditionalTickets(ticketChoice, chosenTickets);
-                    announce(players, currentPlayerInfo.keptTickets(chosenTickets.size()));
-                    update(players, currentGameState);
+                    announce(players, spectators, currentPlayerInfo.keptTickets(chosenTickets.size()));
 
                     break;
                 default:
-                    throw new Error("Oh bah non");
+                    throw new Error();
             }
 
             // When the last turn begins
             if (currentGameState.lastTurnBegins() && !hasLastTurnBegun) {
                 hasLastTurnBegun = true;
-                announce(players, currentPlayerInfo.lastTurnBegins(currentPlayerState.carCount()));
+                update(players, spectators, currentGameState);
+                announce(players, spectators, currentPlayerInfo.lastTurnBegins(currentPlayerState.carCount()));
             }
 
             currentGameState = currentGameState.withCardsDeckRecreatedIfNeeded(rng);
@@ -207,7 +230,7 @@ public final class Game {
         // region ending
 
         final GameState gameOverState = currentGameState;
-        update(players, gameOverState);
+        update(players, spectators, gameOverState);
 
         // Map of scores without bonus
         Map<PlayerId, Integer> playerScores = new HashMap<>();
@@ -216,25 +239,24 @@ public final class Game {
         // Map of the longest length from player routes
         Map<PlayerId, Trail> playersLongestTrails = new HashMap<>();
 
-        players
-                .forEach((k, v) -> playersLongestTrails.put(k, Trail.longest(gameOverState.playerState(k).routes())));
+        players.forEach((k, v) -> playersLongestTrails.put(k, Trail.longest(gameOverState.playerState(k).routes())));
 
         Set<Entry<PlayerId, Trail>> playerLongestTrailsSet = playersLongestTrails.entrySet();
 
         // Filter to the longest trail
-        Optional<Entry<PlayerId, Trail>> maxLength = playerLongestTrailsSet
+        int maxLength = playerLongestTrailsSet
                 .stream()
-                .max(Comparator.comparingInt(entry -> entry.getValue().length()));
+                .max(Comparator.comparingInt(entry -> entry.getValue().length())).get().getValue().length();
 
 
         Map<PlayerId, Trail> playersForBonus = playerLongestTrailsSet
                 .stream()
-                .filter(entry -> entry.getValue().length() == (maxLength.get().getValue().length()))
+                .filter(entry -> entry.getValue().length() == (maxLength))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
         // Add bonus to the right scores and announce bonus earning player(s)
         playersForBonus.forEach((k, v) -> {
-            announce(players, playerInfos.get(k).getsLongestTrailBonus(v));
+            announce(players, spectators, playerInfos.get(k).getsLongestTrailBonus(v));
             playerScores.put(k, playerScores.get(k) + Constants.LONGEST_TRAIL_BONUS_POINTS);
         });
 
@@ -262,7 +284,7 @@ public final class Game {
                     .map(Entry::getValue)
                     .collect(Collectors.toList());
 
-            announce(players, Info.draw(winners, bestScore.getValue()));
+            announce(players, spectators, Info.draw(winners, bestScore.getValue()));
         } else {
             int loserPoints = playerScores
                     .entrySet()
@@ -273,16 +295,25 @@ public final class Game {
 
             int winnerPoints = bestScore.getValue();
 
-            announce(players, playerInfos.get(bestScore.getKey()).won(winnerPoints, loserPoints));
+            announce(players, spectators, playerInfos.get(bestScore.getKey()).won(winnerPoints, loserPoints));
         }
+
+        players.forEach((id, player) -> {
+            if (winningPlayers.containsKey(id))
+                player.won();
+            else
+                player.lost();
+        });
         // endregion
     }
 
-    private static void announce(Map<PlayerId, Player> players, String message) {
+    private static void announce(Map<PlayerId, Player> players, Map<PlayerId, Player> spectators, String message) {
         players.forEach((k, v) -> v.receiveInfo(message));
+        spectators.forEach((k, v) -> v.receiveInfo(message));
     }
 
-    private static void update(Map<PlayerId, Player> players, GameState gameState) {
+    private static void update(Map<PlayerId, Player> players, Map<PlayerId, Player> spectators, GameState gameState) {
         players.forEach((k, v) -> v.updateState(gameState, gameState.playerState(k)));
+        spectators.forEach((k, v) -> v.updateState(gameState, gameState.playerState(k)));
     }
 }

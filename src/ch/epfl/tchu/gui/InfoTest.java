@@ -2,11 +2,8 @@ package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -312,7 +309,7 @@ public class InfoTest {
         var info = new Info("Martin");
 
         var actual1 = info.lastTurnBegins(0);
-        var expected1 = "\nMartin n'a plus que 0 wagons, le dernier tour commence !\n";
+        var expected1 = "\nMartin n'a plus que 0 wagon, le dernier tour commence !\n";
         assertEquals(expected1, actual1);
 
         var actual2 = info.lastTurnBegins(1);
@@ -351,4 +348,12 @@ public class InfoTest {
         var expected2 = "\nBjarne remporte la victoire avec 3 points, contre 2 points !\n";
         assertEquals(expected2, actual2);
     }
+
+    @Test
+    void renduTest() {
+        assertEquals("Les cartes supplémentaires sont 1 noire, 1 violette et 1 rouge. Elles impliquent un coût " +
+                "additionnel de 2 cartes.\n", new Info("inf").drewAdditionalCards(SortedBag.of(1, Card.VIOLET, 1,
+                Card.RED).union(SortedBag.of(1, Card.BLACK)), 2));
+    }
+
 }

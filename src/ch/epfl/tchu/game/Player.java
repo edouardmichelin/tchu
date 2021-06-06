@@ -104,6 +104,23 @@ public interface Player {
     SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options);
 
     /**
+     * Appelée lorsque que le joueur a réussi à s'emparer de la route. Ne fait rien par défaut.
+     *
+     * @param route la route prise
+     */
+    default void successfullyClaimedRoute(Route route) {}
+
+    /**
+     * Appelée lorsque le joueur gagne la partie. Ne fait rien par défaut.
+     */
+    default void won() {}
+
+    /**
+     * Appelée lorsque le joueur perd la partie. Ne fait rien par défaut.
+     */
+    default void lost() {}
+
+    /**
      * Représente les trois types d'actions qu'un joueur de tCHu peut effectuer durant un tour
      */
     enum TurnKind {

@@ -14,10 +14,6 @@ import java.util.stream.IntStream;
 public final class StationPartition implements StationConnectivity {
     private final int[] links;
 
-    private StationPartition() {
-        this.links = new int[0];
-    }
-
     private StationPartition(int[] links) {
         this.links = links;
     }
@@ -31,11 +27,10 @@ public final class StationPartition implements StationConnectivity {
      */
     @Override
     public boolean connected(Station s1, Station s2) {
-        try {
+        if (s1.id() < links.length && s2.id() < links.length)
             return this.links[s1.id()] == this.links[s2.id()];
-        } catch (Exception ignored) {
-            return s1.id() == s2.id();
-        }
+
+        return s1.id() == s2.id();
     }
 
     /**
@@ -43,10 +38,6 @@ public final class StationPartition implements StationConnectivity {
      */
     public static final class Builder {
         private final int[] stations;
-
-        private Builder() {
-            this.stations = null;
-        }
 
         /**
          * Construit un bâtisseur de partition d'un ensemble de gares dont l'identité est comprise entre 0 (inclus)
@@ -100,14 +91,11 @@ public final class StationPartition implements StationConnectivity {
             int witness = -1;
             int representative = station;
 
-            while (true) {
+            while (witness != representative) {
                 representative = this.stations[representative];
-
-                if (witness == representative)
-                    return representative;
-
                 witness = representative;
             }
+            return representative;
         }
     }
 }

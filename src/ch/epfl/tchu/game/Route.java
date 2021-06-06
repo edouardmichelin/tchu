@@ -47,14 +47,16 @@ public final class Route {
      * @throws NullPointerException     si l'identité, l'une des deux gares ou le niveau sont nuls
      */
     public Route(String id, Station station1, Station station2, int length, Level level, Color color) {
+        this.id = Objects.requireNonNull(id);
+        this.station1 = Objects.requireNonNull(station1);
+        this.station2 = Objects.requireNonNull(station2);
+        this.level = Objects.requireNonNull(level);
+
+        Preconditions.checkArgument(!station1.equals(station2));
         Preconditions.checkArgument(station1.id() != station2.id());
         Preconditions.checkArgument(length >= Constants.MIN_ROUTE_LENGTH && length <= Constants.MAX_ROUTE_LENGTH);
         Preconditions.checkArgument(!id.isBlank());
 
-        this.id = id;
-        this.station1 = station1;
-        this.station2 = Objects.requireNonNull(station2);
-        this.level = Objects.requireNonNull(level);
         this.color = color;
         this.length = length;
     }
@@ -147,7 +149,7 @@ public final class Route {
         if (this.color == null)
             return Route.possibleClaimCardsForNeutralRoute(this.length);
 
-        return List.of((new SortedBag.Builder<Card>()).add(this.length, Card.of(this.color)).build());
+        return List.of(SortedBag.of(this.length, Card.of(this.color)));
     }
 
     /**
@@ -175,7 +177,7 @@ public final class Route {
                 count++;
             else
                 for (Card claimCard : claimCards)
-                    if (drawnCard.equals(claimCard)) {
+                    if (claimCards.contains(drawnCard)) {
                         count++;
                         break;
                     }

@@ -31,9 +31,9 @@ public final class Ticket implements Comparable<Ticket> {
      */
     public Ticket(List<Trip> trips) {
         Preconditions.checkArgument(!trips.isEmpty());
-
-        this.trips = tryStoreTrips(trips);
-        this.text = computeText(trips);
+        List<Trip> tripsCopy = List.copyOf(trips);
+        this.trips = tryStoreTrips(tripsCopy);
+        this.text = computeText(tripsCopy);
     }
 
     /**
@@ -74,9 +74,9 @@ public final class Ticket implements Comparable<Ticket> {
                 .stream()
                 .allMatch(trip -> trip.from().name().equals(witness));
 
-        if (validator) return trips;
+        Preconditions.checkArgument(validator);
 
-        throw new IllegalArgumentException();
+        return trips;
     }
 
     /**

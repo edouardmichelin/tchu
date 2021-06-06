@@ -1,0 +1,23 @@
+BorderPane, ListView, Region, VBox {
+    -fx-background-color: #2e2f33;
+}
+
+Text {
+    -fx-fill: white;
+}
+
+.modal-list .list-cell {
+    -fx-text-fill: white;
+}
+
+.list-cell:even{
+    -fx-background-color: #424245;
+}
+
+.list-cell:odd{
+    -fx-background-color: #535355;
+}
+
+.list-cell:selected{
+    -fx-background-color: #0b2576;
+}

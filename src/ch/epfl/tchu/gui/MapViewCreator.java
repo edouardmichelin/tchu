@@ -3,7 +3,6 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.ChMap;
-import ch.epfl.tchu.game.PlayerId;
 import ch.epfl.tchu.game.Route;
 import ch.epfl.tchu.gui.ActionHandlers.ChooseCardsHandler;
 import ch.epfl.tchu.gui.ActionHandlers.ClaimRouteHandler;
@@ -25,7 +24,18 @@ import java.util.List;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-public class MapViewCreator {
+final class MapViewCreator {
+    private MapViewCreator() {
+    }
+
+    /**
+     * Permet de créer la vue de la carte du jeu, partie centrale de la fenêtre
+     *
+     * @param gameState         l'état observable du jeu
+     * @param claimRouteHandler gestionnaire d'action pour s'emparer des routes
+     * @param cardChooser       selectionneur de carte
+     * @return la vue de la carte du jeu
+     */
     public static Node createMapView(
             ObservableGameState gameState,
             ObjectProperty<ClaimRouteHandler> claimRouteHandler,
@@ -49,7 +59,6 @@ public class MapViewCreator {
         ObservableList<Node> children = node.getChildren();
 
         for (Route route : ChMap.routes()) {
-            PlayerId owner;
             Group group = new Group();
             ObservableList<Node> groupChildren = group.getChildren();
             ObservableList<String> classes = group.getStyleClass();
@@ -62,13 +71,16 @@ public class MapViewCreator {
             else
                 classes.add(route.color().name());
             if (route.level().equals(Route.Level.UNDERGROUND)) classes.add("UNDERGROUND");
-            if ((owner = gameState.routes(id).get()) != null) classes.add(owner.name());
+
+            gameState.routesOwner(id).addListener((p, o, n) -> {
+                if (n != null)
+                    classes.add(n.name());
+            });
 
             group.disableProperty().bind(
-                    claimRouteHandler
-                    .isNull()
+                    claimRouteHandler.isNull()
                             .or(gameState.canClaimRoute(id).not())
-                            .or(gameState.routes(id).isNull().not())
+                            .or(gameState.routesOwner(id).isNull().not())
             );
 
             for (int caseIndex = 1; caseIndex <= route.length(); caseIndex++) {

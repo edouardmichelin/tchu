@@ -9,19 +9,28 @@ import ch.epfl.tchu.gui.ActionHandlers.DrawTicketsHandler;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.util.Callback;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -30,7 +39,10 @@ import javafx.scene.text.Text;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-class DecksViewCreator {
+final class DecksViewCreator {
+    private DecksViewCreator() {
+    }
+
     /**
      * Permet de créer la vue de la main du joueur en fonction de l'état de jeu observable passé en argument. C'est à
      * dire la vue du panel du bas de la fenêtre du jeu. Elle content les cartes en main du joueur ainsi que la liste
@@ -41,11 +53,28 @@ class DecksViewCreator {
      */
     public static Node createHandView(ObservableGameState gameState) {
 
-        SortedBag<Card> hand = gameState.cards();
+        ListView<Map.Entry<Ticket, Integer>> ticketsView = new ListView<>(gameState.playerTickets());
 
-        ObservableList<Ticket> playerTickets = FXCollections.observableArrayList(gameState.playerTickets());
-        ListView<Ticket> ticketsView = new ListView<Ticket>(playerTickets);
         ticketsView.setId("tickets");
+
+        ticketsView.setCellFactory(new Callback<>() {
+            @Override
+            public ListCell<Map.Entry<Ticket, Integer>> call(ListView<Map.Entry<Ticket, Integer>> param) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Map.Entry<Ticket, Integer> item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item != null) {
+                            this.setText(item.getKey().toString());
+                            if (item.getValue() > 0)
+                                this.setTextFill(Color.LIGHTGREEN);
+                            else
+                                this.setTextFill(Color.LIGHTCORAL);
+                        }
+                    }
+                };
+            }
+        });
 
         HBox handCardsView = new HBox();
         handCardsView.setId("hand-pane");
@@ -76,11 +105,11 @@ class DecksViewCreator {
             ObjectProperty<DrawTicketsHandler> drawTickets,
             ObjectProperty<DrawCardHandler> drawCard
     ) {
-        Button drawTicketsButton = createDrawButton("Billets", gameState.ticketsPercentage());
+        Button drawTicketsButton = createDrawButton(StringsFr.TICKETS, gameState.ticketsPercentage());
         drawTicketsButton.setOnMouseClicked(event -> drawTickets.get().onDrawTickets());
         drawTicketsButton.disableProperty().bind(drawTickets.isNull());
 
-        Button drawCardsButton = createDrawButton("Cartes", gameState.cardsPercentage());
+        Button drawCardsButton = createDrawButton(StringsFr.CARDS, gameState.cardsPercentage());
         drawCardsButton.setOnMouseClicked(event -> drawCard.get().onDrawCard(-1));
         drawCardsButton.disableProperty().bind(drawCard.isNull());
 
@@ -91,10 +120,10 @@ class DecksViewCreator {
         decksPane.getChildren().add(drawTicketsButton);
 
 
-        for (int index : Constants.FACE_UP_CARD_SLOTS) {
+        for (int slot : Constants.FACE_UP_CARD_SLOTS) {
 
-            StackPane cardView = createCardView(gameState.faceUpCards().get(index));
-            cardView.setOnMouseClicked(event -> drawCard.get().onDrawCard(index));
+            StackPane cardView = createCardView(gameState.faceUpCard(slot));
+            cardView.setOnMouseClicked(event -> drawCard.get().onDrawCard(slot));
             cardView.disableProperty().bind(drawCard.isNull());
 
             decksPane.getChildren().add(cardView);
@@ -123,7 +152,6 @@ class DecksViewCreator {
     private static StackPane createCardView(Card card, ReadOnlyIntegerProperty count, boolean isFaceUpCard) {
         String color = card.color() == null ? "NEUTRAL" : card.color().toString();
 
-
         Rectangle cardBorder = new Rectangle(60, 90);
         cardBorder.getStyleClass().add("outside");
 
@@ -145,7 +173,13 @@ class DecksViewCreator {
         return mainCardPane;
     }
 
-    private static StackPane createCardView(Card card) {
-        return createCardView(card, new SimpleIntegerProperty(), true);
+    private static StackPane createCardView(ReadOnlyObjectProperty<Card> card) {
+        StackPane mainCardPane = createCardView(card.isNull().get() ? Card.LOCOMOTIVE : card.get(),
+                new SimpleIntegerProperty(), true);
+        card.addListener((p, o, n) -> {
+            mainCardPane.getStyleClass().setAll(n.color() == null ? "NEUTRAL" : n.toString(), "card");
+        });
+
+        return mainCardPane;
     }
 }

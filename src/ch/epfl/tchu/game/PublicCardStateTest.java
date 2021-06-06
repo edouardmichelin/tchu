@@ -52,27 +52,6 @@ public class PublicCardStateTest {
     }
 
     @Test
-    void totalSizeReturnsExpectedValue() {
-        int expectedSize = 15;
-        PublicCardState a = new PublicCardState(faceUpCards5, 0, 10);
-        assertEquals(expectedSize, a.totalSize());
-
-        a = new PublicCardState(faceUpCards5, 10, 0);
-        assertEquals(expectedSize, a.totalSize());
-
-        a = new PublicCardState(faceUpCards5, 5, 5);
-        assertEquals(expectedSize, a.totalSize());
-
-        expectedSize = 5;
-        a = new PublicCardState(faceUpCards5, 0, 0);
-        assertEquals(expectedSize, a.totalSize());
-
-        expectedSize = 36;
-        a = new PublicCardState(faceUpCards5, 14, 17);
-        assertEquals(expectedSize, a.totalSize());
-    }
-
-    @Test
     void faceUpCardsReturnsExpectedList() {
         PublicCardState a = new PublicCardState(faceUpCards5, 0, 0);
         assertEquals(faceUpCards5, a.faceUpCards());
@@ -155,17 +134,6 @@ public class PublicCardStateTest {
         var cardState = new PublicCardState(faceUpCards, 0, 0);
         faceUpCards.clear();
         assertEquals(FACE_UP_CARDS, cardState.faceUpCards());
-    }
-
-    @Test
-    void totalSizeReturnsTotalSize() {
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                var cardState = new PublicCardState(FACE_UP_CARDS, i, j);
-                var expectedTotal = i + j + FACE_UP_CARDS.size();
-                assertEquals(expectedTotal, cardState.totalSize());
-            }
-        }
     }
 
     @Test

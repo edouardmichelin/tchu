@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Title
@@ -163,7 +163,6 @@ public class SerdesTest {
         assertEquals(a.deckSize(), c.deckSize());
         assertEquals(a.discardsSize(), c.discardsSize());
         assertEquals(a.faceUpCard(3), c.faceUpCard(3));
-        assertEquals(a.totalSize(), c.totalSize());
         assertEquals(a.faceUpCards(), c.faceUpCards());
     }
 
@@ -205,12 +204,12 @@ public class SerdesTest {
     @Test
     void serdePublicGameStateWorks() {
         List<Card> fu = List.of(Card.RED, Card.WHITE, Card.BLUE, Card.BLACK, Card.RED);
-        PublicCardState cs = new PublicCardState(fu, 30, 31);
+        PublicCardState cs = new PublicCardState(fu, 97, 0);
         List<Route> rs1 = ChMap.routes().subList(0, 2);
         Map<PlayerId, PublicPlayerState> ps = Map.of(
-                PlayerId.PLAYER_1, new PublicPlayerState(10, 11, rs1),
-                PlayerId.PLAYER_2, new PublicPlayerState(20, 21, List.of()));
-        PublicGameState gs = new PublicGameState(40, cs, PlayerId.PLAYER_2, ps, null);
+                PlayerId.PLAYER_1, new PublicPlayerState(0, 4, List.of()),
+                PlayerId.PLAYER_2, new PublicPlayerState(0, 4, List.of()));
+        PublicGameState gs = new PublicGameState(36, cs, PlayerId.PLAYER_2, ps, null);
         var b = Serdes.PUBLICGAMESTATE.serialize(gs);
         var c = Serdes.PUBLICGAMESTATE.deserialize(b);
 

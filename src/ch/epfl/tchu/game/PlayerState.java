@@ -3,9 +3,7 @@ package ch.epfl.tchu.game;
 import ch.epfl.tchu.Preconditions;
 import ch.epfl.tchu.SortedBag;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -19,6 +17,13 @@ public final class PlayerState extends PublicPlayerState {
     private final SortedBag<Ticket> tickets;
     private final SortedBag<Card> cards;
 
+    /**
+     * Créé l'état complet d'un joueur
+     *
+     * @param tickets les tickets en possession du joueur
+     * @param cards   les cartes en main du joueur
+     * @param routes  les routes dont le joueur s'est emparé
+     */
     public PlayerState(SortedBag<Ticket> tickets, SortedBag<Card> cards, List<Route> routes) {
         super(tickets.size(), cards.size(), routes);
         this.tickets = tickets;
@@ -31,6 +36,7 @@ public final class PlayerState extends PublicPlayerState {
      *
      * @param initialCards Les cartes initiale du joueur
      * @return l'état initial du joueur
+     * @throws IllegalArgumentException si le nombre de cartes donné n'est pas égal à 4
      */
     public static PlayerState initial(SortedBag<Card> initialCards) {
         Preconditions.checkArgument(initialCards.size() == Constants.INITIAL_CARDS_COUNT);
@@ -73,19 +79,7 @@ public final class PlayerState extends PublicPlayerState {
      * @return un état identique au récepteur, si ce n'est que le joueur possède en plus la carte donnée
      */
     public PlayerState withAddedCard(Card card) {
-        SortedBag<Card> union = this.cards.union(SortedBag.of(card));
-        return new PlayerState(this.tickets, union, this.routes());
-    }
-
-    /**
-     * Retourne un état identique au récepteur, si ce n'est que le joueur possède en plus les cartes données
-     *
-     * @param additionalCards l'ensemble de cartes à ajouter
-     * @return un état identique au récepteur, si ce n'est que le joueur possède en plus les cartes données
-     */
-    public PlayerState withAddedCards(SortedBag<Card> additionalCards) {
-        SortedBag<Card> union = this.cards.union(additionalCards);
-        return new PlayerState(this.tickets, union, this.routes());
+        return new PlayerState(this.tickets, this.cards.union(SortedBag.of(card)), this.routes());
     }
 
     /**
@@ -122,30 +116,29 @@ public final class PlayerState extends PublicPlayerState {
      *
      * @param additionalCardsCount le nombre de cartes additionnel à défausser pour s'emparer du tunnel
      * @param initialCards         les cartes initialement posées pour s'eparer du tunnel
-     * @param drawnCards           la pioche de 3 cartes qui définissent le nombre de cartes additionnelles à défausser
      * @return la liste de tous les ensembles de cartes que le joueur pourrait utiliser pour s'emparer d'un
      * tunnel, trié par ordre croissant du nombre de cartes locomotives,
      */
     public List<SortedBag<Card>> possibleAdditionalCards(
             int additionalCardsCount,
-            SortedBag<Card> initialCards,
-            SortedBag<Card> drawnCards
+            SortedBag<Card> initialCards
     ) {
         Preconditions.checkArgument(additionalCardsCount >= 1 && additionalCardsCount <= Constants.ADDITIONAL_TUNNEL_CARDS);
         Preconditions.checkArgument(!initialCards.isEmpty());
         Preconditions.checkArgument(initialCards.toSet().size() <= 2);
-        Preconditions.checkArgument(drawnCards.size() == Constants.ADDITIONAL_TUNNEL_CARDS);
 
-        final Card[] initialType = {Card.LOCOMOTIVE};
+        Card initialType = Card.LOCOMOTIVE;
         for (Card card : initialCards) {
             if (!card.equals(Card.LOCOMOTIVE)) {
-                initialType[0] = card;
+                initialType = card;
                 break;
             }
         }
 
+        Card caughtType = initialType;
+
         SortedBag<Card> usableCards = SortedBag.of(this.cards().difference(initialCards).stream().filter(
-                card -> card == initialType[0] || card == Card.LOCOMOTIVE).collect(Collectors.toList()
+                card -> card == caughtType || card == Card.LOCOMOTIVE).collect(Collectors.toList()
         ));
 
         List<SortedBag<Card>> usableCardsSet;
@@ -168,7 +161,7 @@ public final class PlayerState extends PublicPlayerState {
      * moyen des cartes données
      */
     public PlayerState withClaimedRoute(Route route, SortedBag<Card> claimCards) {
-        List<Route> routes = this.routes();
+        List<Route> routes = new ArrayList<>(this.routes());
         routes.add(route);
         return new PlayerState(this.tickets, this.cards().difference(claimCards), routes);
     }
@@ -179,21 +172,12 @@ public final class PlayerState extends PublicPlayerState {
      * @return le nombre de points — éventuellement négatif — obtenus par le joueur grâce à ses billets
      */
     public int ticketPoints() {
-        int maxId = 0;
-        for (Route route : this.routes()) {
-            if (route.station1().id() > maxId || route.station2().id() > maxId) {
-                if (route.station2().id() > route.station1().id()) {
-                    maxId = route.station2().id();
-                } else {
-                    maxId = route.station1().id();
-                }
-            }
-        }
+        StationPartition.Builder spb = new StationPartition.Builder(computeMaxId());
 
-        StationPartition.Builder spb = new StationPartition.Builder(maxId + 1);
         for (Route route : this.routes()) {
             spb.connect(route.station1(), route.station2());
         }
+
         StationPartition stationPartition = spb.build();
 
         int netPoints = 0;
@@ -205,11 +189,44 @@ public final class PlayerState extends PublicPlayerState {
     }
 
     /**
+     * Retourne le nombre de points — éventuellement négatif — obtenus par le joueur grâce à ses billets
+     *
+     * @return un dictionnaire clé-valeur avec le ticket et le nombre de points — éventuellement négatif — obtenus
+     */
+    public Map<Ticket, Integer> ticketsWithPoints() {
+        Map<Ticket, Integer> map = new HashMap<>();
+
+        StationPartition.Builder spb = new StationPartition.Builder(computeMaxId());
+
+        for (Route route : this.routes()) {
+            spb.connect(route.station1(), route.station2());
+        }
+
+        StationPartition stationPartition = spb.build();
+
+        for (Ticket ticket : this.tickets) {
+            map.put(ticket, ticket.points(stationPartition));
+        }
+
+        return map;
+    }
+
+    /**
      * Retourne la totalité des points obtenus par le joueur à la fin de la partie
      *
      * @return retourne la totalité des points obtenus par le joueur à la fin de la partie
      */
     public int finalPoints() {
         return this.ticketPoints() + this.claimPoints();
+    }
+
+    private int computeMaxId() {
+        int maxId = 0;
+
+        for (Route route : this.routes())
+            if (route.station1().id() > maxId || route.station2().id() > maxId)
+                maxId = Math.max(route.station2().id(), route.station1().id());
+
+        return maxId + 1;
     }
 }

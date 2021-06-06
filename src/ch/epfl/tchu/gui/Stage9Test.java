@@ -2,19 +2,24 @@ package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
+import ch.epfl.tchu.gui.ActionHandlers.ChooseCardsHandler;
+import ch.epfl.tchu.gui.ActionHandlers.ClaimRouteHandler;
+import ch.epfl.tchu.gui.ActionHandlers.DrawCardHandler;
+import ch.epfl.tchu.gui.ActionHandlers.DrawTicketsHandler;
 import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.Map;
-
-import ch.epfl.tchu.gui.ActionHandlers.*;
 
 /**
  * Tests
@@ -46,8 +51,16 @@ public final class Stage9Test extends Application {
         Node handView = DecksViewCreator
                 .createHandView(gameState);
 
+        Map<PlayerId, String> playerNames =
+                Map.of(PlayerId.PLAYER_1, "Ada", PlayerId.PLAYER_2, "Charles");
+        ObservableList<Text> infos = FXCollections.observableArrayList(
+                new Text("Première information.\n"),
+                new Text("\nSeconde information.\n"));
+        Node infoView = InfoViewCreator
+                .createInfoView(PlayerId.PLAYER_1, playerNames, gameState, infos);
+
         BorderPane mainPane =
-                new BorderPane(mapView, null, cardsView, handView, null);
+                new BorderPane(mapView, null, cardsView, handView, infoView);
         primaryStage.setScene(new Scene(mainPane));
         primaryStage.show();
 

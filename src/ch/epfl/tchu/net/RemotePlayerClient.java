@@ -18,7 +18,7 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-public class RemotePlayerClient implements AutoCloseable {
+public final class RemotePlayerClient implements AutoCloseable {
     private final Helpers.MessageHandler handler;
     private Player player;
     private Socket socket;
@@ -60,13 +60,16 @@ public class RemotePlayerClient implements AutoCloseable {
 
                 switch (message.id()) {
                     case CARDS:
-                        this.player.initialClaimCards();
+                        SortedBag<Card> cards = this.player.initialClaimCards();
+                        this.handler.post(message.id(), Serdes.BAG_CARD.serialize(cards));
                         break;
                     case ROUTE:
-                        this.player.claimedRoute();
+                        Route route = this.player.claimedRoute();
+                        this.handler.post(message.id(), Serdes.ROUTE.serialize(route));
                         break;
                     case DRAW_SLOT:
-                        this.player.drawSlot();
+                        int slot = this.player.drawSlot();
+                        this.handler.post(message.id(), Serdes.INT.serialize(slot));
                         break;
                     case NEXT_TURN:
                         Player.TurnKind nextTurn = this.player.nextTurn();
@@ -77,8 +80,12 @@ public class RemotePlayerClient implements AutoCloseable {
                         List<String> playerNames = Serdes.LIST_STRING.deserialize(message.content().get(1));
                         Map<PlayerId, String> playerNamesMap = new HashMap<>();
 
-                        for (PlayerId playerId : PlayerId.ALL) {
-                            playerNamesMap.put(playerId, playerNames.get(playerId.ordinal()));
+                        Globals.NUMBER_OF_PLAYERS = playerNames.size();
+
+                        List<PlayerId> ALL_PLAYERS = PlayerId.ALL;
+
+                        for (int id = 0; id < Globals.NUMBER_OF_PLAYERS; id++) {
+                            playerNamesMap.put(ALL_PLAYERS.get(id), playerNames.get(id));
                         }
 
                         player.initPlayers(ownId, playerNamesMap);
@@ -111,6 +118,15 @@ public class RemotePlayerClient implements AutoCloseable {
                         SortedBag<Card> chosenAdditionalCards =
                                 player.chooseAdditionalCards(additionalCardsOptions);
                         this.handler.post(message.id(), Serdes.BAG_CARD.serialize(chosenAdditionalCards));
+                        break;
+                    case LOST:
+                        player.lost();
+                        break;
+                    case WON:
+                        player.won();
+                        break;
+                    case CLAIMED:
+                        player.successfullyClaimedRoute(null);
                         break;
                     default:
                         throw new IllegalArgumentException();

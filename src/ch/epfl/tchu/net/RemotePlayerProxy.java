@@ -18,11 +18,13 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
  * @author Edouard Michelin (314770)
  * @author Julien Jordan (315429)
  */
-public class RemotePlayerProxy implements Player, AutoCloseable {
-    private final Helpers.MessageHandler handler;
+public final class RemotePlayerProxy implements Player, AutoCloseable, Runnable {
+    private Helpers.MessageHandler handler;
+    private final Socket socket;
 
     private RemotePlayerProxy() {
         this.handler = null;
+        this.socket = null;
     }
 
     /**
@@ -30,13 +32,7 @@ public class RemotePlayerProxy implements Player, AutoCloseable {
      * @param socket le socket
      */
     public RemotePlayerProxy(Socket socket) {
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), US_ASCII));
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), US_ASCII));
-            this.handler = new Helpers.MessageHandler(reader, writer);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        this.socket = socket;
     }
 
     @Override
@@ -76,6 +72,8 @@ public class RemotePlayerProxy implements Player, AutoCloseable {
 
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {
+        this.handler.post(MessageId.CHOOSE_INITIAL_TICKETS, "");
+
         Helpers.Payload message = this.handler.get();
 
         Preconditions.checkArgument(message.id().equals(MessageId.CHOOSE_INITIAL_TICKETS));
@@ -85,6 +83,8 @@ public class RemotePlayerProxy implements Player, AutoCloseable {
 
     @Override
     public TurnKind nextTurn() {
+        this.handler.post(MessageId.NEXT_TURN, "");
+
         Helpers.Payload message = this.handler.get();
 
         Preconditions.checkArgument(message.id().equals(MessageId.NEXT_TURN));
@@ -105,6 +105,8 @@ public class RemotePlayerProxy implements Player, AutoCloseable {
 
     @Override
     public int drawSlot() {
+        this.handler.post(MessageId.DRAW_SLOT, "");
+
         Helpers.Payload message = this.handler.get();
 
         Preconditions.checkArgument(message.id().equals(MessageId.DRAW_SLOT));
@@ -114,6 +116,8 @@ public class RemotePlayerProxy implements Player, AutoCloseable {
 
     @Override
     public Route claimedRoute() {
+        this.handler.post(MessageId.ROUTE, "");
+
         Helpers.Payload message = this.handler.get();
 
         Preconditions.checkArgument(message.id().equals(MessageId.ROUTE));
@@ -122,7 +126,14 @@ public class RemotePlayerProxy implements Player, AutoCloseable {
     }
 
     @Override
+    public void successfullyClaimedRoute(Route route) {
+        this.handler.post(MessageId.CLAIMED, "");
+    }
+
+    @Override
     public SortedBag<Card> initialClaimCards() {
+        this.handler.post(MessageId.CARDS, "");
+
         Helpers.Payload message = this.handler.get();
 
         Preconditions.checkArgument(message.id().equals(MessageId.CARDS));
@@ -141,9 +152,30 @@ public class RemotePlayerProxy implements Player, AutoCloseable {
         return Serdes.BAG_CARD.deserialize(message.content().get(0));
     }
 
+    @Override
+    public void lost(){
+        this.handler.post(MessageId.LOST, "");
+    }
+
+    @Override
+    public void won(){
+        this.handler.post(MessageId.WON, "");
+    }
 
     @Override
     public void close() throws Exception {
         this.handler.dispose();
+    }
+
+    @Override
+    public void run() {
+        try {
+            assert socket != null;
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), US_ASCII));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), US_ASCII));
+            this.handler = new Helpers.MessageHandler(reader, writer);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }
