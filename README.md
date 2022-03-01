@@ -1,2 +1,2 @@
 # tchu
-CS108 project
+CS-108 - Project
